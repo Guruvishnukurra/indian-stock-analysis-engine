@@ -1,0 +1,79 @@
+{
+  "universe": "NIFTY 50 with >= 5 analyst opinions",
+  "all": {
+    "companies": 48,
+    "median_engine_vs_consensus": -0.309,
+    "median_abs_gap": 0.484,
+    "consensus_inside_engine_range": 0.521
+  },
+  "high_confidence_only": {
+    "companies": 29,
+    "median_engine_vs_consensus": -0.296,
+    "median_abs_gap": 0.42,
+    "consensus_inside_engine_range": 0.448
+  },
+  "upside_rank_correlation": 0.008,
+  "by_company_type": {
+    "automobile": {
+      "companies": 5,
+      "median_engine_vs_consensus": -0.172,
+      "median_abs_gap": 0.404,
+      "consensus_inside_engine_range": 0.4
+    },
+    "bank": {
+      "companies": 5,
+      "median_engine_vs_consensus": -0.101,
+      "median_abs_gap": 0.112,
+      "consensus_inside_engine_range": 0.8
+    },
+    "consumer_cyclical": {
+      "companies": 3,
+      "median_engine_vs_consensus": -0.651,
+      "median_abs_gap": 1.864,
+      "consensus_inside_engine_range": 0.333
+    },
+    "consumer_defensive": {
+      "companies": 4,
+      "median_engine_vs_consensus": -0.43,
+      "median_abs_gap": 0.754,
+      "consensus_inside_engine_range": 0.0
+    },
+    "energy": {
+      "companies": 3,
+      "median_engine_vs_consensus": 0.19,
+      "median_abs_gap": 0.472,
+      "consensus_inside_engine_range": 0.333
+    },
+    "industrial": {
+      "companies": 4,
+      "median_engine_vs_consensus": -0.315,
+      "median_abs_gap": 0.897,
+      "consensus_inside_engine_range": 0.5
+    },
+    "materials": {
+      "companies": 6,
+      "median_engine_vs_consensus": -0.273,
+      "median_abs_gap": 0.584,
+      "consensus_inside_engine_range": 0.667
+    },
+    "nbfc": {
+      "companies": 3,
+      "median_engine_vs_consensus": -0.512,
+      "median_abs_gap": 1.051,
+      "consensus_inside_engine_range": 0.0
+    },
+    "pharma": {
+      "companies": 3,
+      "median_engine_vs_consensus": -0.166,
+      "median_abs_gap": 0.198,
+      "consensus_inside_engine_range": 0.667
+    },
+    "technology": {
+      "companies": 4,
+      "median_engine_vs_consensus": -0.114,
+      "median_abs_gap": 0.35,
+      "consensus_inside_engine_range": 0.75
+    }
+  },
+  "note": "Positive median_engine_vs_consensus = engine above consensus. Consensus is a reference point, not ground truth."
+}

@@ -1,0 +1,56 @@
+{
+  "PE": {
+    "market_cap": {
+      "companies": 528,
+      "median_abs_log_error": 0.4479,
+      "mean_abs_log_error": 0.6033
+    },
+    "ownership": {
+      "companies": 528,
+      "median_abs_log_error": 0.46,
+      "mean_abs_log_error": 0.6069
+    },
+    "similarity": {
+      "companies": 528,
+      "median_abs_log_error": 0.4341,
+      "mean_abs_log_error": 0.5748
+    },
+    "ownership+similarity": {
+      "companies": 528,
+      "median_abs_log_error": 0.4239,
+      "mean_abs_log_error": 0.5709
+    },
+    "hybrid": {
+      "companies": 528,
+      "median_abs_log_error": 0.4377,
+      "mean_abs_log_error": 0.5715
+    }
+  },
+  "PB": {
+    "market_cap": {
+      "companies": 547,
+      "median_abs_log_error": 0.5682,
+      "mean_abs_log_error": 0.7405
+    },
+    "ownership": {
+      "companies": 547,
+      "median_abs_log_error": 0.622,
+      "mean_abs_log_error": 0.7604
+    },
+    "similarity": {
+      "companies": 547,
+      "median_abs_log_error": 0.5042,
+      "mean_abs_log_error": 0.6545
+    },
+    "ownership+similarity": {
+      "companies": 547,
+      "median_abs_log_error": 0.4885,
+      "mean_abs_log_error": 0.649
+    },
+    "hybrid": {
+      "companies": 547,
+      "median_abs_log_error": 0.5187,
+      "mean_abs_log_error": 0.6658
+    }
+  }
+}

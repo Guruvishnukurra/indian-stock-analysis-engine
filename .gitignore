@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# Local data: caches of third-party market data and the app database
+data/cache/
+data/app.db
+data/*.db
+
+# Model binaries (regenerate with scripts/validate_ml.py)
+models/*.joblib
+
+# Editors / OS
+.ipynb_checkpoints/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Local Claude Code settings (launch.json is shared)
+.claude/settings.local.json

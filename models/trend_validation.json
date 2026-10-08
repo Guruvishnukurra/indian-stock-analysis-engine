@@ -1,0 +1,121 @@
+{
+  "horizon_trading_days": 40,
+  "universe": "Current NIFTY 100 constituents (NSE list)",
+  "n_samples": 11360,
+  "n_stocks": 97,
+  "test_years": [
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+  ],
+  "per_year": [
+    {
+      "year": 2019,
+      "n_train": 1070,
+      "n_test": 1039,
+      "majority": 0.3333,
+      "momentum": 0.3472,
+      "technical": 0.3236,
+      "logistic": 0.3821,
+      "gradient_boosting": 0.3639
+    },
+    {
+      "year": 2020,
+      "n_train": 2102,
+      "n_test": 1151,
+      "majority": 0.3333,
+      "momentum": 0.3269,
+      "technical": 0.3865,
+      "logistic": 0.3155,
+      "gradient_boosting": 0.3438
+    },
+    {
+      "year": 2021,
+      "n_train": 3251,
+      "n_test": 1086,
+      "majority": 0.3333,
+      "momentum": 0.3115,
+      "technical": 0.2986,
+      "logistic": 0.3314,
+      "gradient_boosting": 0.3647
+    },
+    {
+      "year": 2022,
+      "n_train": 4331,
+      "n_test": 1127,
+      "majority": 0.3333,
+      "momentum": 0.3226,
+      "technical": 0.3018,
+      "logistic": 0.3176,
+      "gradient_boosting": 0.3017
+    },
+    {
+      "year": 2023,
+      "n_train": 5454,
+      "n_test": 1213,
+      "majority": 0.3333,
+      "momentum": 0.3156,
+      "technical": 0.3548,
+      "logistic": 0.4008,
+      "gradient_boosting": 0.3001
+    },
+    {
+      "year": 2024,
+      "n_train": 6667,
+      "n_test": 1134,
+      "majority": 0.3333,
+      "momentum": 0.3655,
+      "technical": 0.3675,
+      "logistic": 0.3256,
+      "gradient_boosting": 0.3766
+    },
+    {
+      "year": 2025,
+      "n_train": 7799,
+      "n_test": 1150,
+      "majority": 0.3333,
+      "momentum": 0.287,
+      "technical": 0.3027,
+      "logistic": 0.4154,
+      "gradient_boosting": 0.3595
+    }
+  ],
+  "summary": {
+    "majority": {
+      "balanced_accuracy": 0.3333,
+      "long_short_spread_40d": null
+    },
+    "momentum": {
+      "balanced_accuracy": 0.332,
+      "long_short_spread_40d": 0.0021
+    },
+    "technical": {
+      "balanced_accuracy": 0.3328,
+      "long_short_spread_40d": 0.0071
+    },
+    "logistic": {
+      "balanced_accuracy": 0.3605,
+      "long_short_spread_40d": 0.0138
+    },
+    "gradient_boosting": {
+      "balanced_accuracy": 0.3509,
+      "long_short_spread_40d": 0.0043
+    }
+  },
+  "gate": {
+    "best_model": "logistic",
+    "best_baseline": "majority",
+    "edge": 0.0272,
+    "required_edge": 0.05,
+    "passed": false
+  },
+  "caveats": [
+    "Universe is current NIFTY 100 members: survivorship bias flatters any long-biased signal.",
+    "Price-only features; no point-in-time fundamentals.",
+    "Overlapping 40-day labels across stocks are correlated; the effective sample size is far smaller than n_samples."
+  ]
+}

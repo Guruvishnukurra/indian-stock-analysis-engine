@@ -1,0 +1,120 @@
+{
+  "model": "qwen2.5:7b-instruct",
+  "split": "test",
+  "n_headlines": 60,
+  "human_checked": 0,
+  "llm": {
+    "event_type_accuracy": 0.617,
+    "material_vs_noise_accuracy": 0.9,
+    "material_recall": 0.867,
+    "material_precision": 0.765,
+    "direction_accuracy_on_material": 0.692
+  },
+  "keyword_baseline": {
+    "event_type_accuracy": 0.4,
+    "material_vs_noise_accuracy": 0.75,
+    "material_recall": 0.333,
+    "material_precision": 0.5
+  },
+  "confusion": {
+    "corporate_action": {
+      "corporate_action": 2,
+      "earnings": 0,
+      "m_and_a": 0,
+      "macro_sector": 0,
+      "order_contract": 0,
+      "other": 0,
+      "price_move": 0,
+      "rating_target": 0,
+      "regulatory_legal": 0
+    },
+    "earnings": {
+      "corporate_action": 0,
+      "earnings": 4,
+      "m_and_a": 1,
+      "macro_sector": 0,
+      "order_contract": 0,
+      "other": 0,
+      "price_move": 1,
+      "rating_target": 1,
+      "regulatory_legal": 0
+    },
+    "m_and_a": {
+      "corporate_action": 0,
+      "earnings": 0,
+      "m_and_a": 0,
+      "macro_sector": 2,
+      "order_contract": 0,
+      "other": 0,
+      "price_move": 0,
+      "rating_target": 0,
+      "regulatory_legal": 0
+    },
+    "macro_sector": {
+      "corporate_action": 0,
+      "earnings": 0,
+      "m_and_a": 0,
+      "macro_sector": 2,
+      "order_contract": 0,
+      "other": 0,
+      "price_move": 1,
+      "rating_target": 0,
+      "regulatory_legal": 0
+    },
+    "order_contract": {
+      "corporate_action": 0,
+      "earnings": 0,
+      "m_and_a": 0,
+      "macro_sector": 0,
+      "order_contract": 5,
+      "other": 0,
+      "price_move": 0,
+      "rating_target": 0,
+      "regulatory_legal": 0
+    },
+    "other": {
+      "corporate_action": 0,
+      "earnings": 0,
+      "m_and_a": 0,
+      "macro_sector": 3,
+      "order_contract": 1,
+      "other": 4,
+      "price_move": 2,
+      "rating_target": 0,
+      "regulatory_legal": 0
+    },
+    "price_move": {
+      "corporate_action": 1,
+      "earnings": 0,
+      "m_and_a": 0,
+      "macro_sector": 2,
+      "order_contract": 0,
+      "other": 4,
+      "price_move": 17,
+      "rating_target": 4,
+      "regulatory_legal": 0
+    },
+    "rating_target": {
+      "corporate_action": 0,
+      "earnings": 0,
+      "m_and_a": 0,
+      "macro_sector": 0,
+      "order_contract": 0,
+      "other": 0,
+      "price_move": 0,
+      "rating_target": 2,
+      "regulatory_legal": 0
+    },
+    "regulatory_legal": {
+      "corporate_action": 0,
+      "earnings": 0,
+      "m_and_a": 0,
+      "macro_sector": 0,
+      "order_contract": 0,
+      "other": 0,
+      "price_move": 0,
+      "rating_target": 0,
+      "regulatory_legal": 1
+    }
+  }
+}
