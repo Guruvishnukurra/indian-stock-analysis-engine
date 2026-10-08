@@ -16,8 +16,18 @@ fact-checked AI-written thesis, and an honestly validated ML trend module.
 - **NOT RATED** is issued when: earnings are negative/not usable (growth
   companies get a path-to-profitability view instead), the company is a
   holding company (needs sum-of-the-parts), fewer than 2 valuation methods
-  apply, or the fair value is more than 2x away from analyst consensus
+  apply, or the fair value is more than 3x away from analyst consensus
   (the model's methods likely do not fit the company).
+
+- **Bottom line**: every report opens with a plain-language conclusion
+  built from the engine's numbers by fixed templates (no language model).
+- **Growth companies** (no usable earnings): a path-to-profitability DCF,
+  4,000 simulated futures (growth, mature margin resampled from real
+  profitable peers, discount rate, capital needs) giving a 10th-90th
+  percentile range and the share of futures that justify the price, a
+  funding check (cash burn vs net cash -> dilution risk), the mature
+  margin the price requires, and a separate growth-stage valuation
+  confidence (LOW/MEDIUM/HIGH with reasons).
 
 ### Data hygiene
 
@@ -63,7 +73,7 @@ fact-checked AI-written thesis, and an honestly validated ML trend module.
 
 ```bash
 pip install -r requirements.txt
-python -m pytest tests -q                          # 97 offline tests
+python -m pytest tests -q                          # 101 offline tests
 python -m uvicorn src.api.main:app --port 8000     # API, docs at /docs
 ```
 

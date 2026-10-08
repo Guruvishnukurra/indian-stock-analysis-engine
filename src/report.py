@@ -171,6 +171,17 @@ def print_fair_value(analysis):
 
     print(f"Confidence      : {confidence['label']} — {confidence['score']}/100")
 
+    growth_conf = analysis.get("growth_confidence")
+
+    if growth_conf and "Growth-stage DCF" in fair_value.get("methods_used", []):
+        print(f"Fair-value confidence (growth-stage): {growth_conf['level']}")
+        print(
+            "IMPORTANT: this is not a conventional intrinsic-value estimate. "
+            "It depends heavily on assumed future profitability."
+        )
+        for reason in growth_conf["reasons"]:
+            print(f"  - {reason}")
+
     inputs = analysis.get("inputs", {})
 
     if is_valid(inputs.get("consensus_target")):
@@ -246,6 +257,32 @@ def print_valuation_breakdown(analysis):
                 f"  {name.title():<5} growth {case['start_growth'] * 100:4.0f}%  "
                 f"target margin {case['target_margin'] * 100:5.1f}%  "
                 f"-> {_money(case['value'])}"
+            )
+
+        simulation = growth.get("simulation") or {}
+
+        if simulation:
+            print(
+                f"Simulated futures ({simulation['runs']:,}): 10th / 50th / 90th "
+                f"percentile {_money(simulation['p10'])} / {_money(simulation['p50'])} / "
+                f"{_money(simulation['p90'])}; "
+                f"{simulation['share_justifying_price'] * 100:.0f}% justify the current price"
+            )
+
+        funding = growth.get("funding") or {}
+
+        if funding.get("first_positive_fcf_year"):
+            print(
+                f"Cash-positive from about year {funding['first_positive_fcf_year']}; "
+                f"peak cumulative burn about Rs {funding['peak_cash_burn'] / 1e7:,.0f} crore "
+                f"vs net cash Rs {funding['net_cash'] / 1e7:,.0f} crore"
+            )
+
+        if funding.get("funding_gap"):
+            print(
+                f"Funding gap about Rs {funding['funding_gap'] / 1e7:,.0f} crore "
+                f"(~{funding['gap_share_of_market_cap'] * 100:.0f}% of market cap): "
+                "likely dilution before turning cash-positive"
             )
 
     dcf = results.get("dcf", {})
@@ -364,8 +401,8 @@ def print_market_condition(analysis):
         f"[{analysis['sector_benchmark']['name']}]"
     )
     print(f"Stock relative to sector: {pp(context.get('relative_to_sector'))}")
-    print(f"Beta vs NIFTY      : {_num(analysis.get('beta'))}")
-    print(f"Market/sector      : {market['label']} ({_score(market['score'])})")
+    print(f"Beta vs NIFTY           : {_num(analysis.get('beta'))}")
+    print(f"Market/sector           : {market['label']} ({_score(market['score'])})")
 
     for _, text in technical.get("signals", []):
         print(f"  • {text}")

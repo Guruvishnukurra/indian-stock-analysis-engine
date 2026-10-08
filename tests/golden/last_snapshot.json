@@ -74,7 +74,7 @@
  "BAJFINANCE.NS": {
   "status": "ok",
   "company_type": "nbfc",
-  "stance": "NOT RATED",
+  "stance": "WATCH",
   "price": 955.9500122070312,
   "base": 536.5567352612211,
   "methods": [
@@ -92,7 +92,7 @@
  "HDFCLIFE.NS": {
   "status": "ok",
   "company_type": "insurance",
-  "stance": "NOT RATED",
+  "stance": "AVOID",
   "price": 544.5,
   "base": 357.65991135917704,
   "methods": [
@@ -110,7 +110,7 @@
  "GROWW.NS": {
   "status": "ok",
   "company_type": "capital_markets",
-  "stance": "NOT RATED",
+  "stance": "WATCH",
   "price": 192.60000610351562,
   "base": 108.32306341789473,
   "methods": [
@@ -236,7 +236,7 @@
  "NESTLEIND.NS": {
   "status": "ok",
   "company_type": "consumer_defensive",
-  "stance": "NOT RATED",
+  "stance": "WATCH",
   "price": 1319.0,
   "base": 537.9937609427787,
   "methods": [
@@ -375,7 +375,7 @@
  "TATASTEEL.NS": {
   "status": "ok",
   "company_type": "materials",
-  "stance": "NOT RATED",
+  "stance": "AVOID",
   "price": 171.9600067138672,
   "base": 102.39500568775784,
   "methods": [
@@ -411,7 +411,7 @@
  "ULTRACEMCO.NS": {
   "status": "ok",
   "company_type": "materials",
-  "stance": "NOT RATED",
+  "stance": "AVOID",
   "price": 10426.0,
   "base": 6773.912167263811,
   "methods": [
@@ -465,7 +465,7 @@
  "RELIANCE.NS": {
   "status": "ok",
   "company_type": "energy",
-  "stance": "NOT RATED",
+  "stance": "AVOID",
   "price": 1178.0,
   "base": 751.9195177011459,
   "methods": [
@@ -555,7 +555,7 @@
  "LT.NS": {
   "status": "ok",
   "company_type": "industrial",
-  "stance": "NOT RATED",
+  "stance": "AVOID",
   "price": 3625.10009765625,
   "base": 2194.7720165846,
   "methods": [

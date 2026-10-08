@@ -21,9 +21,14 @@ The target margin comes from what mature PEERS actually earn
 The most useful output is the REVERSE question: which mature margin
 does the current price require, and where would that rank among peers?
 
-Assumptions that matter and are NOT modelled: probability of failure,
-future dilution, tax-loss carry-forwards. Results are a range with
-explicit assumptions, never a precise value.
+Beyond one base case, the model samples many plausible futures (growth,
+mature margin from real peers, discount rate, capital intensity) and
+reports the spread of values and the share of futures that justify the
+current price. It also checks whether the company can fund itself until
+it turns cash-positive (a funding gap means likely dilution).
+
+Not modelled: probability of outright failure, tax-loss carry-forwards.
+Results are a range with explicit assumptions, never a precise value.
 """
 
 import numpy as np
@@ -39,6 +44,12 @@ SALES_TO_CAPITAL = 2.0           # revenue per rupee of new invested capital
 TERMINAL_EXCESS_RETURN = 0.02    # floor: mature return on capital >= WACC + 2pp
 MARGIN_SEARCH = (-0.20, 0.60)
 
+SIMULATIONS = 4000
+SIM_SEED = 7
+MARGIN_NOISE = 0.02              # +/-2pp around a resampled peer margin
+WACC_NOISE = 0.01
+SALES_TO_CAPITAL_RANGE = (1.5, 3.0)
+
 
 def project_value(
     revenue,
@@ -52,12 +63,23 @@ def project_value(
     terminal_growth=config.DCF_TERMINAL_GROWTH,
     sales_to_capital=SALES_TO_CAPITAL,
     tax_rate=config.TAX_RATE,
+    breakdown=False,
 ):
-    """Equity value per share under one set of assumptions."""
+    """
+    Equity value per share under one set of assumptions.
+
+    breakdown=True returns a dict with the value, the share of value
+    from the terminal value, the first year of positive free cash flow
+    and the peak cumulative cash burn before that.
+    """
 
     present_value = 0.0
 
     current_revenue = revenue
+
+    cumulative_cash = 0.0
+    peak_burn = 0.0
+    first_positive_year = None
 
     for year in range(1, years + 1):
 
@@ -78,7 +100,15 @@ def project_value(
 
         reinvestment = (next_revenue - current_revenue) / sales_to_capital
 
-        present_value += (after_tax - reinvestment) / (1 + wacc) ** year
+        free_cash_flow = after_tax - reinvestment
+
+        present_value += free_cash_flow / (1 + wacc) ** year
+
+        cumulative_cash += free_cash_flow
+        peak_burn = min(peak_burn, cumulative_cash)
+
+        if first_positive_year is None and free_cash_flow > 0:
+            first_positive_year = year
 
         current_revenue = next_revenue
 
@@ -97,9 +127,64 @@ def project_value(
 
     terminal_value = terminal_cash_flow / (wacc - terminal_growth)
 
-    present_value += terminal_value / (1 + wacc) ** years
+    present_terminal = terminal_value / (1 + wacc) ** years
 
-    return (present_value - (net_debt or 0.0)) / shares
+    explicit_value = present_value
+
+    present_value += present_terminal
+
+    value = (present_value - (net_debt or 0.0)) / shares
+
+    if not breakdown:
+        return value
+
+    return {
+        "value": value,
+        # If the explicit years burn cash (negative value), all of the
+        # value - and more - comes from beyond the forecast: report 100%.
+        "terminal_share": (
+            1.0 if explicit_value <= 0
+            else present_terminal / present_value if present_value > 0
+            else None
+        ),
+        "explicit_years_burn_cash": explicit_value <= 0,
+        "first_positive_fcf_year": first_positive_year,
+        "peak_cash_burn": -peak_burn,
+    }
+
+
+def simulate_values(common, start_growth, peer_margins, wacc, seed=SIM_SEED):
+    """
+    Values across many plausible futures. Each draw combines:
+      growth          uniform between half and all of current growth
+      mature margin   a resampled profitable-peer margin +/- noise
+      discount rate   base WACC +/- noise
+      capital needs   sales-to-capital within a typical range
+    Returns a numpy array of per-share values.
+    """
+
+    rng = np.random.default_rng(seed)
+
+    margins = np.array(peer_margins) / 100
+
+    values = np.empty(SIMULATIONS)
+
+    floor = config.DCF_TERMINAL_GROWTH + 0.03
+
+    for i in range(SIMULATIONS):
+
+        values[i] = project_value(
+            revenue=common["revenue"],
+            start_growth=start_growth * rng.uniform(0.5, 1.0),
+            start_margin=common["start_margin"],
+            target_margin=max(rng.choice(margins) + rng.normal(0, MARGIN_NOISE), 0.0),
+            wacc=max(wacc + rng.normal(0, WACC_NOISE), floor),
+            net_debt=common["net_debt"],
+            shares=common["shares"],
+            sales_to_capital=rng.uniform(*SALES_TO_CAPITAL_RANGE),
+        )
+
+    return values
 
 
 def peer_margin_distribution(peer_data):
@@ -208,6 +293,29 @@ def growth_stage_valuation(
         for name, case in cases.items()
     }
 
+    base_detail = project_value(**common, **cases["base"], breakdown=True)
+
+    simulated = simulate_values(common, start_growth, margins["values"], wacc)
+
+    p10, p50, p90 = np.percentile(simulated, [10, 50, 90])
+
+    share_justifying_price = float(np.mean(simulated >= price))
+
+    # Funding: can existing net cash carry the company to positive cash flow?
+    net_cash = -(net_debt or 0.0)
+    gap = base_detail["peak_cash_burn"] - max(net_cash, 0.0)
+    market_cap_now = price * shares
+
+    funding = {
+        "peak_cash_burn": base_detail["peak_cash_burn"],
+        "net_cash": net_cash,
+        "first_positive_fcf_year": base_detail["first_positive_fcf_year"],
+        "funding_gap": max(gap, 0.0),
+        "gap_share_of_market_cap": (
+            max(gap, 0.0) / market_cap_now if market_cap_now > 0 else None
+        ),
+    }
+
     implied, status = implied_target_margin(
         price, {**common, "start_growth": start_growth}
     )
@@ -237,18 +345,38 @@ def growth_stage_valuation(
             "these growth assumptions."
         )
 
+    simulation = {
+        "runs": SIMULATIONS,
+        "p10": float(p10),
+        "p50": float(p50),
+        "p90": float(p90),
+        "share_justifying_price": share_justifying_price,
+    }
+
     if values["base"] <= 0:
         return {
             "available": False,
             "reason": "Projected equity value is not positive under base assumptions.",
             "implied_margin_summary": implied_text,
+            "implied_margin": None if implied is None else implied * 100,
+            "assumptions": {
+                "peer_margins": {k: margins[k] for k in ("low", "median", "high", "count")},
+            },
+            "simulation": simulation,
+            "funding": funding,
         }
 
     return {
         "available": True,
         "base": values["base"],
-        "low": max(min(values.values()), 0.0),
-        "high": max(values.values()),
+        # Range = 10th-90th percentile of plausible futures, not two
+        # hand-picked extremes.
+        "low": max(float(p10), 0.0),
+        "high": float(p90),
+        "simulation": simulation,
+        "funding": funding,
+        "terminal_share": base_detail["terminal_share"],
+        "explicit_years_burn_cash": base_detail["explicit_years_burn_cash"],
         "cases": {
             name: {
                 "start_growth": case["start_growth"],
@@ -270,7 +398,87 @@ def growth_stage_valuation(
         "implied_margin_summary": implied_text,
         "peer_count": margins["count"],
         "range_basis": (
-            "bear/base/bull mature margins = peer 25th/median/75th percentile; "
-            "bear also halves growth"
+            f"10th-90th percentile of {SIMULATIONS:,} simulated futures "
+            "(growth, peer-based mature margin, discount rate, capital needs)"
         ),
     }
+
+
+def growth_valuation_confidence(analysis):
+    """
+    How much to trust a growth-stage (pre-profit) fair value, separate
+    from the overall data-confidence score. Returns None when the
+    growth-stage model was not used.
+    """
+
+    result = analysis["method_results"].get("growth_dcf", {})
+
+    if not result or "assumptions" not in result:
+        return None
+
+    reasons = []
+
+    profile = analysis["company_profile"]
+    peers = result["assumptions"].get("peer_margins") or {}
+
+    current = result["assumptions"].get("current_margin")
+
+    if current is not None and current < 0:
+        reasons.append("Currently loss-making at the operating level")
+
+    if not profile.get("positive_fcf"):
+        reasons.append("Free cash flow is negative")
+
+    terminal = result.get("terminal_share")
+
+    if result.get("explicit_years_burn_cash"):
+        reasons.append(
+            "All of the value comes from beyond year 10: the next 10 years "
+            "consume cash"
+        )
+    elif terminal and terminal > 0.70:
+        reasons.append(
+            f"{terminal * 100:.0f}% of the value comes from beyond year 10 "
+            "(terminal value)"
+        )
+
+    implied = result.get("implied_margin")
+
+    if implied is not None and peers and implied > peers.get("high", 0):
+        reasons.append(
+            f"The price-implied mature margin ({implied:.0f}%) is above the "
+            f"peer range ({peers['low']:.0f}-{peers['high']:.0f}%)"
+        )
+
+    simulation = result.get("simulation") or {}
+
+    if simulation.get("p10") and simulation.get("p90"):
+        if simulation["p10"] <= 0 or simulation["p90"] / simulation["p10"] > 4:
+            reasons.append(
+                "Plausible futures span a very wide range of values "
+                "(10th-90th percentile more than 4x apart)"
+            )
+
+    ev_sales = analysis["method_results"].get("peer_evs", {})
+
+    if (
+        ev_sales.get("available")
+        and ev_sales.get("multiple_low")
+        and ev_sales["multiple_high"] / ev_sales["multiple_low"] > 2
+    ):
+        reasons.append("Peer EV/Sales multiples are widely dispersed")
+
+    funding = result.get("funding") or {}
+
+    if funding.get("funding_gap"):
+        reasons.append(
+            "Likely needs new funding before turning cash-positive "
+            "(dilution risk)"
+        )
+
+    if profile.get("annual_years", 0) < 3:
+        reasons.append("Short financial history")
+
+    level = "LOW" if len(reasons) >= 4 else "MEDIUM" if len(reasons) >= 2 else "HIGH"
+
+    return {"level": level, "reasons": reasons}

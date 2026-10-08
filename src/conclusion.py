@@ -91,13 +91,36 @@ def _growth_company(analysis, name, price):
         if is_valid(base) else ""
     )
 
-    return (
+    text = (
         f"{opening} {caution}what it does establish is that {_money(price)} "
         f"requires the company to eventually earn an operating margin of about "
         f"{implied:.0f}%, versus {peers['low']:.0f}-{peers['high']:.0f}% for "
         f"established profitable peers: {judgement}, i.e. exceptionally strong "
         "long-term execution."
     )
+
+    simulation = growth_dcf.get("simulation") or {}
+
+    if simulation:
+        share = simulation["share_justifying_price"]
+        text += (
+            f" {share * 100:.0f}% of {simulation['runs']:,} simulated futures "
+            "based on real peers' margins justify the current price."
+            if share > 0 else
+            f" None of {simulation['runs']:,} simulated futures based on real "
+            "peers' margins justify the current price."
+        )
+
+    funding = growth_dcf.get("funding") or {}
+
+    if funding.get("funding_gap") and funding.get("gap_share_of_market_cap"):
+        text += (
+            f" It also likely needs new funding of roughly "
+            f"{funding['gap_share_of_market_cap'] * 100:.0f}% of its market cap "
+            "before turning cash-positive (dilution risk)."
+        )
+
+    return text
 
 
 def _rated(analysis, name, price, stance):

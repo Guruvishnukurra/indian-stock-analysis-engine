@@ -27,7 +27,7 @@ from src.expectations import market_implied_expectations
 from src.explain import explain
 from src.fair_value import build_fair_value_range
 from src.fundamentals import post_break_data, prepare_fundamental_data
-from src.growth_stage import growth_stage_valuation
+from src.growth_stage import growth_stage_valuation, growth_valuation_confidence
 from src.periods import build_ttm, fy_label, normalized_eps, quarter_label
 from src.market import (
     calculate_beta,
@@ -851,6 +851,10 @@ def analyze_stock(
     }
 
     result["explanation"] = explain(result)
+
+    result["growth_confidence"] = _run_safely(
+        growth_valuation_confidence, result["warnings"], None, result
+    )
 
     result["conclusion"] = _run_safely(
         build_conclusion, result["warnings"], None, result

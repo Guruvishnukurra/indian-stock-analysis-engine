@@ -20,7 +20,9 @@ from src.utils import is_positive, is_valid
 
 
 FAIR_BAND = math.log(1.15)          # within +/-15% of fair value = fairly valued
-CONSENSUS_GATE = 2.0
+# Chosen by the user: only fair values more than 3x away from analyst
+# consensus (clear misfits) are gated; closer gaps are reported, not gated.
+CONSENSUS_GATE = 3.0
 MIN_ANALYSTS_FOR_GATE = 5
 
 TIMING_HORIZON = "next few weeks"
