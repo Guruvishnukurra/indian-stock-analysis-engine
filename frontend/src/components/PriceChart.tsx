@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from 'react'
 import type { Analysis } from '../lib/api'
 import { dateLabel, money } from '../lib/format'
 import { niceTicks } from '../lib/scale'
+import { useWidth } from '../lib/useWidth'
 
 const SERIES = [
   { key: 'Close', label: 'Price', color: 'var(--series-1)' },
@@ -11,7 +12,6 @@ const SERIES = [
 
 type Row = Analysis['price_history'][number]
 
-const width = 760
 const height = 260
 const pad = { left: 56, right: 92, top: 12, bottom: 28 }
 
@@ -20,6 +20,7 @@ const pad = { left: 56, right: 92, top: 12, bottom: 28 }
 export function PriceChart({ data }: { data: Row[] }) {
   const wrap = useRef<HTMLDivElement>(null)
   const [hover, setHover] = useState<number | null>(null)
+  const width = useWidth(wrap)
 
   const { x, y, paths, yTicks, xTicks } = useMemo(() => {
     const values = data.flatMap((r) => SERIES.map((s) => r[s.key])).filter((v): v is number => v != null)
@@ -44,7 +45,7 @@ export function PriceChart({ data }: { data: Row[] }) {
     const xTicks = data.map((_, i) => i).filter((i) => i % step === 0)
 
     return { x, y, paths, yTicks: niceTicks(lo, hi, 5), xTicks }
-  }, [data])
+  }, [data, width])
 
   if (data.length < 2) return <p className="muted">Not enough price history to chart.</p>
 
@@ -59,11 +60,11 @@ export function PriceChart({ data }: { data: Row[] }) {
 
   return (
     <div ref={wrap} style={{ position: 'relative' }}>
-      <svg className="chart" viewBox={`0 0 ${width} ${height}`} role="img"
+      <svg className="chart" width={width} height={height} viewBox={`0 0 ${width} ${height}`} role="img"
         aria-label={`Price over the last year, latest ${money(last.Close)}`}>
         {yTicks.map((t) => (
           <g key={t}>
-            <line x1={pad.left} x2={width - pad.right} y1={y(t)} y2={y(t)} stroke="var(--grid)" strokeWidth={1} />
+            <line x1={pad.left} x2={width - pad.right} y1={y(t)} y2={y(t)} stroke="var(--line)" strokeWidth={1} />
             <text x={pad.left - 8} y={y(t) + 4} textAnchor="end">{money(t)}</text>
           </g>
         ))}
@@ -84,14 +85,14 @@ export function PriceChart({ data }: { data: Row[] }) {
           if (value == null) return null
           return (
             <g key={s.key}>
-              <circle cx={x(data.length - 1)} cy={y(value)} r={4} fill={s.color} stroke="var(--surface-1)" strokeWidth={2} />
+              <circle cx={x(data.length - 1)} cy={y(value)} r={4} fill={s.color} stroke="var(--surface)" strokeWidth={2} />
               <text x={x(data.length - 1) + 8} y={y(value) + 4 + (index - 1) * 2}>{index === 0 ? money(value) : s.label.split(' ')[0]}</text>
             </g>
           )
         })}
 
         {hovered && hover != null && (
-          <line x1={x(hover)} x2={x(hover)} y1={pad.top} y2={height - pad.bottom} stroke="var(--axis)" strokeWidth={1} />
+          <line x1={x(hover)} x2={x(hover)} y1={pad.top} y2={height - pad.bottom} stroke="var(--line-strong)" strokeWidth={1} />
         )}
 
         <rect x={pad.left} y={pad.top} width={width - pad.left - pad.right} height={height - pad.top - pad.bottom}

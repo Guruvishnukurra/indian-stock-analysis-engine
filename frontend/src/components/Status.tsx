@@ -1,38 +1,30 @@
+import { CheckCircle, MinusCircle, Question, WarningCircle, XCircle } from '@phosphor-icons/react'
 import type { Stance } from '../lib/api'
 
-// Status colors are reserved for state and always ship with an icon and a
-// text label - never color alone.
-const STANCE: Record<Stance, { color: string; icon: string }> = {
-  ATTRACTIVE: { color: 'var(--good)', icon: '✓' },
-  WATCH: { color: 'var(--warning)', icon: '!' },
-  AVOID: { color: 'var(--critical)', icon: '✕' },
-  'NOT RATED': { color: 'var(--neutral-status)', icon: '–' },
-  'INSUFFICIENT DATA': { color: 'var(--neutral-status)', icon: '?' },
+// Status colors are reserved for state and always ship with an icon and
+// a text label - never color alone.
+const STANCE: Record<Stance, { tone: string; Icon: typeof CheckCircle }> = {
+  ATTRACTIVE: { tone: 'good', Icon: CheckCircle },
+  WATCH: { tone: 'warn', Icon: WarningCircle },
+  AVOID: { tone: 'bad', Icon: XCircle },
+  'NOT RATED': { tone: 'neutral', Icon: MinusCircle },
+  'INSUFFICIENT DATA': { tone: 'neutral', Icon: Question },
+}
+
+const LABEL: Record<Stance, string> = {
+  ATTRACTIVE: 'Attractive',
+  WATCH: 'Watch',
+  AVOID: 'Avoid',
+  'NOT RATED': 'Not rated',
+  'INSUFFICIENT DATA': 'Insufficient data',
 }
 
 export function StanceBadge({ stance }: { stance: Stance }) {
-  const style = STANCE[stance] ?? STANCE['NOT RATED']
+  const { tone, Icon } = STANCE[stance] ?? STANCE['NOT RATED']
   return (
-    <span className="status">
-      <span className="dot" style={{ background: style.color }} aria-hidden="true">
-        {style.icon}
-      </span>
-      {stance}
-    </span>
-  )
-}
-
-const ASSESSMENT: Record<string, string> = {
-  Strong: 'var(--good)',
-  Moderate: 'var(--warning)',
-  Weak: 'var(--critical)',
-}
-
-export function AssessmentPill({ label }: { label: string }) {
-  return (
-    <span className="pill">
-      <i style={{ background: ASSESSMENT[label] ?? 'var(--neutral-status)' }} aria-hidden="true" />
-      {label}
+    <span className={`stance ${tone}`}>
+      <Icon size={18} weight="fill" aria-hidden="true" />
+      {LABEL[stance] ?? stance}
     </span>
   )
 }

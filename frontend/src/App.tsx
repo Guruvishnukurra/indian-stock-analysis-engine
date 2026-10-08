@@ -1,3 +1,14 @@
+import {
+  ArrowClockwise,
+  ArrowRight,
+  ChartLineUp,
+  CheckCircle,
+  Desktop,
+  MagnifyingGlass,
+  Moon,
+  Sun,
+  WarningOctagon,
+} from '@phosphor-icons/react'
 import { useEffect, useRef, useState } from 'react'
 import { AnalysisView } from './components/AnalysisView'
 import {
@@ -9,13 +20,26 @@ import {
   waitForJob,
 } from './lib/api'
 
-const EXAMPLES = ['TCS', 'HDFCBANK', 'ATHERENERG', 'TATASTEEL', 'BAJFINANCE', 'WAAREEENER']
+const EXAMPLES: [string, string][] = [
+  ['TCS', 'IT services, steady compounder'],
+  ['HDFCBANK', 'Private bank'],
+  ['ATHERENERG', 'Loss-making EV maker'],
+  ['TATASTEEL', 'Cyclical metals'],
+  ['BAJFINANCE', 'Consumer lender (NBFC)'],
+  ['WAAREEENER', 'Capex-heavy solar'],
+]
 
 const DISCLAIMER =
   'Analytical assessment for research and education. Not investment advice, ' +
   'not a recommendation to buy or sell, and not a guaranteed prediction.'
 
 type Theme = 'system' | 'light' | 'dark'
+
+const THEMES: { id: Theme; label: string; Icon: typeof Sun }[] = [
+  { id: 'light', label: 'Light theme', Icon: Sun },
+  { id: 'dark', label: 'Dark theme', Icon: Moon },
+  { id: 'system', label: 'Match system theme', Icon: Desktop },
+]
 
 function useTheme(): [Theme, (t: Theme) => void] {
   const [theme, setTheme] = useState<Theme>(() => {
@@ -40,55 +64,74 @@ function useTheme(): [Theme, (t: Theme) => void] {
   return [theme, setTheme]
 }
 
-function BrandMark() {
+function ThemeControl({ theme, onChange }: { theme: Theme; onChange: (t: Theme) => void }) {
   return (
-    <svg className="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
-      <rect width="32" height="32" rx="8" fill="var(--accent)" />
-      <rect x="6" y="13" width="20" height="6" rx="3" fill="#fff" opacity="0.35" />
-      <rect x="15" y="7" width="2.5" height="18" rx="1.25" fill="#fff" />
-    </svg>
+    <div className="segmented" role="radiogroup" aria-label="Colour theme">
+      {THEMES.map(({ id, label, Icon }) => (
+        <button key={id} type="button" role="radio" aria-checked={theme === id} aria-label={label}
+          title={label} onClick={() => onChange(id)}>
+          <Icon size={16} weight={theme === id ? 'fill' : 'regular'} />
+        </button>
+      ))}
+    </div>
   )
 }
 
-function EmptyState({ onPick }: { onPick: (t: string) => void }) {
+function Welcome({ onPick }: { onPick: (t: string) => void }) {
   return (
-    <section className="empty" aria-labelledby="empty-title">
+    <section className="welcome" aria-labelledby="welcome-title">
       <div>
-        <h1 id="empty-title">Analyse an Indian listed company</h1>
-        <p className="section">
-          Enter an NSE ticker to get a fair-value range, a confidence score and a plain-language
-          verdict, with every number traceable to its method and period.
+        <h1 id="welcome-title">Understand what a stock is worth, and why.</h1>
+        <p className="lead">
+          Enter an NSE ticker for a fair-value range, a confidence score and a plain-language
+          verdict. Every number is traceable to its method and period.
         </p>
-        <div className="examples">
-          {EXAMPLES.map((t) => (
-            <button key={t} className="chip" onClick={() => onPick(t)}>{t}</button>
+        <ul className="list points" aria-label="What the analysis includes">
+          {[
+            'Fair value from several methods, shown as a range',
+            "What today's price assumes about growth and margins",
+            'Quality, valuation and timing judged separately',
+            'News sorted into real events and noise by a local AI model',
+          ].map((p) => (
+            <li key={p}><span className="ic up" aria-hidden="true"><CheckCircle size={14} weight="bold" /></span><span>{p}</span></li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <p className="muted small" style={{ marginBottom: 10 }}>Try one of these</p>
+        <div className="pick-grid">
+          {EXAMPLES.map(([t, d]) => (
+            <button key={t} type="button" className="pick" onClick={() => onPick(t)}>
+              <span className="t">{t}<ArrowRight size={14} aria-hidden="true" /></span>
+              <span className="d">{d}</span>
+            </button>
           ))}
         </div>
       </div>
-      <ul className="plain" aria-label="What the analysis includes">
-        <li><span className="mark neutral">1</span><span>Fair value from several methods, shown as a range, never a single number</span></li>
-        <li><span className="mark neutral">2</span><span>What today's price assumes about growth or margins</span></li>
-        <li><span className="mark neutral">3</span><span>Quality, valuation and timing judged separately</span></li>
-        <li><span className="mark neutral">4</span><span>News sorted into real events and noise by a local AI model</span></li>
-      </ul>
     </section>
   )
 }
 
-function LoadingState({ job, includeNews }: { job: Job | null; includeNews: boolean }) {
+function LoadingState({ job, includeNews, ticker }: { job: Job | null; includeNews: boolean; ticker: string }) {
   const message =
     job?.status === 'running'
-      ? `Fetching data and peers, then running the models${includeNews ? ', news tagging and the AI thesis' : ''}. First runs take ${includeNews ? '1 to 3 minutes' : 'about 30 seconds'}; repeats are faster.`
-      : 'Queued.'
+      ? `Analysing ${ticker}: fetching data and peers, then running the models${includeNews ? ', news tagging and the AI thesis' : ''}. First runs take ${includeNews ? '1 to 3 minutes' : 'about 30 seconds'}; repeats are faster.`
+      : `Queued ${ticker}.`
   return (
     <section aria-live="polite" aria-busy="true">
-      <p className="progress-note"><span className="pulse" aria-hidden="true" />{message}</p>
-      <div className="skeleton-line" style={{ width: '42%', height: 28 }} />
-      <div className="skeleton-line section" style={{ width: '70%' }} />
-      <div className="skeleton-line skeleton-block section" />
-      <div className="grid two section">
-        <div className="skeleton-line skeleton-block" style={{ height: 220 }} />
-        <div className="skeleton-line skeleton-block" style={{ height: 220 }} />
+      <p className="loading-head"><span className="pulse" aria-hidden="true" />{message}</p>
+      <div className="stack" aria-hidden="true" style={{ marginTop: 18 }}>
+        <div className="sk" style={{ width: '38%', height: 34 }} />
+        <div className="sk" style={{ width: '22%', height: 18 }} />
+        <div className="kpis" style={{ marginTop: 8 }}>
+          {Array.from({ length: 5 }, (_, i) => <div key={i} className="sk" style={{ height: 92 }} />)}
+        </div>
+        <div className="sk" style={{ height: 44, marginTop: 8 }} />
+        <div className="sk" style={{ height: 120 }} />
+        <div className="grid cols-2">
+          <div className="sk" style={{ height: 220 }} />
+          <div className="sk" style={{ height: 220 }} />
+        </div>
       </div>
     </section>
   )
@@ -102,15 +145,17 @@ export default function App() {
   const [history, setHistory] = useState<HistoryRow[]>([])
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
-  // The setting the RUNNING job was started with (the checkbox may change).
+  // The setting the RUNNING job was started with (the switch may change).
   const [runningWithNews, setRunningWithNews] = useState(true)
   const [theme, setTheme] = useTheme()
   const abort = useRef<AbortController | null>(null)
+  const input = useRef<HTMLInputElement>(null)
 
   async function run(symbol: string, force = false) {
     const clean = symbol.trim()
     if (!clean) {
       setError('Enter a ticker, for example TCS or HDFCBANK.')
+      input.current?.focus()
       return
     }
 
@@ -156,70 +201,99 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // "/" focuses the search box from anywhere on the page.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement
+      if (e.key === '/' && !['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)) {
+        e.preventDefault()
+        input.current?.focus()
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
+  const goHome = () => {
+    abort.current?.abort()
+    setBusy(false)
+    setAnalysis(null)
+    setError(null)
+    setTicker('')
+    window.history.replaceState(null, '', '/')
+  }
+
   return (
-    <div className="app">
+    <>
       <a className="skip-link" href="#content">Skip to content</a>
 
-      <header className="topbar">
-        <a className="brand" href="/" onClick={(e) => { e.preventDefault(); setAnalysis(null); setError(null); window.history.replaceState(null, '', '/') }}>
-          <BrandMark />
-          <span>
-            <strong>Stock Analysis Engine</strong>
-            <small>NSE and BSE companies</small>
-          </span>
-        </a>
+      <header className="appbar">
+        <div className="appbar-inner">
+          <a className="brand" href="/" onClick={(e) => { e.preventDefault(); goHome() }}>
+            <span className="brand-mark" aria-hidden="true"><ChartLineUp size={18} weight="bold" /></span>
+            <span className="brand-name">Stock Analysis Engine</span>
+          </a>
 
-        <form className="search" onSubmit={(e) => { e.preventDefault(); run(ticker) }} role="search">
-          <div className="field">
-            <label htmlFor="ticker">Ticker</label>
-            <input id="ticker" type="text" placeholder="TCS or TCS.NS" value={ticker}
-              onChange={(e) => setTicker(e.target.value)} autoComplete="off" spellCheck={false}
+          <form className="searchbar" role="search" onSubmit={(e) => { e.preventDefault(); run(ticker) }}>
+            <MagnifyingGlass className="lead" size={18} aria-hidden="true" />
+            <label htmlFor="ticker" className="visually-hidden">NSE ticker</label>
+            <input id="ticker" ref={input} type="text" placeholder="Ticker, e.g. TCS"
+              value={ticker} onChange={(e) => setTicker(e.target.value)} autoComplete="off" spellCheck={false}
               aria-invalid={error?.startsWith('Enter a ticker') ? true : undefined} />
-          </div>
-          <label className="toggle" htmlFor="include-news" title="Include news event tagging and the AI-written thesis (slower)">
-            <input id="include-news" type="checkbox" checked={includeNews}
-              onChange={(e) => setIncludeNews(e.target.checked)} aria-label="Include news and AI" />
-            News and AI
-          </label>
-          <button className="btn primary" type="submit" disabled={busy}>{busy ? 'Analysing' : 'Analyse'}</button>
-          {analysis && !busy && (
-            <button className="btn" type="button" onClick={() => run(analysis.ticker, true)}
-              title="Recompute instead of reusing a result from the last 6 hours">
-              Refresh
+            {!ticker && <kbd aria-hidden="true">/</kbd>}
+            <button className="btn btn-primary" type="submit" disabled={busy} style={{ height: 32 }}>
+              {busy ? 'Analysing' : 'Analyse'}
             </button>
-          )}
-          <select className="btn select" value={theme} onChange={(e) => setTheme(e.target.value as Theme)} aria-label="Colour theme">
-            <option value="system">Auto theme</option>
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-          </select>
-        </form>
+          </form>
+
+          <div className="bar-actions">
+            <button type="button" className="switch" role="switch" aria-checked={includeNews}
+              onClick={() => setIncludeNews((v) => !v)}
+              title="Include news event tagging and the AI-written thesis (slower)">
+              <span className="track" aria-hidden="true"><span className="thumb" /></span>
+              <span className="label-text">News and AI</span>
+              <span className="visually-hidden">Include news and AI</span>
+            </button>
+            {analysis && !busy && (
+              <button className="btn btn-ghost btn-icon" type="button" onClick={() => run(analysis.ticker, true)}
+                aria-label="Recompute this analysis" title="Recompute instead of reusing a result from the last 6 hours">
+                <ArrowClockwise size={18} />
+              </button>
+            )}
+            <ThemeControl theme={theme} onChange={setTheme} />
+          </div>
+        </div>
       </header>
 
-      <main id="content" tabIndex={-1}>
-        {error && !busy && (
-          <section className="panel error-panel" role="alert">
-            <p className="error">Could not analyse {ticker || 'that ticker'}.</p>
-            <p className="secondary section">{error}</p>
-            {!error.startsWith('Enter a ticker') && (
-              <p className="muted small section">
-                If this keeps happening, check the API is running:{' '}
-                <code className="inline">.venv\Scripts\python.exe -m uvicorn src.api.main:app --port 8000</code>
-              </p>
-            )}
-          </section>
-        )}
+      <div className="shell">
+        <main id="content" tabIndex={-1}>
+          {error && !busy && (
+            <section className="card error-card" role="alert">
+              <span className="ic" aria-hidden="true"><WarningOctagon size={20} weight="bold" /></span>
+              <div className="stack">
+                <h2>Could not analyse {ticker || 'that ticker'}</h2>
+                <p className="secondary">{error}</p>
+                {!error.startsWith('Enter a ticker') && (
+                  <p className="muted small">
+                    If this keeps happening, check the API is running:{' '}
+                    <code className="inline">.venv\Scripts\python.exe -m uvicorn src.api.main:app --port 8000</code>
+                  </p>
+                )}
+              </div>
+            </section>
+          )}
 
-        {!analysis && !busy && !error && <EmptyState onPick={(t) => run(t)} />}
+          {!analysis && !busy && <Welcome onPick={(t) => run(t)} />}
 
-        {busy && <LoadingState job={job} includeNews={runningWithNews} />}
+          {busy && <LoadingState job={job} includeNews={runningWithNews} ticker={ticker} />}
 
-        {analysis && !busy && <AnalysisView analysis={analysis} history={history} />}
-      </main>
+          {analysis && !busy && <AnalysisView analysis={analysis} history={history} />}
+        </main>
 
-      <footer>
-        <p className="disclaimer">{DISCLAIMER}</p>
-      </footer>
-    </div>
+        <footer className="site">
+          <p>{DISCLAIMER}</p>
+        </footer>
+      </div>
+    </>
   )
 }

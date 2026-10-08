@@ -46,3 +46,7 @@ export function dateLabel(iso: string): string {
 }
 
 export { isNum }
+
+export function assessmentTone(label: string): 'good' | 'warn' | 'bad' {
+  return label === 'Strong' ? 'good' : label === 'Moderate' ? 'warn' : 'bad'
+}
