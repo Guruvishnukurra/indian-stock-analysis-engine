@@ -59,13 +59,15 @@ def build_reasons(analysis):
 
         upside = fair_value["upside_base"]
 
+        # Phrase from the fair value's side so the percentage keeps its
+        # meaning: upside = fair value / price - 1.
         if upside >= 10:
             bullish.append(
-                f"Price is {upside:.0f}% below the base fair-value estimate"
+                f"Base fair-value estimate is {upside:.0f}% above the price"
             )
         elif upside <= -10:
             not_bullish.append(
-                f"Price is {-upside:.0f}% above the base fair-value estimate"
+                f"Base fair-value estimate is {-upside:.0f}% below the price"
             )
 
         current_pe = analysis["inputs"].get("current_pe")

@@ -144,7 +144,7 @@ def summarize_events(news, classifications, max_items=4):
     (newest first). Price-move commentary is counted, not reported.
     """
 
-    catalysts, risks = [], []
+    catalysts, risks, neutral = [], [], []
     counts = {}
 
     for (_, row), event in zip(news.iterrows(), classifications):
@@ -164,12 +164,15 @@ def summarize_events(news, classifications, max_items=4):
             catalysts.append(item)
         elif event["direction"] == "negative" and len(risks) < max_items:
             risks.append(item)
+        elif event["direction"] == "neutral" and len(neutral) < max_items:
+            neutral.append(item)
 
     total = sum(counts.values())
 
     return {
         "catalysts": catalysts,
         "risks": risks,
+        "other_material": neutral,
         "event_counts": counts,
         "material_share": (
             sum(counts.get(t, 0) for t in MATERIAL_TYPES) / total

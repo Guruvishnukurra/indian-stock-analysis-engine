@@ -394,3 +394,23 @@ def test_same_peer_set_methods_are_not_independent(healthy_statements):
 
     assert points["Valuation methods"] == 8
     assert points["Method agreement"] <= 10
+
+
+def test_valuation_gap_wording_keeps_direction():
+    from src.explain import build_reasons
+
+    def reasons(upside):
+        analysis = {
+            "fundamental_score": {"metrics": []},
+            "fair_value": {"available": True, "upside_base": upside,
+                           "low": 1, "high": 10_000},
+            "technical_score": {}, "market_score": {}, "news": {},
+            "current_price": 1406, "inputs": {}, "peer_analysis": {},
+        }
+        return build_reasons(analysis)
+
+    _, not_bullish = reasons(-74.3)
+    assert "Base fair-value estimate is 74% below the price" in not_bullish
+
+    bullish, _ = reasons(30.3)
+    assert "Base fair-value estimate is 30% above the price" in bullish

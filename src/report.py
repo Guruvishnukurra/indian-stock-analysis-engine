@@ -287,6 +287,9 @@ def print_news(analysis):
         _bullets(events["catalysts"], "+")
         print("Key event risks:")
         _bullets(events["risks"], "-")
+        if events.get("other_material"):
+            print("Other material events (no clear direction):")
+            _bullets(events["other_material"], "·")
         print(f"({events['accuracy_note']})")
 
     if not events and news.get("top_positive"):

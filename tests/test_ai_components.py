@@ -92,3 +92,11 @@ def test_thesis_contradicting_stance_is_rejected():
     ok, problems = verify_thesis(text, FACTS, stance="WATCH")
     assert not ok
     assert any("stance" in p for p in problems)
+
+
+def test_neutral_material_events_are_reported():
+    news = pd.DataFrame({"Headline": ["Board meeting to consider results"]})
+    summary = news_events.summarize_events(
+        news, [{"event_type": "earnings", "direction": "neutral"}]
+    )
+    assert summary["other_material"] == ["[earnings] Board meeting to consider results"]
