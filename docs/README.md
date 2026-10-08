@@ -25,7 +25,7 @@ fact-checked AI-written thesis, and an honestly validated ML trend module.
 
 ```bash
 pip install -r requirements.txt
-python -m pytest tests -q                          # 80 offline tests
+python -m pytest tests -q                          # 81 offline tests
 python -m uvicorn src.api.main:app --port 8000     # API, docs at /docs
 ```
 
@@ -67,7 +67,7 @@ Storage: SQLite at `data/app.db` by default; set `DATABASE_URL` for PostgreSQL.
 | ML trend (40-day) | `scripts/validate_ml.py` | Walk-forward balanced accuracy 36.0% vs 33.3% baseline; **fails** the 5pp gate, so it is reported as unavailable |
 | Technical score | same | No predictive value (33.3%): kept as context only |
 | Peer selection | `scripts/evaluate_peers.py` | Ownership + description similarity + 20% size floor is best (P/E typical miss 57% to 50%, P/B 77% to 63% vs top-by-market-cap) |
-| News events (local LLM) | `scripts/evaluate_news_events.py test` | 90% material-vs-noise, 69% direction on 60 held-out headlines (labels drafted by Claude, pending human check) |
+| News events (local LLM, two-pass) | `scripts/evaluate_news_events.py test` / `test2` | On 120 held-out headlines: 86% of reported catalysts/risks are genuine company events (68% single-pass), 76% have the exact type; recall 55%, i.e. about half of events are not shown. Labels drafted by Claude, pending human check |
 | Score bands | `scripts/band_check.py` | Calibrated to sector quartiles of Indian companies |
 | Fair value vs analyst consensus | `scripts/compare_consensus.py` | 48 NIFTY 50 companies. With DCF at 45% weight the engine sat a median 39% below consensus; the driver was the DCF (median 58% below price vs peer P/E -9%, own-history P/E +24%, consensus +28%). DCF weight was cut to 25% (judgement, documented in `src/config.py`): gap now -31%, consensus inside the engine's range 52% (was 46%). Rank correlation with consensus ~0: the engine's relative calls are independent of analysts |
 
@@ -77,8 +77,8 @@ Storage: SQLite at `data/app.db` by default; set `DATABASE_URL` for PostgreSQL.
 - PSU detection covers NSE PSU index members only (e.g. IDBI Bank and LIC are missed).
 - The fair-value backtest needs historical fundamentals from another source.
 - News-event labels need human verification (`data/reference/news_labels*.csv`).
-  Event *type* accuracy is moderate (62% held-out): individual catalyst/risk
-  tags can be wrong (e.g. a broker downgrade tagged as M&A).
+  A second LLM pass verifies every reported item; about 1 in 7 shown items
+  may still be wrong, and about half of real events are not shown.
 - The DCF is structurally conservative for Indian large caps, which trade at
   40-60x free cash flow: a 10-year DCF at ~12% cost of capital and 5%
   terminal growth cannot reach those prices. With 45% DCF weight this pulls

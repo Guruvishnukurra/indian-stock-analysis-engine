@@ -115,3 +115,33 @@ def test_syndicated_rewrites_are_deduplicated():
     })
 
     assert len(deduplicate_news(news)) == 2
+
+
+def test_skipped_headlines_are_reasked(monkeypatch):
+    calls = []
+
+    def fake_batch(company, headlines, version):
+        calls.append(len(headlines))
+        if len(headlines) > 1:          # model skips the second headline
+            return [{"event_type": "earnings", "direction": "positive"}, None]
+        return [{"event_type": "management", "direction": "neutral"}]
+
+    monkeypatch.setattr(news_events, "_classify_batch", fake_batch)
+
+    result = news_events.classify_headlines("Co", ["a", "b"])
+
+    assert result[1]["event_type"] == "management"
+    assert calls == [2, 1]
+
+
+def test_same_story_listed_once():
+    news = pd.DataFrame({"Headline": [
+        "HDFC Bank Limited Securities Fraud Class Action Result of - GlobeNewswire",
+        "HDFC Bank Limited Class Action Reminder about Securities Fraud - Robbins LLP",
+        "SEBI fines HDFC Bank over disclosure lapse - ET",
+    ]})
+    negative = {"event_type": "regulatory_legal", "direction": "negative"}
+
+    summary = news_events.summarize_events(news, [negative] * 3)
+
+    assert len(summary["risks"]) == 2

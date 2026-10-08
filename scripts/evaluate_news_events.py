@@ -25,7 +25,7 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from src.llm import LLM_MODEL, llm_available
-from src.news_events import MATERIAL_TYPES, classify_headlines
+from src.news_events import MATERIAL_TYPES, classify_headlines, verify_classifications
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -56,6 +56,7 @@ def keyword_classify(headline):
 LABEL_FILES = {
     "dev": "news_labels.csv",
     "test": "news_labels_test.csv",
+    "test2": "news_labels_test2.csv",
 }
 
 
@@ -88,6 +89,13 @@ def score(true_types, predicted_types, true_dirs=None, predicted_dirs=None):
         "material_vs_noise_accuracy": round(float((material_true == material_pred).mean()), 3),
         "material_recall": round(float((material_pred & material_true).sum() / max(1, material_true.sum())), 3),
         "material_precision": round(float((material_pred & material_true).sum() / max(1, material_pred.sum())), 3),
+        # Of the items the report would show (predicted material), how many
+        # have exactly the right event type?
+        "reported_items": int(material_pred.sum()),
+        "reported_exact_type_precision": round(
+            float((material_pred & (true_types == predicted_types)).sum()
+                  / max(1, material_pred.sum())), 3
+        ),
     }
 
     if true_dirs is not None:
@@ -113,15 +121,20 @@ def main():
     predictions = []
 
     for company, group in data.groupby("company", sort=False):
-        classified = classify_headlines(company, group["headline"].tolist())
+        headlines = group["headline"].tolist()
+        classified = classify_headlines(company, headlines)
         if classified is None:
             sys.exit("LLM classification failed.")
-        predictions.extend(zip(group.index, classified))
+        verified = verify_classifications(company, headlines, classified)
+        predictions.extend(zip(group.index, classified, verified))
 
     predicted = pd.DataFrame(
-        [{"idx": i, "llm_type": (c or {}).get("event_type", "other"),
-          "llm_direction": (c or {}).get("direction", "neutral")}
-         for i, c in predictions]
+        [{"idx": i,
+          "llm_type": (c or {}).get("event_type", "other"),
+          "llm_direction": (c or {}).get("direction", "neutral"),
+          "verified_type": (v or {}).get("event_type", "other"),
+          "verified_direction": (v or {}).get("direction", "neutral")}
+         for i, c, v in predictions]
     ).set_index("idx")
 
     data = data.join(predicted)
@@ -134,6 +147,8 @@ def main():
         "human_checked": int(data["human_checked"].sum()),
         "llm": score(data["true_type"], data["llm_type"],
                      data["true_direction"], data["llm_direction"]),
+        "llm_verified": score(data["true_type"], data["verified_type"],
+                              data["true_direction"], data["verified_direction"]),
         "keyword_baseline": score(data["true_type"], data["keyword_type"]),
         "confusion": pd.crosstab(data["true_type"], data["llm_type"]).to_dict(),
     }
@@ -142,15 +157,16 @@ def main():
         json.dumps(results, indent=2)
     )
 
-    disagreements = data[data["true_type"] != data["llm_type"]]
-    disagreements[["headline", "true_type", "llm_type"]].to_csv(
+    disagreements = data[data["true_type"] != data["verified_type"]]
+    disagreements[["headline", "true_type", "llm_type", "verified_type"]].to_csv(
         ROOT / "data" / "reference" / f"news_event_disagreements_{split}.csv", encoding="utf-8"
     )
 
-    print(json.dumps({k: results[k] for k in ("model", "split", "n_headlines", "human_checked", "llm", "keyword_baseline")}, indent=2))
+    print(json.dumps({k: results[k] for k in ("model", "split", "n_headlines", "human_checked", "llm", "llm_verified", "keyword_baseline")}, indent=2))
     print(f"\n{len(disagreements)} disagreements:")
     for _, row in disagreements.iterrows():
-        print(f"  label={row.true_type:<16} llm={row.llm_type:<16} {row.headline[:90]}")
+        print(f"  label={row.true_type:<16} pass1={row.llm_type:<16} "
+              f"verified={row.verified_type:<16} {row.headline[:70]}")
 
 
 if __name__ == "__main__":

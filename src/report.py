@@ -42,6 +42,7 @@ def _num(value, digits=2):
 
 
 def _section(title):
+    _ensure_unicode_output()
     print()
     print(title)
     print("-" * WIDTH)

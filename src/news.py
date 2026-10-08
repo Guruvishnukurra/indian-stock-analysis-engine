@@ -306,7 +306,11 @@ def classify_news_events(company_name, news):
     """
 
     from src.llm import llm_available
-    from src.news_events import classify_headlines, summarize_events
+    from src.news_events import (
+        classify_headlines,
+        summarize_events,
+        verify_classifications,
+    )
 
     if news.empty or not llm_available():
         return None
@@ -320,6 +324,11 @@ def classify_news_events(company_name, news):
     if classifications is None:
         return None
 
+    # Second pass: only verified material events are reported.
+    classifications = verify_classifications(
+        company_name, recent["Headline"].tolist(), classifications
+    )
+
     summary = summarize_events(recent, classifications)
 
     summary["classified"] = [
@@ -328,9 +337,10 @@ def classify_news_events(company_name, news):
     ]
 
     summary["accuracy_note"] = (
-        "AI-tagged by a local LLM: 90% material-vs-noise accuracy and "
-        "69% direction accuracy on 60 held-out headlines "
-        "(labels not yet human-verified)."
+        "AI-tagged by a local LLM and re-checked by a second pass. On 120 "
+        "held-out headlines, 86% of reported items were genuine company "
+        "events (68% without the check); about half of real events are not "
+        "shown. Labels not yet human-verified."
     )
 
     return summary
