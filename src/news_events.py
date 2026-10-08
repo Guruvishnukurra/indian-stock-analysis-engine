@@ -162,12 +162,40 @@ def _story_words(headline):
     return {w for w in _WORD.findall(text) if len(w) > 2 and w not in _COMMON}
 
 
-def _repeats_listed_story(headline, listed_words):
+# Meaning-based check (sentence embeddings). In a hand-checked sample,
+# repeats of one story scored 0.66-0.98 and different stories up to
+# 0.69, so 0.72 is set to avoid merging distinct stories (some repeats
+# are missed rather than real events hidden).
+SAME_STORY_EMBEDDING = 0.72
+
+
+def _embedding(headline):
+    try:
+        from src.embeddings import embed_text
+        return embed_text(re.sub(r"\s+-\s+[^-]+$", "", str(headline)))
+    except Exception:
+        return None
+
+
+def _repeats_listed_story(headline, listed):
+    """listed: list of (word set, embedding or None) already shown."""
+
     words = _story_words(headline)
-    return any(
-        words and other and len(words & other) / len(words | other) >= SAME_STORY
-        for other in listed_words
-    )
+    vector = _embedding(headline)
+
+    for other_words, other_vector in listed:
+
+        if words and other_words and (
+            len(words & other_words) / len(words | other_words) >= SAME_STORY
+        ):
+            return True
+
+        if vector is not None and other_vector is not None and (
+            float(vector @ other_vector) >= SAME_STORY_EMBEDDING
+        ):
+            return True
+
+    return False
 
 
 def summarize_events(news, classifications, max_items=4):
@@ -198,7 +226,7 @@ def summarize_events(news, classifications, max_items=4):
         if _repeats_listed_story(row["Headline"], listed_words):
             continue
 
-        listed_words.append(_story_words(row["Headline"]))
+        listed_words.append((_story_words(row["Headline"]), _embedding(row["Headline"])))
 
         if event["direction"] == "positive" and len(catalysts) < max_items:
             catalysts.append(item)

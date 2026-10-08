@@ -134,7 +134,10 @@ def test_skipped_headlines_are_reasked(monkeypatch):
     assert calls == [2, 1]
 
 
-def test_same_story_listed_once():
+def test_same_story_listed_once(monkeypatch):
+    # Word-overlap rule only (no embedding model in unit tests).
+    monkeypatch.setattr(news_events, "_embedding", lambda headline: None)
+
     news = pd.DataFrame({"Headline": [
         "HDFC Bank Limited Securities Fraud Class Action Result of - GlobeNewswire",
         "HDFC Bank Limited Class Action Reminder about Securities Fraud - Robbins LLP",
