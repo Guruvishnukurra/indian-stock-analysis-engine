@@ -23,12 +23,14 @@ Design rules:
   starting points are kept (marked "uncalibrated").
 """
 
+from src.periods import fy_label, quarter_label
 from src.utils import (
     interpolate_score,
     is_positive,
     is_valid,
     label_from_thresholds,
     latest_valid,
+    latest_valid_dated,
     valid_values,
 )
 
@@ -172,17 +174,17 @@ def metric_specs(company_type):
 
 def _latest_with_fallback(quarterly_data, quarterly_col,
                           fundamental_data, annual_col):
-    """Prefer the latest quarterly YoY figure, else annual."""
+    """Prefer the latest quarterly YoY figure, else annual. Period-tagged."""
 
-    value = latest_valid(quarterly_data, quarterly_col)
-
-    if value is not None:
-        return value, "latest quarter YoY"
-
-    value = latest_valid(fundamental_data, annual_col)
+    value, date = latest_valid_dated(quarterly_data, quarterly_col)
 
     if value is not None:
-        return value, "latest fiscal year"
+        return value, f"{quarter_label(date)} vs a year earlier"
+
+    value, date = latest_valid_dated(fundamental_data, annual_col)
+
+    if value is not None:
+        return value, f"{fy_label(date)} vs prior year"
 
     return None, None
 
@@ -190,7 +192,8 @@ def _latest_with_fallback(quarterly_data, quarterly_col,
 def extract_fundamental_metrics(
     fundamental_data,
     quarterly_data,
-    normalized_fcf=None
+    normalized_fcf=None,
+    ttm=None
 ):
     """
     Collect every metric the engine can compute.
@@ -221,15 +224,28 @@ def extract_fundamental_metrics(
     }
 
     for key, column in annual_columns.items():
-        metrics[key] = latest_valid(fundamental_data, column)
-        sources[key] = "latest fiscal year" if metrics[key] is not None else None
+        value, date = latest_valid_dated(fundamental_data, column)
+        metrics[key] = value
+        sources[key] = fy_label(date) if value is not None else None
+
+    # Margins: prefer trailing twelve months (more current), built only
+    # from four consecutive quarters; numerator and denominator always
+    # come from the same period.
+    if ttm and ttm.get("available"):
+        for key, field in (("operating_margin", "Operating_Margin"),
+                           ("net_margin", "Net_Margin")):
+            if ttm.get(field) is not None:
+                metrics[key] = ttm[field]
+                sources[key] = ttm["label"]
 
     # FCF conversion uses normalised FCF vs latest net income.
     net_income = latest_valid(fundamental_data, "Net_Income")
 
     if is_valid(normalized_fcf) and is_positive(net_income):
         metrics["fcf_conversion"] = normalized_fcf / net_income
-        sources["fcf_conversion"] = "multi-year average FCF / latest net income"
+        sources["fcf_conversion"] = (
+            f"average FCF over recent years / {fy_label(latest_valid_dated(fundamental_data, 'Net_Income')[1])} net income"
+        )
     else:
         metrics["fcf_conversion"] = None
         sources["fcf_conversion"] = None
@@ -240,7 +256,7 @@ def extract_fundamental_metrics(
         metrics["profit_consistency"] = (
             sum(1 for v in incomes if v > 0) / len(incomes)
         )
-        sources["profit_consistency"] = f"{len(incomes)} fiscal years"
+        sources["profit_consistency"] = f"last {len(incomes)} fiscal years"
     else:
         metrics["profit_consistency"] = None
         sources["profit_consistency"] = None

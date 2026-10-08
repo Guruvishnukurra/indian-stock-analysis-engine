@@ -16,6 +16,11 @@ def get_valuation_weights(company_profile):
     if family == "asset_light_financial":
         return dict(config.ASSET_LIGHT_FINANCIAL_WEIGHTS)
 
+    if company_profile.get("company_type") == "utilities" and company_profile.get(
+        "earnings_usable", True
+    ):
+        return dict(config.UTILITY_WEIGHTS)
+
     if not company_profile.get(
         "earnings_usable", company_profile.get("positive_earnings", False)
     ):

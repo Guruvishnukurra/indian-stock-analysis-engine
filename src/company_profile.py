@@ -6,6 +6,7 @@ depends on a specific ticker.
 """
 
 from src import config
+from src.routing import assess_capex_heavy, assess_cyclicality, is_holding_company
 from src.utils import is_positive, is_valid, latest_valid, valid_values
 
 
@@ -23,6 +24,9 @@ FINANCIAL_TYPES = (
 
 # Matched against the Yahoo industry (lower case), in order.
 INDUSTRY_RULES = [
+    # Solar module/cell makers: capital-intensive manufacturing, not IT
+    # (Yahoo files them under the Technology sector).
+    ("solar", "industrial"),
     ("banks", "bank"),
     ("credit services", "nbfc"),
     ("mortgage finance", "nbfc"),
@@ -127,7 +131,7 @@ def get_valuation_family(company_type):
     return "operating"
 
 
-def normalized_fcf(fundamental_data):
+def normalized_fcf(fundamental_data, years=None):
     """
     Average free cash flow over the last few years.
 
@@ -138,7 +142,7 @@ def normalized_fcf(fundamental_data):
     values = valid_values(
         fundamental_data,
         "Free_Cash_Flow",
-        last_n=config.DCF_FCF_NORMALIZATION_YEARS
+        last_n=years or config.DCF_FCF_NORMALIZATION_YEARS
     )
 
     if not values:
@@ -192,7 +196,8 @@ def assess_company_profile(
     sector=None,
     industry=None,
     trailing_eps=None,
-    price_history_days=None
+    price_history_days=None,
+    business_summary=None
 ):
     profile = {}
 
@@ -255,7 +260,35 @@ def assess_company_profile(
     # Free cash flow (normalised)
     # -------------------------
 
-    fcf, fcf_years = normalized_fcf(fundamental_data)
+    # -------------------------
+    # Business-type routing
+    # -------------------------
+
+    operating = profile["valuation_family"] == "operating"
+
+    cycle = assess_cyclicality(industry, fundamental_data) if operating else {"cyclical": False}
+    profile.update(cycle)
+
+    # Cyclicals: average free cash flow over every available year
+    # (closer to a full cycle) rather than the last three.
+    fcf, fcf_years = normalized_fcf(
+        fundamental_data,
+        years=10 if profile.get("cyclical") else config.DCF_FCF_NORMALIZATION_YEARS,
+    )
+
+    profile["fcf_basis"] = f"average free cash flow over {fcf_years} years"
+
+    capex = (
+        assess_capex_heavy(fundamental_data, fcf, profile["earnings_usable"])
+        if operating else {"capex_heavy": False}
+    )
+    profile.update(capex)
+
+    if profile.get("capex_heavy"):
+        fcf = capex["maintenance_fcf"]
+        profile["fcf_basis"] = "maintenance free cash flow (operating cash flow - depreciation)"
+
+    profile["holding_company"] = is_holding_company(industry, business_summary)
 
     profile["normalized_fcf"] = fcf
     profile["fcf_years"] = fcf_years
@@ -346,9 +379,15 @@ def determine_method_applicability(profile):
         rules["peer_pe"] = (False, reason)
         rules["historical_pe"] = (False, reason)
 
-    # Book-value multiples are the anchor for financials.
+    # Book-value multiples are the anchor for financials; for regulated
+    # utilities, book equity approximates the regulated asset base.
     if family in ("financial_balance_sheet", "asset_light_financial"):
         rules["peer_pb"] = (True, "Book value anchors financial companies.")
+    elif profile.get("company_type") == "utilities":
+        rules["peer_pb"] = (
+            True,
+            "Regulated utility: book equity approximates the regulated asset base."
+        )
     else:
         rules["peer_pb"] = (
             False,

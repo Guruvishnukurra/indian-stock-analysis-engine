@@ -1,0 +1,42 @@
+{
+  "_about": "Golden set: run scripts/run_golden.py after every change. Expectations are STRUCTURAL (routing, methods, allowed verdicts). 'fair_value_checked' is for hand-checked ranges [low, high] in rupees: fill these in yourself after checking each company; the harness then verifies the engine's base estimate falls inside.",
+  "sanity": {
+    "base_to_price_ratio": [0.2, 5.0],
+    "rated_stances": ["ATTRACTIVE", "WATCH", "AVOID"],
+    "all_stances": ["ATTRACTIVE", "WATCH", "AVOID", "NOT RATED", "INSUFFICIENT DATA"]
+  },
+  "stocks": [
+    {"ticker": "TCS.NS", "expect": {"company_type": "technology", "methods_include": ["DCF", "Peer P/E"], "stance_not": ["NOT RATED", "INSUFFICIENT DATA"]}, "fair_value_checked": null},
+    {"ticker": "INFY.NS", "expect": {"company_type": "technology", "methods_include": ["Peer P/E"]}, "fair_value_checked": null},
+    {"ticker": "HDFCBANK.NS", "expect": {"company_type": "bank", "methods_exclude": ["DCF"], "methods_include": ["Peer P/B"]}, "fair_value_checked": null},
+    {"ticker": "SBIN.NS", "expect": {"company_type": "bank", "ownership": "PSU", "methods_exclude": ["DCF"]}, "fair_value_checked": null},
+    {"ticker": "BAJFINANCE.NS", "expect": {"company_type": "nbfc", "methods_exclude": ["DCF"]}, "fair_value_checked": null},
+    {"ticker": "HDFCLIFE.NS", "expect": {"company_type": "insurance", "methods_exclude": ["DCF"], "expectations_available": false}, "fair_value_checked": null},
+    {"ticker": "GROWW.NS", "expect": {"company_type": "capital_markets", "methods_exclude": ["DCF"]}, "fair_value_checked": null},
+    {"ticker": "BSE.NS", "expect": {"company_type": "capital_markets", "methods_exclude": ["DCF"]}, "fair_value_checked": null},
+    {"ticker": "HDFCAMC.NS", "expect": {"company_type": "asset_management"}, "fair_value_checked": null},
+    {"ticker": "BAJAJHLDNG.NS", "expect": {"holding_company": true, "stance_in": ["NOT RATED", "INSUFFICIENT DATA"]}, "fair_value_checked": null},
+    {"ticker": "SUNPHARMA.NS", "expect": {"company_type": "pharma"}, "fair_value_checked": null},
+    {"ticker": "APOLLOHOSP.NS", "expect": {"company_type": "healthcare_services"}, "fair_value_checked": null},
+    {"ticker": "HINDUNILVR.NS", "expect": {"company_type": "consumer_defensive", "cyclical": false}, "fair_value_checked": null},
+    {"ticker": "NESTLEIND.NS", "expect": {"company_type": "consumer_defensive", "cyclical": false}, "fair_value_checked": null},
+    {"ticker": "TITAN.NS", "expect": {"company_type": "consumer_cyclical"}, "fair_value_checked": null},
+    {"ticker": "TRENT.NS", "expect": {"company_type": "consumer_cyclical"}, "fair_value_checked": null},
+    {"ticker": "MARUTI.NS", "expect": {"company_type": "automobile"}, "fair_value_checked": null},
+    {"ticker": "ATHERENERG.NS", "expect": {"earnings_usable": false, "stance_in": ["NOT RATED", "INSUFFICIENT DATA"], "methods_exclude": ["Peer P/E"]}, "fair_value_checked": null},
+    {"ticker": "SWIGGY.NS", "expect": {"earnings_usable": false, "stance_in": ["NOT RATED", "INSUFFICIENT DATA"]}, "fair_value_checked": null},
+    {"ticker": "ETERNAL.NS", "expect": {"earnings_usable": false, "stance_in": ["NOT RATED", "INSUFFICIENT DATA"]}, "fair_value_checked": null},
+    {"ticker": "IDEA.NS", "expect": {"earnings_usable": false, "stance_in": ["NOT RATED", "INSUFFICIENT DATA"]}, "fair_value_checked": null},
+    {"ticker": "TATASTEEL.NS", "expect": {"company_type": "materials", "cyclical": true}, "fair_value_checked": null},
+    {"ticker": "HINDALCO.NS", "expect": {"company_type": "materials", "cyclical": true}, "fair_value_checked": null},
+    {"ticker": "ULTRACEMCO.NS", "expect": {"company_type": "materials"}, "fair_value_checked": null},
+    {"ticker": "PIDILITIND.NS", "expect": {"company_type": "materials", "cyclical": false}, "fair_value_checked": null},
+    {"ticker": "WAAREEENER.NS", "expect": {"company_type": "industrial", "capex_heavy": true}, "fair_value_checked": null},
+    {"ticker": "RELIANCE.NS", "expect": {"company_type": "energy"}, "fair_value_checked": null},
+    {"ticker": "ONGC.NS", "expect": {"company_type": "energy", "ownership": "PSU"}, "fair_value_checked": null},
+    {"ticker": "NTPC.NS", "expect": {"company_type": "utilities", "methods_include": ["Peer P/B"]}, "fair_value_checked": null},
+    {"ticker": "DLF.NS", "expect": {"company_type": "real_estate"}, "fair_value_checked": null},
+    {"ticker": "BHARTIARTL.NS", "expect": {"company_type": "telecom"}, "fair_value_checked": null},
+    {"ticker": "LT.NS", "expect": {"company_type": "industrial"}, "fair_value_checked": null}
+  ]
+}

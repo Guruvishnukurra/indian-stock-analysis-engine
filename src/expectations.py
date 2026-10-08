@@ -228,12 +228,13 @@ def estimate_book_growth(fundamental_data):
 
 
 def reverse_residual_income(price, book_value_per_share, company_roe,
-                            raw_beta, fundamental_data, tolerance=1e-5):
+                            raw_beta, fundamental_data, tolerance=1e-5,
+                            risk_premium=0.0):
 
     if not is_positive(book_value_per_share):
         return {"available": False, "reason": "Book value unavailable."}
 
-    cost_of_equity, _, _ = estimate_cost_of_equity(raw_beta)
+    cost_of_equity, _, _ = estimate_cost_of_equity(raw_beta, risk_premium)
 
     long_run = config.DCF_TERMINAL_GROWTH
 
@@ -290,7 +291,8 @@ def reverse_residual_income(price, book_value_per_share, company_roe,
     return result
 
 
-def reverse_earnings_dcf(price, shares, raw_beta, fundamental_data):
+def reverse_earnings_dcf(price, shares, raw_beta, fundamental_data,
+                         risk_premium=0.0):
     """
     Asset-light financials (brokers, AMCs, exchanges) need little
     capital and pay out most of their earnings, so net income is
@@ -302,7 +304,7 @@ def reverse_earnings_dcf(price, shares, raw_beta, fundamental_data):
     if not is_positive(net_income) or not is_positive(shares):
         return {"available": False, "reason": "Positive net income required."}
 
-    cost_of_equity, _, _ = estimate_cost_of_equity(raw_beta)
+    cost_of_equity, _, _ = estimate_cost_of_equity(raw_beta, risk_premium)
 
     implied, status = solve_implied_growth(
         price, net_income, shares, cost_of_equity, 0.0
@@ -421,6 +423,7 @@ def market_implied_expectations(
             inputs["shares_outstanding"],
             raw_beta,
             fundamental_data,
+            risk_premium=inputs.get("risk_premium", 0.0),
         )
 
     return reverse_residual_income(
@@ -429,4 +432,5 @@ def market_implied_expectations(
         inputs["roe"],
         raw_beta,
         fundamental_data,
+        risk_premium=inputs.get("risk_premium", 0.0),
     )

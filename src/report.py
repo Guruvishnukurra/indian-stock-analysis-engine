@@ -70,6 +70,31 @@ def print_header(analysis):
     print(f"Current price     : ₹{analysis['current_price']:,.2f}")
 
 
+def print_verdicts(analysis):
+    explanation = analysis["explanation"]
+    verdicts = explanation.get("verdicts") or {}
+
+    _section("VERDICT SUMMARY")
+
+    valuation = verdicts.get("valuation", {})
+    timing = verdicts.get("timing", {})
+
+    print(f"Overall          : {explanation['stance']} "
+          f"(confidence {analysis['confidence']['label']}, {analysis['confidence']['score']}/100)")
+    print(f"Quality          : {verdicts.get('quality', 'Unavailable')}")
+    print(f"Valuation        : {valuation.get('label', 'Unavailable')}"
+          + (f"  [{valuation['measure']}]" if valuation.get("measure") else ""))
+    print(f"Timing           : {timing.get('label', 'Unavailable')} "
+          f"(horizon: {timing.get('horizon', '-')})")
+
+    for note in timing.get("notes", []):
+        print(f"  note: {note}")
+
+    if verdicts.get("triggers"):
+        print("What would change the verdict:")
+        _bullets(verdicts["triggers"], "\u2192")
+
+
 def print_scores(analysis):
     scores = analysis["scores"]
 
@@ -194,6 +219,8 @@ def print_valuation_breakdown(analysis):
             f"{a['current_margin'] * 100:.1f}% to the mature target; WACC "
             f"{a['wacc'] * 100:.1f}%"
         )
+        if a.get("basis"):
+            print(f"Inputs from     : {a['basis']}")
         print(
             f"Mature margin targets from {peers['count']} peers: "
             f"bear {peers['low']:.1f}% / base {peers['median']:.1f}% / "
@@ -219,6 +246,11 @@ def print_valuation_breakdown(analysis):
             f"({a['growth_basis']}), WACC {a['wacc'] * 100:.1f}%, "
             f"terminal growth {a['terminal_growth'] * 100:.1f}%"
         )
+        reasons = analysis["inputs"].get("risk_premium_reasons") or []
+        if reasons:
+            print("Risk premium in discount rate: " + "; ".join(reasons))
+        if dcf.get("terminal_share") is not None:
+            print(f"Terminal value share of DCF value: {dcf['terminal_share'] * 100:.0f}%")
         print("DCF sensitivity (₹ per share):")
         print(dcf["sensitivity"].map(
             lambda v: f"{round_price(v):,.0f}" if is_valid(v) else "n/a"
@@ -289,7 +321,8 @@ def print_fundamentals(analysis):
 
         print(
             f"{item['label']:<32}: {value:>9}  "
-            f"[{item['assessment']}, {item['score']:.0f}/100]"
+            f"[{item['assessment']}, {item['score']:.0f}/100]  "
+            f"({item.get('source') or 'period unknown'})"
         )
 
     if fundamental.get("missing"):
@@ -441,6 +474,7 @@ def generate_report(analysis):
         return
 
     print_header(analysis)
+    print_verdicts(analysis)
     print_scores(analysis)
     print_fair_value(analysis)
     print_valuation_breakdown(analysis)

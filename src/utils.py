@@ -168,3 +168,19 @@ def label_from_thresholds(value, thresholds):
             return label
 
     return thresholds[-1][1]
+
+
+def latest_valid_dated(data, column):
+    """(value, date) of the most recent non-missing value, or (None, None)."""
+
+    if data is None or data.empty or column not in data.columns:
+        return None, None
+
+    series = pd.to_numeric(data[column], errors="coerce").dropna()
+
+    series = series[np.isfinite(series)]
+
+    if series.empty:
+        return None, None
+
+    return float(series.iloc[-1]), series.index[-1]

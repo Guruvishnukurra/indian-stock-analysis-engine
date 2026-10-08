@@ -25,10 +25,14 @@ def calculate_dcf(
     wacc=0.10,
     forecast_years=5,
     net_cash=0.0,
-    fade_years=0
+    fade_years=0,
+    breakdown=False
 ):
     """
     Per-share equity value from a two-stage FCF DCF.
+
+    breakdown=True returns (value, terminal_share), where terminal_share
+    is the fraction of enterprise value coming from the terminal value.
 
     Stage 1: `forecast_years` at `growth_rate`.
     Stage 2: `fade_years` with growth fading linearly to
@@ -39,10 +43,10 @@ def calculate_dcf(
     """
 
     if not is_positive(free_cash_flow) or not is_positive(shares_outstanding):
-        return None
+        return (None, None) if breakdown else None
 
     if not is_valid(wacc) or wacc <= terminal_growth:
-        return None
+        return (None, None) if breakdown else None
 
     net_cash = net_cash if is_valid(net_cash) else 0.0
 
@@ -75,9 +79,14 @@ def calculate_dcf(
     equity_value = enterprise_value + net_cash
 
     if equity_value <= 0:
-        return None
+        return (None, None) if breakdown else None
 
-    return equity_value / shares_outstanding
+    value = equity_value / shares_outstanding
+
+    if breakdown:
+        return value, present_terminal_value / enterprise_value
+
+    return value
 
 
 def _unavailable(reason):
@@ -108,22 +117,30 @@ def adjust_beta(raw_beta):
     return bounded, note
 
 
-def estimate_cost_of_equity(raw_beta):
+def estimate_cost_of_equity(raw_beta, risk_premium=0.0):
+    """
+    CAPM with Blume-adjusted beta, plus an explicit company-specific
+    risk premium (unproven earnings, small size, high leverage).
+    """
 
     beta, note = adjust_beta(raw_beta)
 
-    cost = config.RISK_FREE_RATE + beta * config.EQUITY_RISK_PREMIUM
+    cost = (
+        config.RISK_FREE_RATE
+        + beta * config.EQUITY_RISK_PREMIUM
+        + (risk_premium or 0.0)
+    )
 
     return cost, beta, note
 
 
-def estimate_wacc(raw_beta, market_cap, total_debt):
+def estimate_wacc(raw_beta, market_cap, total_debt, risk_premium=0.0):
     """
     Market-value-weighted cost of capital.
     With no debt data, WACC equals cost of equity.
     """
 
-    cost_of_equity, beta, note = estimate_cost_of_equity(raw_beta)
+    cost_of_equity, beta, note = estimate_cost_of_equity(raw_beta, risk_premium)
 
     after_tax_cost_of_debt = (
         (config.RISK_FREE_RATE + config.DEBT_SPREAD)
@@ -195,7 +212,8 @@ def run_dcf(
     shares_outstanding,
     raw_beta,
     market_cap,
-    normalized_fcf
+    normalized_fcf,
+    risk_premium=0.0
 ):
     """
     DCF with sensitivity analysis.
@@ -217,7 +235,7 @@ def run_dcf(
 
     net_cash = cash - debt
 
-    capital = estimate_wacc(raw_beta, market_cap, debt)
+    capital = estimate_wacc(raw_beta, market_cap, debt, risk_premium)
     wacc = capital["wacc"]
 
     growth, growth_basis, growth_from_data = estimate_dcf_growth(
@@ -237,6 +255,18 @@ def run_dcf(
         )
 
     base = value(growth, wacc)
+
+    _, terminal_share = calculate_dcf(
+        free_cash_flow=normalized_fcf,
+        shares_outstanding=shares_outstanding,
+        growth_rate=growth,
+        terminal_growth=config.DCF_TERMINAL_GROWTH,
+        wacc=wacc,
+        forecast_years=config.DCF_HIGH_GROWTH_YEARS,
+        net_cash=net_cash,
+        fade_years=config.DCF_FADE_YEARS,
+        breakdown=True,
+    )
 
     if base is None:
         return _unavailable("DCF produced a non-positive equity value.")
@@ -266,6 +296,7 @@ def run_dcf(
     return {
         "available": True,
         "base": base,
+        "terminal_share": terminal_share,
         "low": min(one_step + [base]),
         "high": max(one_step + [base]),
         "sensitivity": grid,
@@ -279,6 +310,7 @@ def run_dcf(
             "cost_of_equity": capital["cost_of_equity"],
             "beta": capital["beta"],
             "beta_note": capital["note"],
+            "risk_premium": risk_premium,
             "net_cash": net_cash,
         },
         "range_basis": (

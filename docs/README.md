@@ -9,6 +9,44 @@ fact-checked AI-written thesis, and an honestly validated ML trend module.
 
 ## How verdicts work
 
+- **Split verdict**: Quality (fundamentals), Valuation (log of fair value /
+  price; within +/-15% = fairly valued) and Timing (technicals, horizon:
+  next few weeks) are reported separately, plus the overall stance and the
+  price levels at which it would change.
+- **NOT RATED** is issued when: earnings are negative/not usable (growth
+  companies get a path-to-profitability view instead), the company is a
+  holding company (needs sum-of-the-parts), fewer than 2 valuation methods
+  apply, or the fair value is more than 2x away from analyst consensus
+  (the model's methods likely do not fit the company).
+
+### Data hygiene
+
+- Every metric is labelled with its period (FY2026, TTM to 30 Jun 2026,
+  quarter vs year earlier). TTM figures are built only from four
+  consecutive quarters; ratios never mix periods.
+- One-off items (exceptional charges/gains) are stripped from EPS, only
+  when the source reports matching one-off items.
+- Cross-checks: statement TTM vs Yahoo summary (revenue, profit), ROE and
+  book value, reporting currency, shares issued after the balance sheet.
+
+### Business-type routing
+
+- Banks/NBFCs/insurers: book-value and earnings multiples, no DCF.
+- Brokers/AMCs/exchanges: earnings-based, no FCF/DCF.
+- Cyclicals (commodity industry AND volatile margins): mid-cycle earnings,
+  peak/trough warnings.
+- Capex-heavy growth: DCF on maintenance FCF (operating cash flow minus
+  depreciation).
+- Loss-making growth: path-to-profitability DCF and implied mature margin.
+- Utilities: book value added as a regulated-asset-base proxy.
+- Holding companies, real estate (NAV) and pharma pipelines: flagged as
+  not modelled.
+- Discount rates: CAPM plus explicit premiums (+2pp unproven earnings,
+  +1pp small cap, +1pp high leverage, capped at +3pp). DCFs report the
+  share of value coming from the terminal value (flagged above 70%).
+
+### Overall method rules
+
 - **Fair value** = core methods only (configured weight >= 10%). Low-weight
   references such as own-history P/E are shown as *context* and never move
   the base or range; the range always spans every core method's estimate.
@@ -25,7 +63,7 @@ fact-checked AI-written thesis, and an honestly validated ML trend module.
 
 ```bash
 pip install -r requirements.txt
-python -m pytest tests -q                          # 81 offline tests
+python -m pytest tests -q                          # 97 offline tests
 python -m uvicorn src.api.main:app --port 8000     # API, docs at /docs
 ```
 
@@ -59,6 +97,17 @@ to reset).
 | GET | `/health` | Local LLM and GPU availability |
 
 Storage: SQLite at `data/app.db` by default; set `DATABASE_URL` for PostgreSQL.
+
+## Golden set (run after every change)
+
+```bash
+python scripts/run_golden.py
+```
+
+32 stocks across sectors with structural expectations (routing, methods,
+allowed verdicts), sanity checks, a sector-distribution check and a change
+report vs the previous run. Hand-checked fair-value ranges can be added in
+`tests/golden/golden_set.json` (`fair_value_checked`).
 
 ## Validation evidence (re-run the scripts to refresh)
 

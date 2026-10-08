@@ -8,6 +8,12 @@ but never override the valuation view.
 """
 
 from src import config
+from src.verdicts import (
+    consensus_gate,
+    timing_verdict,
+    valuation_verdict,
+    verdict_triggers,
+)
 from src.utils import is_valid
 
 
@@ -275,6 +281,56 @@ def build_risks(analysis):
                 f"{bear['upside']:.0f}% over {scenarios['horizon_years']} years"
             )
 
+    position = profile.get("cycle_position")
+
+    if position == "peak":
+        risks.append(
+            "Cyclical near a peak: current margin "
+            f"{profile['current_operating_margin']:.1f}% vs mid-cycle "
+            f"{profile['mid_cycle_operating_margin']:.1f}%; a low P/E on peak "
+            "earnings can be a trap"
+        )
+    elif position == "trough":
+        risks.append(
+            "Cyclical near a trough: current margin "
+            f"{profile['current_operating_margin']:.1f}% vs mid-cycle "
+            f"{profile['mid_cycle_operating_margin']:.1f}%; trailing P/E "
+            "overstates how expensive it is"
+        )
+
+    dcf_result = method_results.get("dcf", {})
+    terminal_share = dcf_result.get("terminal_share")
+
+    if dcf_result.get("available") and terminal_share and terminal_share > 0.70:
+        risks.append(
+            f"{terminal_share * 100:.0f}% of the DCF value comes from the "
+            "terminal value (beyond year 10): highly assumption-dependent"
+        )
+
+    liquidity = analysis.get("liquidity") or {}
+
+    if liquidity.get("illiquid"):
+        risks.append(
+            f"Illiquid: median daily traded value about Rs "
+            f"{liquidity['median_traded_value'] / 1e7:,.1f} crore over "
+            f"{liquidity['days']} days; prices are easier to move and "
+            "harder to exit"
+        )
+
+    company_type = profile.get("company_type")
+
+    if company_type in EXPORTER_TYPES:
+        risks.append(
+            "Rupee sensitivity: largely export revenue, so a stronger rupee "
+            "would cut earnings (a weak-rupee tailwind can reverse)"
+        )
+
+    if profile.get("cyclical") or company_type in ("energy", "materials"):
+        risks.append(
+            "Commodity sensitivity: earnings move with input/output commodity "
+            "prices (e.g. crude, metals, coal)"
+        )
+
     events = (analysis.get("news") or {}).get("events") or {}
 
     for item in events.get("risks", [])[:2]:
@@ -303,12 +359,81 @@ def build_data_limitations(analysis):
             "Embedded value (P/EV) is not available; valuation uses P/E and P/B"
         )
 
+    profile = analysis["company_profile"]
+
+    for key in ("cyclical_note", "capex_note"):
+        if profile.get(key):
+            limitations.append(profile[key])
+
+    if profile.get("holding_company"):
+        limitations.append(
+            "Holding/investment company: sum-of-the-parts with a holding "
+            "discount is needed and is not implemented"
+        )
+
+    if company_type == "real_estate":
+        limitations.append(
+            "Real estate: developers are best valued on net asset value of "
+            "land bank and projects (not implemented); earnings are lumpy"
+        )
+
+    if company_type == "pharma":
+        limitations.append(
+            "Pharma: the product pipeline and US generic pricing are not modelled"
+        )
+
     missing = analysis["fundamental_score"].get("missing", [])
 
     if missing:
         limitations.append("Unavailable metrics: " + ", ".join(missing))
 
     return limitations
+
+
+MIN_METHODS = 2
+
+# Business types whose revenue is mostly in foreign currency.
+EXPORTER_TYPES = {"technology", "pharma"}
+
+
+def not_rated_reason(analysis):
+    profile = analysis["company_profile"]
+    fair_value = analysis["fair_value"]
+
+    if (
+        profile.get("valuation_family") == "operating"
+        and not profile.get("earnings_usable", True)
+    ):
+        return (
+            "No buy/avoid verdict: the company has no usable earnings, so its "
+            "value depends on the margin it reaches once mature, which can "
+            "only be assumed. The fair-value range below is assumption-driven "
+            "and wide."
+        )
+
+    gate = consensus_gate(fair_value, analysis.get("inputs") or {})
+
+    if (
+        gate
+        and profile.get("earnings_usable", True)
+        and not profile.get("holding_company")
+        and len(fair_value.get("methods_used", [])) >= MIN_METHODS
+    ):
+        return "No buy/avoid verdict: " + gate
+
+    if profile.get("holding_company"):
+        return (
+            "No buy/avoid verdict: this looks like a holding/investment "
+            "company, whose value lies in its stakes and needs a "
+            "sum-of-the-parts valuation (not implemented). Multiples below "
+            "are indicative only."
+        )
+
+    return (
+        f"No buy/avoid verdict: only {len(fair_value.get('methods_used', []))} "
+        f"valuation method could be applied; at least {MIN_METHODS} are "
+        "required to cross-check a fair value."
+    )
 
 
 def determine_stance(analysis):
@@ -339,6 +464,19 @@ def determine_stance(analysis):
         profile.get("valuation_family") == "operating"
         and not profile.get("earnings_usable", True)
     ):
+        return "NOT RATED"
+
+    # Holding companies need a sum-of-the-parts valuation.
+    if profile.get("holding_company"):
+        return "NOT RATED"
+
+    # A fair value far from analyst consensus means the model's methods
+    # likely do not fit this company.
+    if consensus_gate(fair_value, analysis.get("inputs") or {}):
+        return "NOT RATED"
+
+    # Never issue a verdict on a single method.
+    if len(fair_value.get("methods_used", [])) < MIN_METHODS:
         return "NOT RATED"
 
     upside = fair_value["upside_base"]
@@ -378,12 +516,7 @@ def build_interpretation(analysis, stance):
 
     if stance == "NOT RATED":
         expectations = analysis.get("expectations") or {}
-        sentences.append(
-            "No buy/avoid verdict: the company has no usable earnings, so its "
-            "value depends on the margin it reaches once mature, which can "
-            "only be assumed. The fair-value range below is assumption-driven "
-            "and wide."
-        )
+        sentences.append(not_rated_reason(analysis))
         if expectations.get("summary"):
             sentences.append(expectations["summary"])
 
@@ -437,8 +570,24 @@ def explain(analysis):
 
     stance = determine_stance(analysis)
 
+    verdicts = {
+        "quality": analysis["fundamental_score"].get("label", "Unavailable"),
+        "valuation": valuation_verdict(
+            analysis["fair_value"], analysis["current_price"]
+        ),
+        "timing": timing_verdict(
+            analysis["technical_score"],
+            analysis["latest_technical"]
+            if analysis.get("latest_technical") is not None else {},
+        ),
+        "triggers": verdict_triggers(
+            analysis["fair_value"], analysis["current_price"], stance
+        ),
+    }
+
     return {
         "stance": stance,
+        "verdicts": verdicts,
         "why_bullish": bullish,
         "why_not_bullish": not_bullish,
         "risks": build_risks(analysis),

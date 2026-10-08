@@ -86,6 +86,15 @@ OPERATING_WEIGHTS = {
     "historical_pe": 0.05,
 }
 
+# Regulated utilities: earnings and cash flows plus book value (a proxy
+# for the regulated asset base on which returns are allowed).
+UTILITY_WEIGHTS = {
+    "dcf": 0.30,
+    "peer_pe": 0.40,
+    "peer_pb": 0.30,
+    "historical_pe": 0.05,
+}
+
 # Methods whose configured weight is below this are context only:
 # reported, but excluded from the base estimate and the range.
 CONTEXT_WEIGHT_THRESHOLD = 0.10

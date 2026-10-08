@@ -145,7 +145,7 @@ def _relative_gap(a, b):
     return abs(a - b) / max(abs(a), abs(b))
 
 
-def check_data_consistency(info, fundamental_data):
+def check_data_consistency(info, fundamental_data, ttm=None):
     """
     Cross-check statement-derived figures against Yahoo's
     summary figures. Yahoo statements are occasionally wrong
@@ -160,8 +160,30 @@ def check_data_consistency(info, fundamental_data):
 
     issues = []
     preferred = {}
+    notes = []
 
     info = info or {}
+
+    # Shares issued after the latest balance sheet (IPO, QIP, ESOPs,
+    # conversions): book value and net cash describe the older share
+    # base. Informational unless large.
+    statement_shares = latest_valid(fundamental_data, "Shares")
+    current_shares = safe_float(info.get("sharesOutstanding"))
+
+    if is_positive(statement_shares) and is_positive(current_shares):
+
+        change = current_shares / statement_shares - 1
+
+        if abs(change) > 0.03:
+            text = (
+                f"Share count changed {change * 100:+.1f}% since the latest "
+                "balance sheet (issuance or buyback after the reporting date): "
+                "book value and net cash may be out of date"
+            )
+            if abs(change) > 0.10:
+                issues.append(text)
+            else:
+                notes.append(text)
 
     # ROE
     statement_roe = latest_valid(fundamental_data, "ROE")
@@ -196,4 +218,35 @@ def check_data_consistency(info, fundamental_data):
                 f"with Yahoo summary {summary_bvps:,.0f}; using summary"
             )
 
-    return {"issues": issues, "preferred": preferred}
+    # Summary (Yahoo's own TTM) vs statements summed over the same TTM.
+    if ttm and ttm.get("available"):
+
+        for label, summary_key, ttm_key, tolerance in (
+            ("revenue", "totalRevenue", "Revenue", 0.10),
+            ("net profit", "netIncomeToCommon", "Net_Income", 0.15),
+        ):
+            summary_value = safe_float(info.get(summary_key))
+            statement_value = ttm.get(ttm_key)
+
+            if (
+                is_positive(summary_value)
+                and is_positive(statement_value)
+                and _relative_gap(summary_value, statement_value) > tolerance
+            ):
+                issues.append(
+                    f"Trailing {label} differs between Yahoo summary "
+                    f"({summary_value / 1e7:,.0f} cr) and quarterly statements "
+                    f"({statement_value / 1e7:,.0f} cr, {ttm['label']})"
+                )
+
+    # Reporting currency must match the trading currency.
+    financial_ccy = info.get("financialCurrency")
+    trading_ccy = info.get("currency")
+
+    if financial_ccy and trading_ccy and financial_ccy != trading_ccy:
+        issues.append(
+            f"Financials are reported in {financial_ccy} but the stock "
+            f"trades in {trading_ccy}; per-share values may be misstated"
+        )
+
+    return {"issues": issues, "preferred": preferred, "notes": notes}

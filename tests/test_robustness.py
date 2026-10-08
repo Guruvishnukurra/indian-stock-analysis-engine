@@ -440,3 +440,56 @@ def test_valuation_score_blends_method_premiums():
     )["score"]
 
     assert score == pytest.approx(0.25 * 0 + 0.75 * 50)
+
+
+def test_single_method_is_not_rated():
+    from src.explain import determine_stance
+
+    analysis = {
+        "fair_value": {"available": True, "upside_base": 40.0, "methods_used": ["Peer P/E"],
+                       "low": 1, "high": 2},
+        "confidence": {"score": 80},
+        "fundamental_score": {"score": 80},
+        "company_profile": {"valuation_family": "operating", "earnings_usable": True},
+    }
+
+    assert determine_stance(analysis) == "NOT RATED"
+
+
+def test_risk_premium_reasons():
+    from src.analysis import company_risk_premium
+
+    premium, reasons = company_risk_premium(
+        {"earnings_usable": False, "valuation_family": "operating"},
+        {"market_cap": 5e10},
+        pd.DataFrame({"Debt_to_Equity": [2.0]}),
+    )
+
+    assert premium == 0.03          # 2 + 1 + 1, capped at 3
+    assert len(reasons) == 3
+
+
+def test_split_verdicts_and_consensus_gate():
+    from src.verdicts import consensus_gate, timing_verdict, valuation_verdict
+
+    assert valuation_verdict({"available": True, "base": 130}, 100)["label"] == "Undervalued"
+    assert valuation_verdict({"available": True, "base": 105}, 100)["label"] == "Fairly valued"
+    assert valuation_verdict({"available": True, "base": 60}, 100)["label"] == "Overvalued"
+
+    oversold = timing_verdict({"label": "Weak"}, pd.Series({"RSI_14": 22.0}))
+    assert "oversold" in oversold["notes"][0]
+
+    fair_value = {"available": True, "base": 900}
+    assert consensus_gate(fair_value, {"consensus_target": 5400, "analyst_count": 30})
+    assert consensus_gate(fair_value, {"consensus_target": 1200, "analyst_count": 30}) is None
+    assert consensus_gate(fair_value, {"consensus_target": 5400, "analyst_count": 2}) is None
+
+
+def test_liquidity_flag(price_data):
+    from src.analysis import assess_liquidity
+
+    thin = price_data.assign(Volume=100)             # ~Rs 40k a day
+    assert assess_liquidity(thin)["illiquid"] is True
+
+    deep = price_data.assign(Volume=10_000_000)
+    assert assess_liquidity(deep)["illiquid"] is False

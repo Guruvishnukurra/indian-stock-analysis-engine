@@ -27,6 +27,7 @@ from src.explain import explain
 from src.fair_value import build_fair_value_range
 from src.fundamentals import post_break_data, prepare_fundamental_data
 from src.growth_stage import growth_stage_valuation
+from src.periods import build_ttm, fy_label, normalized_eps, quarter_label
 from src.market import (
     calculate_beta,
     calculate_correlation,
@@ -50,7 +51,7 @@ from src.scoring import (
 )
 from src.technical import calculate_technical_features
 from src.thesis import write_thesis
-from src.utils import is_positive, latest_valid, safe_float
+from src.utils import is_positive, latest_valid, latest_valid_dated, safe_float
 from src.valuation import (
     ev_sales_valuation,
     historical_pe_valuation,
@@ -147,6 +148,114 @@ def get_market_inputs(info, fundamental_data, latest_price):
         "analyst_count": info.get("numberOfAnalystOpinions"),
         "current_pb": safe_float(info.get("priceToBook")),
     }
+
+
+ILLIQUID_TRADED_VALUE = 5e7     # Rs 5 crore median daily traded value
+LIQUIDITY_DAYS = 60
+
+
+def assess_liquidity(price_data):
+    """Median daily traded value (close x volume) over recent sessions."""
+
+    if (
+        price_data is None
+        or price_data.empty
+        or "Volume" not in price_data.columns
+    ):
+        return {"illiquid": None}
+
+    recent = price_data.tail(LIQUIDITY_DAYS)
+
+    traded = (recent["Close"] * recent["Volume"]).median()
+
+    if not is_positive(traded):
+        return {"illiquid": None}
+
+    return {
+        "illiquid": bool(traded < ILLIQUID_TRADED_VALUE),
+        "median_traded_value": float(traded),
+        "days": len(recent),
+    }
+
+
+SMALL_CAP = 1e11            # Rs 10,000 crore
+MAX_RISK_PREMIUM = 0.03
+
+
+def company_risk_premium(company_profile, inputs, fundamental_data):
+    """
+    Company-specific risk premium added to the CAPM cost of equity, so
+    discount rates reflect more than beta. Returns (premium, reasons).
+    """
+
+    items = []
+
+    if not company_profile.get("earnings_usable", True):
+        items.append((0.02, "+2pp: earnings negative or not yet proven"))
+
+    market_cap = inputs.get("market_cap")
+
+    if is_positive(market_cap) and market_cap < SMALL_CAP:
+        items.append((0.01, "+1pp: small company (market cap under Rs 10,000 crore)"))
+
+    debt_to_equity = latest_valid(fundamental_data, "Debt_to_Equity")
+
+    if (
+        company_profile.get("valuation_family") == "operating"
+        and debt_to_equity is not None
+        and debt_to_equity > 1.5
+    ):
+        items.append((0.01, f"+1pp: high leverage (debt/equity {debt_to_equity:.1f}x)"))
+
+    premium = min(sum(p for p, _ in items), MAX_RISK_PREMIUM)
+
+    return premium, [text for _, text in items]
+
+
+def growth_model_basis(ttm, quarterly_data, fundamental_data):
+    """
+    Revenue, margin and growth for the growth-stage model, always taken
+    from one consistent period (TTM if available, else the latest FY);
+    growth is the latest quarter's year-on-year change, labelled.
+    """
+
+    growth, growth_date = latest_valid_dated(quarterly_data, "Revenue_YoY")
+    growth_label = (
+        f"revenue growth: {quarter_label(growth_date)} vs a year earlier"
+        if growth is not None else None
+    )
+
+    if growth is None:
+        growth, growth_date = latest_valid_dated(fundamental_data, "Revenue_Growth")
+        growth_label = (
+            f"revenue growth: {fy_label(growth_date)} vs prior year"
+            if growth is not None else None
+        )
+
+    if (
+        ttm.get("available")
+        and ttm.get("Revenue")
+        and ttm.get("Operating_Margin") is not None
+    ):
+        return {
+            "revenue": ttm["Revenue"],
+            "margin": ttm["Operating_Margin"],
+            "growth": growth,
+            "label": f"revenue and margin: {ttm['label']}; {growth_label}",
+        }
+
+    revenue, date = latest_valid_dated(fundamental_data, "Revenue")
+    margin, margin_date = latest_valid_dated(fundamental_data, "Operating_Margin")
+
+    if revenue is not None and margin is not None and date == margin_date:
+        return {
+            "revenue": revenue,
+            "margin": margin,
+            "growth": growth,
+            "label": f"revenue and margin: {fy_label(date)}; {growth_label}",
+        }
+
+    return {"revenue": None, "margin": None, "growth": growth, "label": "unavailable"}
 
 
 def run_peer_stage(ticker, info):
@@ -266,6 +375,7 @@ def run_valuation_methods(
             beta,
             inputs["market_cap"],
             company_profile.get("normalized_fcf"),
+            risk_premium=inputs["risk_premium"],
         ),
         "peer_pe": lambda: peer_multiple_valuation(
             inputs["trailing_eps"], summary("PE"), "P/E"
@@ -280,17 +390,9 @@ def run_valuation_methods(
             summary("PB"),
         ),
         "growth_dcf": lambda: growth_stage_valuation(
-            revenue=inputs["revenue"],
-            revenue_growth_pct=(
-                latest_valid(quarterly_data, "Revenue_YoY")
-                if latest_valid(quarterly_data, "Revenue_YoY") is not None
-                else latest_valid(fundamental_data, "Revenue_Growth")
-            ),
-            operating_margin_pct=(
-                latest_valid(fundamental_data, "Operating_Margin")
-                if latest_valid(fundamental_data, "Operating_Margin") is not None
-                else latest_valid(quarterly_data, "Operating_Margin")
-            ),
+            revenue=inputs["growth_basis"]["revenue"],
+            revenue_growth_pct=inputs["growth_basis"]["growth"],
+            operating_margin_pct=inputs["growth_basis"]["margin"],
             net_debt=inputs["net_debt"],
             shares=inputs["shares_outstanding"],
             raw_beta=beta,
@@ -298,6 +400,8 @@ def run_valuation_methods(
             total_debt=latest_valid(fundamental_data, "Debt"),
             peer_data=peers("EVS") if peers("EVS") is not None else peers("PE"),
             price=price,
+            basis_label=inputs["growth_basis"]["label"],
+            risk_premium=inputs["risk_premium"],
         ),
         "peer_evs": lambda: ev_sales_valuation(
             inputs["revenue"],
@@ -383,6 +487,38 @@ def analyze_stock(
 
     inputs = get_market_inputs(info, fundamental_data, latest_price)
 
+    # Period hygiene: TTM only from four consecutive quarters.
+    ttm = build_ttm(quarterly_data)
+
+    if ttm.get("available") and ttm.get("Revenue"):
+        inputs["revenue"] = ttm["Revenue"]
+        inputs["revenue_basis"] = ttm["label"]
+    else:
+        inputs["revenue_basis"] = "Yahoo trailing revenue"
+
+    inputs["growth_basis"] = growth_model_basis(ttm, quarterly_data, fundamental_data)
+
+    # One-off items stripped from earnings used by P/E methods.
+    inputs["trailing_eps_reported"] = inputs["trailing_eps"]
+
+    adjusted_eps, eps_note = normalized_eps(
+        inputs["trailing_eps"], quarterly_data, inputs["shares_outstanding"]
+    )
+
+    inputs["trailing_eps"] = adjusted_eps
+    inputs["eps_adjustment"] = eps_note
+
+    if eps_note:
+        prefix = "Adjustment: " if adjusted_eps != inputs["trailing_eps_reported"] else "Note: "
+        warnings.append(prefix + eps_note)
+
+    consistency = check_data_consistency(info, fundamental_data, ttm)
+
+    if "roe" in consistency["preferred"]:
+        inputs["roe"] = consistency["preferred"]["roe"]
+
+    warnings.extend("Note: " + n for n in consistency["notes"])
+
     # Growth history excludes years before a merger/large raise.
     growth_data, structural_break = post_break_data(fundamental_data)
 
@@ -392,11 +528,6 @@ def analyze_stock(
             "(merger, acquisition or large capital raise); growth "
             "estimates use only the years from then on."
         )
-
-    consistency = check_data_consistency(info, fundamental_data)
-
-    if "roe" in consistency["preferred"]:
-        inputs["roe"] = consistency["preferred"]["roe"]
 
     # ---------------------------------------------------------
     # 3. Company profile
@@ -409,7 +540,38 @@ def analyze_stock(
         industry=industry,
         trailing_eps=inputs["trailing_eps"],
         price_history_days=len(price_data),
+        business_summary=info.get("longBusinessSummary"),
     )
+
+    premium, premium_reasons = company_risk_premium(
+        company_profile, inputs, fundamental_data
+    )
+
+    inputs["risk_premium"] = premium
+    inputs["risk_premium_reasons"] = premium_reasons
+
+    # Cyclicals: P/E-based methods use mid-cycle earnings, not the
+    # current (possibly peak or trough) profit.
+    if (
+        company_profile.get("cyclical")
+        and company_profile.get("mid_cycle_net_margin") is not None
+        and is_positive(inputs["revenue"])
+        and is_positive(inputs["shares_outstanding"])
+    ):
+        mid_eps = (
+            company_profile["mid_cycle_net_margin"] / 100
+            * inputs["revenue"] / inputs["shares_outstanding"]
+        )
+        if mid_eps > 0:
+            warnings.append(
+                f"Adjustment: cyclical, so P/E methods use mid-cycle EPS "
+                f"{mid_eps:.2f} (median net margin "
+                f"{company_profile['mid_cycle_net_margin']:.1f}% x current revenue) "
+                f"instead of trailing EPS {inputs['trailing_eps']:.2f}."
+                if is_positive(inputs["trailing_eps"])
+                else f"Adjustment: cyclical, P/E methods use mid-cycle EPS {mid_eps:.2f}."
+            )
+            inputs["trailing_eps"] = mid_eps
 
     data_quality = calculate_data_quality_score(
         fundamental_data,
@@ -436,6 +598,8 @@ def analyze_stock(
     # ---------------------------------------------------------
 
     technical_data = calculate_technical_features(price_data)
+
+    liquidity = assess_liquidity(price_data)
 
     latest_technical = technical_data.iloc[-1]
 
@@ -523,6 +687,7 @@ def analyze_stock(
         fundamental_data,
         quarterly_data,
         normalized_fcf=company_profile.get("normalized_fcf"),
+        ttm=ttm,
     )
 
     if "roe" in consistency["preferred"]:
@@ -620,11 +785,13 @@ def analyze_stock(
         "company_profile": company_profile,
         "data_quality": data_quality,
         "structural_break": structural_break,
+        "ttm": {k: v for k, v in ttm.items() if k != "end"},
 
         "fundamental_metrics": fundamental_metrics,
         "fundamental_score": fundamental_score,
 
         "technical_data": technical_data,
+        "liquidity": liquidity,
         "latest_technical": latest_technical,
         "technical_score": technical_score,
 

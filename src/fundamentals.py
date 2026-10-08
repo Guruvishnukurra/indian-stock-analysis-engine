@@ -86,6 +86,13 @@ def build_fundamental_data(
         ]
     )
 
+    fundamental_data["Normalized_Income"] = get_statement_value(
+        income_stmt,
+        [
+            "Normalized Income"
+        ]
+    )
+
     fundamental_data["EBITDA"] = get_statement_value(
         income_stmt,
         [
@@ -160,6 +167,14 @@ def build_fundamental_data(
         ]
     )
 
+    fundamental_data["Shares"] = get_statement_value(
+        balance_sheet,
+        [
+            "Ordinary Shares Number",
+            "Share Issued"
+        ]
+    )
+
     fundamental_data["Net_Debt"] = get_statement_value(
         balance_sheet,
         [
@@ -196,6 +211,14 @@ def build_fundamental_data(
         cash_flow,
         [
             "Free Cash Flow"
+        ]
+    )
+
+    fundamental_data["Depreciation"] = get_statement_value(
+        cash_flow,
+        [
+            "Depreciation And Amortization",
+            "Depreciation"
         ]
     )
 
@@ -264,6 +287,13 @@ def calculate_fundamental_ratios(
 
     data["Net_Margin"] = (
         data["Net_Income"]
+        / data["Revenue"]
+        * 100
+    )
+
+    # Net margin excluding one-off items, where the source provides it.
+    data["Normalized_Net_Margin"] = (
+        data["Normalized_Income"]
         / data["Revenue"]
         * 100
     )

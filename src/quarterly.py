@@ -10,6 +10,8 @@ QUARTERLY_COLUMNS = [
     "Operating_Income",
     "Net_Interest_Income",
     "Net_Income",
+    "Normalized_Income",
+    "Unusual_Items",
     "EPS",
     "Net_Margin",
     "Operating_Margin",
@@ -81,6 +83,23 @@ def build_quarterly_fundamentals(
         [
             "Diluted EPS",
             "Basic EPS"
+        ]
+    )
+
+    # One-off items (pre-tax) and profit excluding them, as reported
+    # by the data source.
+    data["Normalized_Income"] = get_statement_value(
+        income_stmt,
+        [
+            "Normalized Income"
+        ]
+    )
+
+    data["Unusual_Items"] = get_statement_value(
+        income_stmt,
+        [
+            "Total Unusual Items",
+            "Total Unusual Items Excluding Goodwill"
         ]
     )
 

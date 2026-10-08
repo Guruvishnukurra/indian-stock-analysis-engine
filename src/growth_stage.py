@@ -163,6 +163,8 @@ def growth_stage_valuation(
     total_debt,
     peer_data,
     price,
+    basis_label=None,
+    risk_premium=0.0,
 ):
 
     if not is_positive(revenue) or not is_positive(shares):
@@ -182,7 +184,7 @@ def growth_stage_valuation(
             "reason": "Too few peers with operating margins to set a mature target.",
         }
 
-    wacc = estimate_wacc(raw_beta, market_cap, total_debt)["wacc"]
+    wacc = estimate_wacc(raw_beta, market_cap, total_debt, risk_premium)["wacc"]
 
     start_growth = min(max(revenue_growth_pct / 100, 0.0), MAX_START_GROWTH)
 
@@ -262,6 +264,7 @@ def growth_stage_valuation(
             "wacc": wacc,
             "years": YEARS,
             "sales_to_capital": SALES_TO_CAPITAL,
+            "basis": basis_label,
         },
         "implied_margin": None if implied is None else implied * 100,
         "implied_margin_summary": implied_text,

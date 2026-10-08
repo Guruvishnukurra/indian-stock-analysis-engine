@@ -162,7 +162,9 @@ def run_scenarios(
             "reason": "No peer or historical P/E range for exit multiples.",
         }
 
-    cost_of_equity, _, _ = estimate_cost_of_equity(raw_beta)
+    cost_of_equity, _, _ = estimate_cost_of_equity(
+        raw_beta, inputs.get("risk_premium", 0.0)
+    )
 
     discount = (1 + cost_of_equity) ** HORIZON_YEARS
 
@@ -188,9 +190,10 @@ def run_scenarios(
     bear_upside = cases["bear"]["upside"]
     bull_upside = cases["bull"]["upside"]
 
-    if bear_upside >= 0:
+    if bear_upside >= -2:
+        # A ratio against a near-zero downside is meaningless.
         asymmetry = None
-        asymmetry_text = "Even the bear case is at or above the current price"
+        asymmetry_text = "Even the bear case is roughly at or above the current price"
     elif bull_upside <= 0:
         asymmetry = 0.0
         asymmetry_text = "Even the bull case is below the current price"
