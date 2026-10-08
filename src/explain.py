@@ -259,7 +259,7 @@ def build_risks(analysis):
 
     if is_valid(sector_return) and sector_return < -5:
         risks.append(
-            f"Sector benchmark down {abs(sector_return):.1f}% over "
+            f"Sector basket fell {abs(sector_return):.1f}% (absolute) over "
             f"{context.get('window', 30)} days"
         )
 

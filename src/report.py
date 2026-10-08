@@ -70,6 +70,20 @@ def print_header(analysis):
     print(f"Current price     : ₹{analysis['current_price']:,.2f}")
 
 
+def print_conclusion(analysis):
+
+    conclusion = analysis.get("conclusion")
+
+    if not conclusion:
+        return
+
+    import textwrap
+
+    _section("BOTTOM LINE")
+
+    print(textwrap.fill(conclusion, WIDTH))
+
+
 def print_verdicts(analysis):
     explanation = analysis["explanation"]
     verdicts = explanation.get("verdicts") or {}
@@ -337,14 +351,19 @@ def print_market_condition(analysis):
 
     _section("CURRENT MARKET CONDITION")
 
-    print(f"Technical          : {technical['label']} ({_score(technical['score'])})")
-    print(f"RSI (14)           : {_num(latest.get('RSI_14'), 1)}")
-    print(f"30D return         : {_pct(context.get('stock_return'))}")
-    print(f"vs NIFTY (30D)     : {_pct(context.get('relative_to_market'))}")
+    def pp(value):
+        return f"{value:+.1f} pp" if is_valid(value) else "Unavailable"
+
+    print(f"Technical               : {technical['label']} ({_score(technical['score'])})")
+    print(f"RSI (14)                : {_num(latest.get('RSI_14'), 1)}")
+    print(f"Stock 30D return        : {_pct(context.get('stock_return'))}")
+    print(f"NIFTY 30D return        : {_pct(context.get('market_return'))}")
+    print(f"Stock relative to NIFTY : {pp(context.get('relative_to_market'))}")
     print(
-        f"vs sector (30D)    : {_pct(context.get('relative_to_sector'))} "
+        f"Sector 30D return       : {_pct(context.get('sector_return'))} "
         f"[{analysis['sector_benchmark']['name']}]"
     )
+    print(f"Stock relative to sector: {pp(context.get('relative_to_sector'))}")
     print(f"Beta vs NIFTY      : {_num(analysis.get('beta'))}")
     print(f"Market/sector      : {market['label']} ({_score(market['score'])})")
 
@@ -408,7 +427,22 @@ def print_ml(analysis):
     _section("ML TREND OUTLOOK")
 
     if not ml.get("available"):
-        print(f"ML Trend: Unavailable — {ml.get('reason')}")
+        print("ML Trend: Unavailable — the model is not shown because it has "
+              "not beaten simple baselines out of sample.")
+        gate = ml.get("validation") or {}
+        if gate:
+            from src.ml_trend import load_validation
+            results = load_validation() or {}
+            summary = results.get("summary", {})
+            model = summary.get(gate.get("best_model"), {}).get("balanced_accuracy")
+            baseline = summary.get(gate.get("best_baseline"), {}).get("balanced_accuracy")
+            if model is not None and baseline is not None:
+                print(f"  Balanced accuracy : {model * 100:.1f}%")
+                print(f"  Best baseline     : {baseline * 100:.1f}% ({gate['best_baseline']})")
+                print(f"  Edge              : {gate['edge'] * 100:+.1f} pp "
+                      f"(required: +{gate['required_edge'] * 100:.0f} pp)")
+        else:
+            print(f"  {ml.get('reason')}")
         return
 
     print(
@@ -474,6 +508,7 @@ def generate_report(analysis):
         return
 
     print_header(analysis)
+    print_conclusion(analysis)
     print_verdicts(analysis)
     print_scores(analysis)
     print_fair_value(analysis)

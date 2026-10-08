@@ -16,6 +16,7 @@ confidence; it never crashes the analysis.
 from src import config
 from src.benchmarks import select_sector_benchmark
 from src.company_profile import assess_company_profile
+from src.conclusion import build_conclusion
 from src.confidence import calculate_confidence
 from src.data import fetch_company_data, fetch_index_history
 from src.data_quality import (
@@ -850,6 +851,10 @@ def analyze_stock(
     }
 
     result["explanation"] = explain(result)
+
+    result["conclusion"] = _run_safely(
+        build_conclusion, result["warnings"], None, result
+    )
 
     if use_llm:
         result["thesis"] = _run_safely(
