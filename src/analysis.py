@@ -179,7 +179,7 @@ def assess_liquidity(price_data):
     }
 
 
-SMALL_CAP = 1e11            # Rs 10,000 crore
+SMALL_CAP = 1e11            # ₹10,000 crore
 MAX_RISK_PREMIUM = 0.03
 
 
@@ -197,7 +197,7 @@ def company_risk_premium(company_profile, inputs, fundamental_data):
     market_cap = inputs.get("market_cap")
 
     if is_positive(market_cap) and market_cap < SMALL_CAP:
-        items.append((0.01, "+1pp: small company (market cap under Rs 10,000 crore)"))
+        items.append((0.01, "+1pp: small company (market cap under ₹10,000 crore)"))
 
     debt_to_equity = latest_valid(fundamental_data, "Debt_to_Equity")
 

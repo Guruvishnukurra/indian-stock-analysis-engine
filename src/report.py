@@ -274,13 +274,13 @@ def print_valuation_breakdown(analysis):
         if funding.get("first_positive_fcf_year"):
             print(
                 f"Cash-positive from about year {funding['first_positive_fcf_year']}; "
-                f"peak cumulative burn about Rs {funding['peak_cash_burn'] / 1e7:,.0f} crore "
-                f"vs net cash Rs {funding['net_cash'] / 1e7:,.0f} crore"
+                f"peak cumulative burn about ₹{funding['peak_cash_burn'] / 1e7:,.0f} crore "
+                f"vs net cash ₹{funding['net_cash'] / 1e7:,.0f} crore"
             )
 
         if funding.get("funding_gap"):
             print(
-                f"Funding gap about Rs {funding['funding_gap'] / 1e7:,.0f} crore "
+                f"Funding gap about ₹{funding['funding_gap'] / 1e7:,.0f} crore "
                 f"(~{funding['gap_share_of_market_cap'] * 100:.0f}% of market cap): "
                 "likely dilution before turning cash-positive"
             )

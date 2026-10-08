@@ -95,6 +95,26 @@ contradicts the engine's stance causes it to be rejected.
 Cache: Yahoo/NSE data is cached under `data/cache/` (`src.cache.clear_cache()`
 to reset).
 
+## Dashboard (React + TypeScript)
+
+```bash
+python -m uvicorn src.api.main:app --port 8000     # terminal 1: API
+cd frontend && npm install && npm run dev          # terminal 2: http://localhost:5173
+```
+
+Enter a ticker (or open `http://localhost:5173/?t=TCS.NS`). The dashboard
+starts an analysis job, polls it, and shows: bottom line, verdict strip
+(overall, quality, valuation, timing, confidence), fair-value range chart
+with each method and the analyst consensus marked, valuation methods,
+what the price assumes (reverse valuation, simulated futures, funding
+check, scenarios, DCF sensitivity), period-tagged fundamentals, price
+chart with 50/200-day averages, news events, risks, ML evidence, data
+limitations and past analyses. Light/dark/auto theme; works on phones.
+
+In development the Vite server proxies `/api` to the FastAPI backend; for a
+deployed build set `VITE_API_URL` and add the dashboard's origin to
+`CORS_ORIGINS` on the API.
+
 ## API
 
 | Method | Path | Purpose |

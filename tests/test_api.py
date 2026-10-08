@@ -156,3 +156,18 @@ def test_serializer_handles_numpy_and_nan():
     }
 
     assert serialize_analysis({"status": "failed", "reason": "x"})["reason"] == "x"
+
+
+def test_results_from_older_engine_are_not_reused(client):
+
+    job = client.post("/analyses", json={"ticker": "TCS", "include_news": False}).json()
+    wait_for(client, job["job_id"])
+
+    # Simulate a result saved by an older engine version.
+    db = main.app.state.db
+    stored = db.get_job(job["job_id"])
+    db.update_job(job["job_id"], result={**stored.result, "engine_version": "old"})
+
+    again = client.post("/analyses", json={"ticker": "TCS", "include_news": False}).json()
+
+    assert again["reused"] is False

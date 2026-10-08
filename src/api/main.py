@@ -27,6 +27,10 @@ from src.api.serialize import serialize_analysis
 
 ROOT = Path(__file__).resolve().parents[2]
 
+# Bump whenever the analysis output changes shape or method, so results
+# saved by an older engine are recomputed instead of reused.
+ENGINE_VERSION = "2026.10.09-2"
+
 RESULT_MAX_AGE = timedelta(hours=int(os.environ.get("RESULT_MAX_AGE_HOURS", "6")))
 MAX_WORKERS = int(os.environ.get("ANALYSIS_WORKERS", "2"))
 
@@ -87,6 +91,7 @@ def execute_job(db, job_id, ticker, include_news):
         analysis = run_analysis(ticker, include_news)
 
         result = serialize_analysis(analysis)
+        result["engine_version"] = ENGINE_VERSION
 
         if analysis.get("status") != "ok":
             db.update_job(
@@ -202,7 +207,11 @@ def create_analysis(request: AnalysisRequest, http: Request):
 
         recent = db.latest_done(ticker, include_news=request.include_news)
 
-        if recent and is_fresh(recent):
+        if (
+            recent
+            and is_fresh(recent)
+            and (recent.result or {}).get("engine_version") == ENGINE_VERSION
+        ):
             return {**job_payload(recent, include_result=False), "reused": True}
 
         running = db.active_job(ticker, include_news=request.include_news)

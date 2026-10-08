@@ -121,13 +121,13 @@ def verdict_triggers(fair_value, price, stance):
 
     if price > attractive_below:
         triggers.append(
-            f"Valuation would support ATTRACTIVE below about Rs {attractive_below:,.0f} "
+            f"Valuation would support ATTRACTIVE below about ₹{attractive_below:,.0f} "
             "(if quality and confidence hold)"
         )
 
     if price < avoid_above:
         triggers.append(
-            f"Valuation would point to AVOID above about Rs {avoid_above:,.0f}"
+            f"Valuation would point to AVOID above about ₹{avoid_above:,.0f}"
         )
 
     triggers.append(

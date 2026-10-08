@@ -311,7 +311,7 @@ def build_risks(analysis):
 
     if liquidity.get("illiquid"):
         risks.append(
-            f"Illiquid: median daily traded value about Rs "
+            f"Illiquid: median daily traded value about ₹"
             f"{liquidity['median_traded_value'] / 1e7:,.1f} crore over "
             f"{liquidity['days']} days; prices are easier to move and "
             "harder to exit"
