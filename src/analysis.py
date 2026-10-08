@@ -26,6 +26,7 @@ from src.expectations import market_implied_expectations
 from src.explain import explain
 from src.fair_value import build_fair_value_range
 from src.fundamentals import post_break_data, prepare_fundamental_data
+from src.growth_stage import growth_stage_valuation
 from src.market import (
     calculate_beta,
     calculate_correlation,
@@ -178,6 +179,7 @@ def run_peer_stage(ticker, info):
         number_of_peers=config.PEER_COUNT,
         target_ownership=target_ownership,
         target_summary=info.get("longBusinessSummary"),
+        target_market_cap=safe_float(info.get("marketCap")),
     )
 
     peer_analysis["target_ownership"] = target_ownership
@@ -234,6 +236,8 @@ def _unavailable(reason):
 def run_valuation_methods(
     company_profile,
     fundamental_data,
+    quarterly_data,
+    price,
     growth_data,
     price_data,
     inputs,
@@ -274,6 +278,26 @@ def run_valuation_methods(
             inputs["roe"],
             peers("PB"),
             summary("PB"),
+        ),
+        "growth_dcf": lambda: growth_stage_valuation(
+            revenue=inputs["revenue"],
+            revenue_growth_pct=(
+                latest_valid(quarterly_data, "Revenue_YoY")
+                if latest_valid(quarterly_data, "Revenue_YoY") is not None
+                else latest_valid(fundamental_data, "Revenue_Growth")
+            ),
+            operating_margin_pct=(
+                latest_valid(fundamental_data, "Operating_Margin")
+                if latest_valid(fundamental_data, "Operating_Margin") is not None
+                else latest_valid(quarterly_data, "Operating_Margin")
+            ),
+            net_debt=inputs["net_debt"],
+            shares=inputs["shares_outstanding"],
+            raw_beta=beta,
+            market_cap=inputs["market_cap"],
+            total_debt=latest_valid(fundamental_data, "Debt"),
+            peer_data=peers("EVS") if peers("EVS") is not None else peers("PE"),
+            price=price,
         ),
         "peer_evs": lambda: ev_sales_valuation(
             inputs["revenue"],
@@ -439,6 +463,8 @@ def analyze_stock(
     method_results = run_valuation_methods(
         company_profile,
         fundamental_data,
+        quarterly_data,
+        latest_price,
         growth_data,
         price_data,
         inputs,
@@ -508,8 +534,17 @@ def analyze_stock(
         company_profile["company_type"]
     )
 
+    label_weights = {
+        label: fair_value["weights_used"][method]
+        for method, label in zip(
+            fair_value.get("weights_used", {}),
+            fair_value.get("methods_used", []),
+        )
+    }
+
     valuation_score = calculate_valuation_score(
-        upside_base=fair_value.get("upside_base"),
+        method_upsides=fair_value.get("method_upsides"),
+        method_weights=label_weights,
         current_pe=inputs["current_pe"],
         peer_median_pe=peer_analysis.get("median_pe"),
     )

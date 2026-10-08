@@ -40,6 +40,17 @@ def _normalize_headline(headline):
     return re.sub(r"[^a-z0-9 ]", "", text.lower()).strip()
 
 
+# Jaccard overlap of meaningful words above which two headlines are
+# treated as the same story.
+NEAR_DUPLICATE = 0.6
+
+STOPWORDS = {
+    "the", "and", "for", "with", "its", "after", "ahead", "from", "into",
+    "over", "share", "shares", "stock", "stocks", "price", "today", "says",
+    "here", "why", "what", "how", "this", "that", "are", "has", "was",
+}
+
+
 def deduplicate_news(news):
     """
     Remove syndicated/duplicate headlines so one story
@@ -57,7 +68,25 @@ def deduplicate_news(news):
 
     data = data.drop_duplicates(subset="_key", keep="first")
 
-    return data.drop(columns="_key").reset_index(drop=True)
+    # Near-duplicates: syndicated rewrites of one story share most of
+    # their meaningful words even when the wording differs.
+    kept, kept_tokens = [], []
+
+    for index, key in data["_key"].items():
+
+        tokens = {w for w in key.split() if len(w) > 2 and w not in STOPWORDS}
+
+        duplicate = any(
+            tokens and other
+            and len(tokens & other) / len(tokens | other) >= NEAR_DUPLICATE
+            for other in kept_tokens
+        )
+
+        if not duplicate:
+            kept.append(index)
+            kept_tokens.append(tokens)
+
+    return data.loc[kept].drop(columns="_key").reset_index(drop=True)
 
 
 def fetch_news(ticker, company_name, limit=100):
@@ -261,6 +290,15 @@ def label_news_score(news_score):
     return "Neutral"
 
 
+# Event types whose sentiment says something about the company itself.
+SENTIMENT_EVENT_TYPES = {
+    "earnings", "order_contract", "corporate_action", "m_and_a",
+    "regulatory_legal", "management", "rating_target",
+}
+
+MIN_MATERIAL_FOR_SENTIMENT = 3
+
+
 def classify_news_events(company_name, news):
     """
     Material-event tagging with the local LLM (if available).
@@ -283,6 +321,11 @@ def classify_news_events(company_name, news):
         return None
 
     summary = summarize_events(recent, classifications)
+
+    summary["classified"] = [
+        (headline, (event or {}).get("event_type"))
+        for headline, event in zip(recent["Headline"], classifications)
+    ]
 
     summary["accuracy_note"] = (
         "AI-tagged by a local LLM: 90% material-vs-noise accuracy and "
@@ -384,9 +427,44 @@ def analyze_news(
         except Exception as error:
             warnings.append(f"News event tagging failed: {error}")
 
+    sentiment_basis = f"all {len(news)} de-duplicated headlines"
+
+    if events and events.get("classified"):
+
+        material = {
+            headline for headline, event_type in events["classified"]
+            if event_type in SENTIMENT_EVENT_TYPES
+        }
+
+        subset = news[news["Headline"].isin(material)]
+
+        if len(subset) >= MIN_MATERIAL_FOR_SENTIMENT:
+
+            vader_score = calculate_recency_weighted_vader(subset)
+
+            finbert_score = (
+                calculate_recency_weighted_finbert(subset)
+                if "FinBERT_Score" in subset.columns
+                else np.nan
+            )
+
+            news_score = calculate_news_score(vader_score, finbert_score)
+
+            sentiment_basis = (
+                f"{len(subset)} material-event headlines "
+                "(price-move commentary and off-topic items excluded)"
+            )
+
+        else:
+            sentiment_basis += (
+                f" (only {len(subset)} material headlines; too few to use alone)"
+            )
+
     return {
         "news": news,
         "events": events,
+        "sentiment_basis": sentiment_basis,
+        "raw_article_count": raw_count,
         "vader_score": vader_score,
         "finbert_score": finbert_score,
         "news_score": news_score,

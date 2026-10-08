@@ -364,6 +364,33 @@ def market_implied_expectations(
 
     if family == "operating":
 
+        growth = method_results.get("growth_dcf", {})
+
+        # Pre-profit companies: what mature margin does the price need?
+        if growth.get("implied_margin_summary"):
+            implied = growth.get("implied_margin")
+            peers = growth.get("assumptions", {}).get("peer_margins", {})
+            median = peers.get("median")
+
+            if implied is None or median is None:
+                assessment = "Very demanding"
+            else:
+                gap = implied - median
+                assessment = (
+                    "Undemanding" if gap <= -3
+                    else "Consistent with peers" if gap <= 2
+                    else "Demanding" if gap <= 6
+                    else "Very demanding"
+                )
+
+            return {
+                "available": True,
+                "method": "Reverse growth-stage DCF (implied mature margin)",
+                "implied_margin": implied,
+                "assessment": assessment,
+                "summary": growth["implied_margin_summary"],
+            }
+
         if not method_results.get("dcf", {}).get("available"):
             return {
                 "available": False,

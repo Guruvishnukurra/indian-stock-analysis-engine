@@ -39,6 +39,7 @@ METHOD_FAMILIES = {
     "peer_pb": "peer",
     "peer_evs": "peer",
     "historical_pe": "own_history",
+    "growth_dcf": "intrinsic",
 }
 
 
@@ -329,6 +330,12 @@ def penalties(method_results, fair_value, data_quality=None,
         items.append((
             10,
             "Loss-making or barely profitable: relies on an EV/Sales fallback"
+        ))
+
+    if "growth_dcf" in weights:
+        items.append((
+            5,
+            "Pre-profit valuation depends on an assumed mature margin"
         ))
 
     dcf = method_results.get("dcf", {})

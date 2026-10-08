@@ -1,23 +1,26 @@
 """
 Combine valuation methods into a fair-value RANGE.
 
-Two sources of uncertainty are reflected:
+CORE methods (configured weight >= CONTEXT_WEIGHT_THRESHOLD) build the
+base estimate and the range:
 
-1. Within-method uncertainty
-   Each method already supplies low/base/high
-   (DCF sensitivity, peer interquartile multiples, ...).
-   These are weighted together.
+    base   = weighted average of core central estimates
+    range  = weighted core lows/highs (each method's own uncertainty:
+             DCF sensitivity, peer interquartile multiples, ...),
+             widened if needed so it spans every core method's central
+             estimate (disagreement between credible methods is shown,
+             not averaged away)
 
-2. Between-method disagreement
-   If methods disagree, the range is widened to at least
-   +/- one weighted standard deviation of the method base
-   values around the combined base.
+CONTEXT methods (low configured weight, e.g. own-history P/E) are
+reported next to the range but never move it: one extreme reference
+must not explode the range.
 
 No arbitrary +/-20% band is used.
 """
 
 import math
 
+from src.config import CONTEXT_WEIGHT_THRESHOLD
 from src.utils import calculate_upside_pct, is_positive, round_price
 
 
@@ -27,30 +30,41 @@ METHOD_LABELS = {
     "historical_pe": "Historical P/E",
     "peer_pb": "Peer P/B",
     "peer_evs": "Peer EV/Sales",
+    "growth_dcf": "Growth-stage DCF",
 }
 
 
+def split_methods(method_results, weights):
+    """
+    (core, context) method names among those that produced a value.
+    If no core method is available, context methods are used as core.
+    """
+
+    available = [
+        m for m, r in method_results.items()
+        if r.get("available") and weights.get(m, 0) > 0
+    ]
+
+    core = [m for m in available if weights[m] >= CONTEXT_WEIGHT_THRESHOLD]
+    context = [m for m in available if weights[m] < CONTEXT_WEIGHT_THRESHOLD]
+
+    if not core:
+        return context, []
+
+    return core, context
+
+
 def normalized_weights(method_results, weights):
-    """
-    Weights renormalised over methods that produced a value.
-    """
+    """Core-method weights renormalised over methods that produced a value."""
 
-    usable = {
-        method: weights[method]
-        for method, result in method_results.items()
-        if result.get("available")
-        and weights.get(method, 0) > 0
-    }
+    core, _ = split_methods(method_results, weights)
 
-    total = sum(usable.values())
+    total = sum(weights[m] for m in core)
 
     if total <= 0:
         return {}
 
-    return {
-        method: weight / total
-        for method, weight in usable.items()
-    }
+    return {m: weights[m] / total for m in core}
 
 
 def method_dispersion(method_results, used_weights):
@@ -89,11 +103,22 @@ def build_fair_value_range(method_results, weights, current_price):
 
     used_weights = normalized_weights(method_results, weights)
 
+    _, context = split_methods(method_results, weights)
+
+    context_methods = {
+        METHOD_LABELS.get(m, m): {
+            "base": method_results[m]["base"],
+            "upside": calculate_upside_pct(current_price, method_results[m]["base"]),
+        }
+        for m in context
+    }
+
     if not used_weights:
         return {
             "available": False,
             "reason": "No valuation method produced a usable value.",
             "methods_used": [],
+            "context_methods": context_methods,
         }
 
     def weighted(key):
@@ -106,23 +131,14 @@ def build_fair_value_range(method_results, weights, current_price):
     low = weighted("low")
     high = weighted("high")
 
-    dispersion = method_dispersion(method_results, used_weights)
+    core_bases = [method_results[m]["base"] for m in used_weights]
 
-    widened_for_disagreement = False
+    widened_for_disagreement = (
+        min(core_bases) < low or max(core_bases) > high
+    )
 
-    if dispersion is not None:
-
-        std = dispersion["weighted_std"]
-
-        if base - std < low:
-            low = base - std
-            widened_for_disagreement = True
-
-        if base + std > high:
-            high = base + std
-            widened_for_disagreement = True
-
-    low = max(low, 0.0)
+    low = max(min(low, min(core_bases)), 0.0)
+    high = max(high, max(core_bases))
 
     return {
         "available": True,
@@ -137,6 +153,13 @@ def build_fair_value_range(method_results, weights, current_price):
         "upside_high": calculate_upside_pct(current_price, high),
         "weights_used": used_weights,
         "methods_used": [METHOD_LABELS.get(m, m) for m in used_weights],
-        "dispersion": dispersion,
+        "method_upsides": {
+            METHOD_LABELS.get(m, m): calculate_upside_pct(
+                current_price, method_results[m]["base"]
+            )
+            for m in used_weights
+        },
+        "dispersion": method_dispersion(method_results, used_weights),
         "widened_for_disagreement": widened_for_disagreement,
+        "context_methods": context_methods,
     }

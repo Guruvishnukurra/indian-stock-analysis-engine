@@ -25,6 +25,11 @@ def get_peer_financials(peer_tickers):
                 "EVS": info.get("enterpriseToRevenue"),
                 "ROE": info.get("returnOnEquity"),
                 "Profit_Margin": info.get("profitMargins"),
+                "Operating_Margin": (
+                    info["operatingMargins"] * 100
+                    if isinstance(info.get("operatingMargins"), (int, float))
+                    else None
+                ),
                 "Debt_to_Equity": info.get("debtToEquity"),
                 "Sector": info.get("sector"),
                 "Industry": info.get("industry"),
@@ -37,7 +42,7 @@ def get_peer_financials(peer_tickers):
 
     columns = [
         "Ticker", "Company", "Price", "Market_Cap", "EPS", "PE",
-        "PB", "EVS", "ROE", "Profit_Margin", "Debt_to_Equity",
+        "PB", "EVS", "ROE", "Profit_Margin", "Operating_Margin", "Debt_to_Equity",
         "Sector", "Industry", "Industry_Key", "Summary"
     ]
 
@@ -45,7 +50,7 @@ def get_peer_financials(peer_tickers):
 
     numeric = [
         "Price", "Market_Cap", "EPS", "PE", "PB", "EVS",
-        "ROE", "Profit_Margin", "Debt_to_Equity"
+        "ROE", "Profit_Margin", "Operating_Margin", "Debt_to_Equity"
     ]
 
     data[numeric] = data[numeric].apply(
@@ -203,6 +208,37 @@ def build_multiple_analysis(
 
 MIN_SAME_OWNERSHIP_PEERS = 5
 
+# Peers smaller than this fraction of the target's market cap are
+# excluded (if enough remain): micro-caps carry noisy multiples.
+# Evidence (scripts/evaluate_peers.py): with the floor, peer median
+# P/E predicts a company's own P/E better (typical miss 53% -> 50%);
+# P/B accuracy unchanged.
+SIZE_FLOOR = 0.20
+MIN_PEERS_AFTER_FLOOR = 5
+
+
+def apply_size_floor(peer_data, target_market_cap):
+
+    if (
+        peer_data.empty
+        or not target_market_cap
+        or "Market_Cap" not in peer_data.columns
+    ):
+        return peer_data, ""
+
+    floor = SIZE_FLOOR * target_market_cap
+
+    big_enough = peer_data[peer_data["Market_Cap"] >= floor]
+
+    if len(big_enough) >= MIN_PEERS_AFTER_FLOOR:
+        excluded = len(peer_data) - len(big_enough)
+        return big_enough, (
+            f" {excluded} candidates below {SIZE_FLOOR:.0%} of the "
+            "company's market cap excluded."
+        )
+
+    return peer_data, " Too few larger peers: no size floor applied."
+
 
 def apply_ownership_filter(peer_data, target_ticker, target_ownership):
     """
@@ -267,12 +303,17 @@ def build_peer_analysis(
     target_ticker,
     number_of_peers=10,
     target_ownership=None,
-    target_summary=None
+    target_summary=None,
+    target_market_cap=None
 ):
 
     peer_data, ownership_note = apply_ownership_filter(
         peer_data, target_ticker, target_ownership
     )
+
+    peer_data, size_note = apply_size_floor(peer_data, target_market_cap)
+
+    ownership_note += size_note
 
     peer_data, ranking_note = add_similarity(peer_data, target_summary)
 

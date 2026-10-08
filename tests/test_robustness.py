@@ -414,3 +414,29 @@ def test_valuation_gap_wording_keeps_direction():
 
     bullish, _ = reasons(30.3)
     assert "Base fair-value estimate is 30% above the price" in bullish
+
+
+def test_context_method_does_not_move_range():
+    results = {
+        "dcf": _method(145, 130, 160),
+        "peer_pe": _method(255, 220, 300),
+        "historical_pe": _method(1050, 900, 1200),
+    }
+    weights = {"dcf": 0.25, "peer_pe": 0.70, "historical_pe": 0.05}
+
+    fv = build_fair_value_range(results, weights, 300)
+
+    assert fv["high"] <= 300
+    assert "Historical P/E" in fv["context_methods"]
+    assert set(fv["methods_used"]) == {"DCF", "Peer P/E"}
+    # The range spans both credible methods' central estimates.
+    assert fv["low"] <= 145 and fv["high"] >= 255
+
+
+def test_valuation_score_blends_method_premiums():
+    score = calculate_valuation_score(
+        method_upsides={"DCF": -50.0, "Peer P/E": 0.0},
+        method_weights={"DCF": 0.25, "Peer P/E": 0.75},
+    )["score"]
+
+    assert score == pytest.approx(0.25 * 0 + 0.75 * 50)

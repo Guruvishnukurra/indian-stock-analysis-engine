@@ -12,6 +12,9 @@ WIDTH = 60
 
 
 def _money(value):
+    if is_valid(value) and value <= 0:
+        return "₹0"          # e.g. a bear case where debt/losses exceed value
+
     rounded = round_price(value) if is_valid(value) else None
 
     if rounded is None:
@@ -95,6 +98,31 @@ def print_fair_value(analysis):
             f"{_money(fair_value['high'])}"
         )
         print(f"Base estimate   : {_money(fair_value['base'])}")
+
+        from src.explain import describe_position
+
+        print(
+            f"Price position  : "
+            f"{describe_position(fair_value, analysis['current_price'])}"
+        )
+
+        dispersion = fair_value.get("dispersion") or {}
+
+        if dispersion.get("coefficient_of_variation") is not None:
+            spread = ", ".join(
+                f"{label} {_pct(upside)}"
+                for label, upside in fair_value["method_upsides"].items()
+            )
+            print(
+                f"Method spread   : {dispersion['coefficient_of_variation'] * 100:.0f}% "
+                f"dispersion ({spread} vs price)"
+            )
+
+        for label, context in fair_value.get("context_methods", {}).items():
+            print(
+                f"Context only    : {label} {_money(context['base'])} "
+                f"({_pct(context['upside'])} vs price; not in base or range)"
+            )
         print(
             f"Potential upside: {_pct(fair_value['upside_low'])} to "
             f"{_pct(fair_value['upside_high'])} "
@@ -133,6 +161,7 @@ def print_valuation_breakdown(analysis):
         "historical_pe": "Historical P/E",
         "peer_pb": "Peer P/B",
         "peer_evs": "Peer EV/Sales",
+        "growth_dcf": "Growth DCF",
     }
 
     for method, label in labels.items():
@@ -149,6 +178,33 @@ def print_valuation_breakdown(analysis):
             print(f"{'':<17}{result.get('range_basis', '')}")
         else:
             print(f"{label:<15}: — {result.get('reason', 'Unavailable')}")
+
+    growth = results.get("growth_dcf", {})
+
+    if growth.get("available"):
+
+        a = growth["assumptions"]
+        peers = a["peer_margins"]
+
+        print()
+        print(
+            f"Growth-stage DCF: revenue growth starts at {a['start_growth'] * 100:.0f}% "
+            f"and fades over {a['years']} years; operating margin moves from "
+            f"{a['current_margin'] * 100:.1f}% to the mature target; WACC "
+            f"{a['wacc'] * 100:.1f}%"
+        )
+        print(
+            f"Mature margin targets from {peers['count']} peers: "
+            f"bear {peers['low']:.1f}% / base {peers['median']:.1f}% / "
+            f"bull {peers['high']:.1f}%"
+        )
+
+        for name, case in growth["cases"].items():
+            print(
+                f"  {name.title():<5} growth {case['start_growth'] * 100:4.0f}%  "
+                f"target margin {case['target_margin'] * 100:5.1f}%  "
+                f"-> {_money(case['value'])}"
+            )
 
     dcf = results.get("dcf", {})
 
@@ -269,9 +325,13 @@ def print_news(analysis):
 
     print(f"Sentiment     : {news.get('label')}")
     print(f"News score    : {_score(news.get('news_score'))}")
+
+    if news.get("sentiment_basis"):
+        print(f"Scored on     : {news['sentiment_basis']}")
+
     print(
-        f"Articles      : {news.get('article_count', 0)} "
-        f"({news.get('duplicates_removed', 0)} duplicates removed)"
+        f"Articles      : {news.get('raw_article_count', news.get('article_count', 0))} fetched, "
+        f"{news.get('duplicates_removed', 0)} duplicates removed"
     )
 
     events = news.get("events")

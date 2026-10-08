@@ -318,33 +318,55 @@ def calculate_fundamental_score(extracted_metrics, company_type):
 # VALUATION SCORE
 # =========================================================
 
+VALUATION_SCALE = 50   # +/- percent at which a method scores 100 / 0
+
+
 def calculate_valuation_score(
-    upside_base=None,
+    method_upsides=None,
+    method_weights=None,
     current_pe=None,
     peer_median_pe=None
 ):
     """
-    How cheap the stock is relative to its estimated fair value.
+    Valuation ATTRACTIVENESS, kept separate from fundamental quality.
 
-    -30% (30% overvalued) -> 0,  +30% (30% undervalued) -> 100.
+    Each credible (core) method's discount/premium to the price is
+    mapped onto 0-100 (-50% -> 0, 0% -> 50, +50% -> 100) and the
+    scores are weight-averaged. So a stock that is expensive against
+    one method but fair against another scores in between, instead of
+    collapsing to 0 because one blended estimate is below the price.
 
-    Falls back to P/E relative to the peer median if no fair
-    value is available. Returns None if neither is available
-    (it is NOT imputed as 50).
+    Falls back to P/E relative to the peer median. Returns None if
+    neither is available (it is NOT imputed as 50).
     """
 
-    if is_valid(upside_base):
-        return {
-            "score": interpolate_score(upside_base, -30, 30),
-            "basis": "Upside to base fair value",
-        }
+    if method_upsides:
+
+        parts = []
+
+        for label, upside in method_upsides.items():
+            score = interpolate_score(upside, -VALUATION_SCALE, VALUATION_SCALE)
+            if score is not None:
+                parts.append((score, (method_weights or {}).get(label, 1.0)))
+
+        total = sum(w for _, w in parts)
+
+        if parts and total > 0:
+            return {
+                "score": sum(sc * w for sc, w in parts) / total,
+                "basis": (
+                    "Premium/discount to price across "
+                    + ", ".join(method_upsides)
+                ),
+                "by_method": method_upsides,
+            }
 
     if is_positive(current_pe) and is_positive(peer_median_pe):
 
         discount = (peer_median_pe / current_pe - 1) * 100
 
         return {
-            "score": interpolate_score(discount, -30, 30),
+            "score": interpolate_score(discount, -VALUATION_SCALE, VALUATION_SCALE),
             "basis": "P/E relative to peer median",
         }
 

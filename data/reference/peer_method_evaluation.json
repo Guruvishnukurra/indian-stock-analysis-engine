@@ -12,18 +12,38 @@
     },
     "similarity": {
       "companies": 528,
-      "median_abs_log_error": 0.4341,
-      "mean_abs_log_error": 0.5748
+      "median_abs_log_error": 0.4327,
+      "mean_abs_log_error": 0.5749
     },
     "ownership+similarity": {
       "companies": 528,
-      "median_abs_log_error": 0.4239,
-      "mean_abs_log_error": 0.5709
+      "median_abs_log_error": 0.4258,
+      "mean_abs_log_error": 0.571
     },
     "hybrid": {
       "companies": 528,
       "median_abs_log_error": 0.4377,
-      "mean_abs_log_error": 0.5715
+      "mean_abs_log_error": 0.5716
+    },
+    "floor_0.02": {
+      "companies": 528,
+      "median_abs_log_error": 0.4239,
+      "mean_abs_log_error": 0.5711
+    },
+    "floor_0.05": {
+      "companies": 528,
+      "median_abs_log_error": 0.4145,
+      "mean_abs_log_error": 0.5673
+    },
+    "floor_0.10": {
+      "companies": 528,
+      "median_abs_log_error": 0.4103,
+      "mean_abs_log_error": 0.5636
+    },
+    "floor_0.20": {
+      "companies": 528,
+      "median_abs_log_error": 0.4036,
+      "mean_abs_log_error": 0.5667
     }
   },
   "PB": {
@@ -51,6 +71,26 @@
       "companies": 547,
       "median_abs_log_error": 0.5187,
       "mean_abs_log_error": 0.6658
+    },
+    "floor_0.02": {
+      "companies": 547,
+      "median_abs_log_error": 0.4898,
+      "mean_abs_log_error": 0.6421
+    },
+    "floor_0.05": {
+      "companies": 547,
+      "median_abs_log_error": 0.4908,
+      "mean_abs_log_error": 0.642
+    },
+    "floor_0.10": {
+      "companies": 547,
+      "median_abs_log_error": 0.4908,
+      "mean_abs_log_error": 0.6428
+    },
+    "floor_0.20": {
+      "companies": 547,
+      "median_abs_log_error": 0.4908,
+      "mean_abs_log_error": 0.6434
     }
   }
 }

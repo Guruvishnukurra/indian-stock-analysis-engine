@@ -21,6 +21,34 @@ def _fmt_metric(item):
     return f"{item['label']} {value:.2f}x"
 
 
+def describe_position(fair_value, price):
+    """
+    Plain-language position of the price against the range AND the base,
+    so 'within the range' and 'X% above base' never read as a contradiction.
+    """
+
+    position = _valuation_position(fair_value, price)
+
+    if position is None:
+        return None
+
+    if position == "below":
+        return "below the entire fair-value range"
+
+    if position == "above":
+        return "above the entire fair-value range"
+
+    upside = fair_value["upside_base"]
+
+    if upside <= -10:
+        return "within the broad uncertainty range but above the base estimate"
+
+    if upside >= 10:
+        return "within the broad uncertainty range but below the base estimate"
+
+    return "within the fair-value range and close to the base estimate"
+
+
 def _valuation_position(fair_value, price):
 
     if not fair_value.get("available"):
@@ -285,20 +313,33 @@ def build_data_limitations(analysis):
 
 def determine_stance(analysis):
     """
-    ATTRACTIVE / WATCH / AVOID / INSUFFICIENT DATA
+    ATTRACTIVE / WATCH / AVOID / NOT RATED / INSUFFICIENT DATA
 
     Based on valuation upside, fundamental quality and confidence.
+
+    NOT RATED: operating companies without usable earnings (loss-making
+    or barely profitable). Their value hinges on a future margin the
+    engine can only assume, so it reports what the price requires
+    instead of a verdict.
     """
 
     fair_value = analysis["fair_value"]
     confidence = analysis["confidence"]["score"]
     fundamental = analysis["fundamental_score"].get("score")
+    profile = analysis["company_profile"]
+
 
     if (
         not fair_value.get("available")
         or confidence < config.MIN_CONFIDENCE_FOR_STANCE
     ):
         return "INSUFFICIENT DATA"
+
+    if (
+        profile.get("valuation_family") == "operating"
+        and not profile.get("earnings_usable", True)
+    ):
+        return "NOT RATED"
 
     upside = fair_value["upside_base"]
 
@@ -335,6 +376,17 @@ def build_interpretation(analysis, stance):
     fundamental = analysis["fundamental_score"]
     fair_value = analysis["fair_value"]
 
+    if stance == "NOT RATED":
+        expectations = analysis.get("expectations") or {}
+        sentences.append(
+            "No buy/avoid verdict: the company has no usable earnings, so its "
+            "value depends on the margin it reaches once mature, which can "
+            "only be assumed. The fair-value range below is assumption-driven "
+            "and wide."
+        )
+        if expectations.get("summary"):
+            sentences.append(expectations["summary"])
+
     if fundamental.get("score") is not None:
         sentences.append(
             f"Fundamental quality is {fundamental['label'].lower()} "
@@ -344,13 +396,12 @@ def build_interpretation(analysis, stance):
     else:
         sentences.append("Fundamental quality could not be scored reliably.")
 
-    position = _valuation_position(fair_value, analysis["current_price"])
+    position = describe_position(fair_value, analysis["current_price"])
 
     if position is not None:
         methods = ", ".join(fair_value["methods_used"])
         sentences.append(
-            f"The price is {position} the estimated fair-value range "
-            f"(methods: {methods})."
+            f"The price is {position} (methods: {methods})."
         )
     else:
         sentences.append(

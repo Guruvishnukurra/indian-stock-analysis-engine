@@ -369,6 +369,20 @@ def determine_method_applicability(profile):
             "Earnings-based methods are available or more appropriate."
         )
 
+    # Growth-stage DCF: values a loss-making / barely profitable
+    # operating company on the margin it could reach when mature.
+    if family == "operating" and not earnings_usable:
+        rules["growth_dcf"] = (
+            True,
+            "Path-to-profitability valuation for a company without "
+            "usable earnings."
+        )
+    else:
+        rules["growth_dcf"] = (
+            False,
+            "Only used when earnings are negative or not a usable base."
+        )
+
     # Scenarios are reported separately, not blended into fair value.
     if earnings_usable:
         rules["scenario"] = (

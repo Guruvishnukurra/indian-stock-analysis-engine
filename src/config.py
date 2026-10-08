@@ -75,16 +75,20 @@ MIN_HISTORICAL_PE_YEARS = 2
 
 # DCF was 45%. Reduced (judgement, not fitted) after the consensus check
 # (scripts/compare_consensus.py, 48 NIFTY 50 companies): the DCF sat a
-# median 58% below price while peer P/E (-9%) and own-history P/E (+24%)
-# did not, i.e. it disagrees structurally with every other method because
-# Indian large caps price a longer growth runway than a 10-year DCF holds.
-# Historical P/E is raised from 5% now that it is computed from real data
-# with split/bonus and look-ahead guards. The DCF stays fully reported.
+# median 58% below price while peer P/E (-9%) did not, i.e. it disagrees
+# structurally with the relative methods because Indian large caps price
+# a longer growth runway than a 10-year DCF holds. It stays fully reported.
+# Historical P/E is a low-weight CONTEXT reference: it can sit far from
+# every other method and must not drive the base or widen the range.
 OPERATING_WEIGHTS = {
     "dcf": 0.25,
-    "peer_pe": 0.55,
-    "historical_pe": 0.20,
+    "peer_pe": 0.70,
+    "historical_pe": 0.05,
 }
+
+# Methods whose configured weight is below this are context only:
+# reported, but excluded from the base estimate and the range.
+CONTEXT_WEIGHT_THRESHOLD = 0.10
 
 FINANCIAL_BALANCE_SHEET_WEIGHTS = {   # banks, NBFCs, insurers
     "peer_pe": 0.50,
@@ -98,11 +102,15 @@ ASSET_LIGHT_FINANCIAL_WEIGHTS = {     # brokers, AMCs, exchanges
     "historical_pe": 0.05,
 }
 
-# Loss-making operating companies: no earnings-based method is
-# valid. Peer EV/Sales (debt-aware) is a weak fallback, flagged as such.
+# Loss-making or barely profitable operating companies: earnings
+# multiples are invalid. The growth-stage DCF (path to profitability)
+# carries most weight; peer EV/Sales is a mature-peer anchor that
+# ignores growth, so it is weighted lower. A standard DCF applies only
+# if free cash flow is somehow positive.
 LOSS_MAKING_WEIGHTS = {
-    "dcf": 0.50,
-    "peer_evs": 0.50,
+    "growth_dcf": 0.50,
+    "peer_evs": 0.30,
+    "dcf": 0.20,
 }
 
 # =========================================================

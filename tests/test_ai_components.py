@@ -100,3 +100,18 @@ def test_neutral_material_events_are_reported():
         news, [{"event_type": "earnings", "direction": "neutral"}]
     )
     assert summary["other_material"] == ["[earnings] Board meeting to consider results"]
+
+
+def test_syndicated_rewrites_are_deduplicated():
+    from src.news import deduplicate_news
+
+    news = pd.DataFrame({
+        "Headline": [
+            "Infosys bags multi-year deal from Danske Bank worth $454 million - ET",
+            "Infosys bags $454 million multi-year deal from Danske Bank - Business Standard",
+            "TCS wins $500 million deal from European bank - Moneycontrol",
+        ],
+        "Date": pd.to_datetime(["2026-10-08", "2026-10-08", "2026-10-07"], utc=True),
+    })
+
+    assert len(deduplicate_news(news)) == 2

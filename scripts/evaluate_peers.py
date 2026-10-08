@@ -13,6 +13,8 @@ Methods compared (all within the same Yahoo industry):
     similarity            top 10 by business-description similarity
     ownership+similarity  same ownership, then top 10 by similarity
     hybrid                same ownership, top 15 by similarity, then top 10 by market cap
+    floor_X               ownership+similarity, excluding peers smaller than
+                          X times the target's market cap (if >= 5 remain)
 
 Usage:  python scripts/evaluate_peers.py
 """
@@ -75,7 +77,17 @@ def load_universe(per_industry=40):
     return data.reset_index(drop=True)
 
 
+SIZE_FLOORS = {"floor_0.02": 0.02, "floor_0.05": 0.05, "floor_0.10": 0.10, "floor_0.20": 0.20}
+
+
 def select(method, target, candidates):
+
+    if method in SIZE_FLOORS:
+        floor = SIZE_FLOORS[method] * (target["market_cap"] or 0)
+        big_enough = candidates[candidates["market_cap"] >= floor]
+        if len(big_enough) >= 5:
+            candidates = big_enough
+        method = "ownership+similarity"
 
     if method in ("ownership", "ownership+similarity", "hybrid"):
         same = candidates[candidates["ownership"] == target["ownership"]]
@@ -97,7 +109,8 @@ def select(method, target, candidates):
 
 def evaluate(data):
 
-    methods = ["market_cap", "ownership", "similarity", "ownership+similarity", "hybrid"]
+    methods = ["market_cap", "ownership", "similarity", "ownership+similarity",
+               "hybrid", *SIZE_FLOORS]
 
     results = {}
 
