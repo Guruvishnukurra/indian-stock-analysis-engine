@@ -423,6 +423,12 @@ tr.excluded td { color: var(--ink-3); }
 .pick .t svg { color: var(--ink-3); transition: transform 160ms var(--ease), color 160ms var(--ease); }
 .pick:hover .t svg { transform: translateX(2px); color: var(--accent); }
 .pick .d { font-size: 0.82rem; color: var(--ink-3); }
+.backdrop3d {
+  display: block; width: 100%; height: 230px; margin: -24px 0 6px; pointer-events: none;
+  -webkit-mask-image: radial-gradient(closest-side, #000 55%, transparent);
+          mask-image: radial-gradient(closest-side, #000 55%, transparent);
+}
+@media (max-width: 860px) { .backdrop3d { height: 170px; margin-top: -12px; } }
 @media (max-width: 860px) { .welcome { grid-template-columns: 1fr; padding-top: 32px; } }
 
 .loading-head { display: flex; align-items: center; gap: 10px; padding: 26px 0 6px; color: var(--ink-2); font-size: 0.92rem; }

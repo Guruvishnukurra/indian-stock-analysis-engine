@@ -11,6 +11,7 @@ import {
 } from '@phosphor-icons/react'
 import { useEffect, useRef, useState } from 'react'
 import { AnalysisView } from './components/AnalysisView'
+import { Backdrop3D } from './components/Backdrop3D'
 import {
   type Analysis,
   type HistoryRow,
@@ -98,6 +99,7 @@ function Welcome({ onPick }: { onPick: (t: string) => void }) {
         </ul>
       </div>
       <div>
+        <Backdrop3D />
         <p className="muted small" style={{ marginBottom: 10 }}>Try one of these</p>
         <div className="pick-grid">
           {EXAMPLES.map(([t, d]) => (
