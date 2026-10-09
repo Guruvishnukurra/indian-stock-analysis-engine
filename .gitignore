@@ -21,3 +21,11 @@ Thumbs.db
 
 # Local Claude Code settings (launch.json is shared)
 .claude/settings.local.json
+
+# Locally installed AI design tooling (not part of the project)
+.claude/skills/
+.claude/agents/
+skills-lock.json
+
+# Design-review screenshots (local evidence only)
+.impeccable/review/

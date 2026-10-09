@@ -102,18 +102,37 @@ python -m uvicorn src.api.main:app --port 8000     # terminal 1: API
 cd frontend && npm install && npm run dev          # terminal 2: http://localhost:5173
 ```
 
-Enter a ticker (or open `http://localhost:5173/?t=TCS.NS`). The dashboard
-starts an analysis job, polls it, and shows: bottom line, verdict strip
-(overall, quality, valuation, timing, confidence), fair-value range chart
-with each method and the analyst consensus marked, valuation methods,
-what the price assumes (reverse valuation, simulated futures, funding
-check, scenarios, DCF sensitivity), period-tagged fundamentals, price
-chart with 50/200-day averages, news events, risks, ML evidence, data
-limitations and past analyses. Light/dark/auto theme; works on phones.
+For the news-event tagging and the AI-written thesis, also run Ollama with
+`qwen2.5:7b-instruct` (`OLLAMA_URL`, default `http://127.0.0.1:11434`).
+Without it those two sections show as unavailable; everything else works.
+
+| Page | What it shows |
+|---|---|
+| `/` | Home: simulated price paths fanning out of the search box (hover a showcase company to see its real volatility), the explained-number replay, the 3D uncertainty lab, and the validation results in brief |
+| `/s/TCS` | Report: bottom line, key figures, verdict path, fair-value chart, valuation methods, scenarios, DCF sensitivity, fundamentals, market, news and risks. Every headline figure opens a "how we got here" trace; the tab and trace live in the URL (e.g. `/s/TCS?explain=fairvalue`) |
+| `/compare?a=TCS&b=INFY` | Two companies side by side: biggest differences, fair-value ranges against each price, mirrored scores, verdicts and methods |
+| `/how-it-works` | Scroll story of the engine's seven steps for TCS, HDFCBANK or ATHERENERG |
+| `/evidence` | The validation results (`/validation`), including the ML model that failed its gate |
+
+Press **Ctrl+K** anywhere for the command palette (companies, report
+sections, explanations, pages, theme). Themes: Dim (default), Light, Dark;
+works on phones; respects reduced motion.
+
+**Demo mode.** Showcase companies open instantly from snapshots in
+`frontend/public/demo/`, labelled with their date; any other ticker runs the
+live engine. Refresh the snapshots (and the exported validation evidence)
+before a demo:
+
+```bash
+python scripts/export_demo.py              # 8 showcase companies + evidence (about 15 min)
+python scripts/export_demo.py --evidence   # validation evidence only
+```
 
 In development the Vite server proxies `/api` to the FastAPI backend; for a
-deployed build set `VITE_API_URL` and add the dashboard's origin to
-`CORS_ORIGINS` on the API.
+deployed build set `VITE_API_URL`, add the dashboard's origin to
+`CORS_ORIGINS` on the API, and serve `index.html` for every route (the app
+uses client-side routing). Design system: `DESIGN.md`; product brief:
+`PRODUCT.md`.
 
 ## API
 
