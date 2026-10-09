@@ -1,42 +1,19 @@
 import {
   ArrowClockwise,
-  ChartLineUp,
-  CircleHalf,
   ClockCounterClockwise,
   Lightning,
   MagnifyingGlass,
-  Moon,
-  Sun,
   WarningOctagon,
 } from '@phosphor-icons/react'
 import { useEffect, useRef, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router'
+import { useNavigate, useParams } from 'react-router'
 import { AnalysisView } from '../components/AnalysisView'
 import type { Job } from '../lib/api'
 import { bareSymbol, snapshotDate } from '../lib/demo'
-import { type Theme, useTheme } from '../lib/theme'
+import { AppHeader } from '../components/AppHeader'
 import { type Source, useAnalysis } from '../lib/useAnalysis'
 
 import { DISCLAIMER } from '../lib/copy'
-
-const THEMES: { id: Theme; label: string; Icon: typeof Sun }[] = [
-  { id: 'light', label: 'Light theme', Icon: Sun },
-  { id: 'dim', label: 'Dim theme (default)', Icon: CircleHalf },
-  { id: 'dark', label: 'Dark theme', Icon: Moon },
-]
-
-function ThemeControl({ theme, onChange }: { theme: Theme; onChange: (t: Theme) => void }) {
-  return (
-    <div className="segmented" role="radiogroup" aria-label="Colour theme">
-      {THEMES.map(({ id, label, Icon }) => (
-        <button key={id} type="button" role="radio" aria-checked={theme === id} aria-label={label}
-          title={label} onClick={() => onChange(id)}>
-          <Icon size={16} weight={theme === id ? 'fill' : 'regular'} />
-        </button>
-      ))}
-    </div>
-  )
-}
 
 function LoadingState({ job, includeNews, ticker }: { job: Job | null; includeNews: boolean; ticker: string }) {
   const message =
@@ -88,7 +65,6 @@ function Report({ param }: { param: string }) {
   const [query, setQuery] = useState(symbol)
   const [includeNews, setIncludeNews] = useState(true)
   const [live, setLive] = useState(0)
-  const [theme, setTheme] = useTheme()
   const input = useRef<HTMLInputElement>(null)
   const state = useAnalysis(symbol, includeNews, live)
 
@@ -117,13 +93,8 @@ function Report({ param }: { param: string }) {
     <>
       <a className="skip-link" href="#content">Skip to content</a>
 
-      <header className="appbar">
-        <div className="appbar-inner">
-          <Link className="brand" to="/">
-            <span className="brand-mark" aria-hidden="true"><ChartLineUp size={18} weight="bold" /></span>
-            <span className="brand-name">Stock Analysis Engine</span>
-          </Link>
-
+      <AppHeader
+        center={
           <form className="searchbar" role="search" onSubmit={(e) => { e.preventDefault(); submit() }}>
             <MagnifyingGlass className="lead" size={18} aria-hidden="true" />
             <label htmlFor="ticker" className="visually-hidden">NSE ticker</label>
@@ -134,8 +105,9 @@ function Report({ param }: { param: string }) {
               {busy ? 'Analysing' : 'Analyse'}
             </button>
           </form>
-
-          <div className="bar-actions">
+        }
+        actions={
+          <>
             <button type="button" className="switch" role="switch" aria-checked={includeNews}
               onClick={() => setIncludeNews((v) => !v)}
               title="Include news event tagging and the AI-written thesis in live runs (slower)">
@@ -149,10 +121,9 @@ function Report({ param }: { param: string }) {
                 <ArrowClockwise size={18} />
               </button>
             )}
-            <ThemeControl theme={theme} onChange={setTheme} />
-          </div>
-        </div>
-      </header>
+          </>
+        }
+      />
 
       <div className="shell">
         <main id="content" tabIndex={-1}>
