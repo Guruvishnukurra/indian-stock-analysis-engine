@@ -169,34 +169,6 @@ ol.trace { list-style: none; margin: 4px 0 0; padding: 0; display: grid; }
 
 /* ---------- start screen ---------- */
 
-.welcome { padding: 24px 0 8px; display: grid; gap: 28px; }
-.stage {
-  position: relative; display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.25fr); min-height: 540px;
-  border-radius: 22px; overflow: hidden; color: #eef2f8; isolation: isolate;
-  background:
-    radial-gradient(80% 90% at 75% 40%, rgba(57, 135, 229, 0.20), transparent 60%),
-    radial-gradient(60% 70% at 10% 100%, rgba(47, 224, 166, 0.08), transparent 60%),
-    linear-gradient(160deg, #0d1320, #0a0e17 60%, #0b1019);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 30px 60px -30px rgba(5, 10, 25, 0.6);
-}
-.stage::after {
-  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: -1; opacity: 0.6;
-  background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 32px 32px;
-  -webkit-mask-image: radial-gradient(90% 90% at 70% 50%, #000, transparent);
-          mask-image: radial-gradient(90% 90% at 70% 50%, #000, transparent);
-}
-.stage-copy { padding: 44px 8px 110px 44px; display: flex; flex-direction: column; justify-content: center; gap: 16px; position: relative; z-index: 1; }
-.stage-eyebrow {
-  align-self: flex-start; font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: #9cc4ff;
-  padding: 5px 10px; border-radius: 999px; border: 1px solid rgba(156, 196, 255, 0.25); background: rgba(57, 135, 229, 0.10);
-  display: inline-flex; align-items: center; gap: 8px;
-}
-.stage-eyebrow::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #2fe0a6; box-shadow: 0 0 10px #2fe0a6; animation: pulse 1.6s var(--ease) infinite; }
-.stage h1 { font-size: clamp(1.7rem, 3.1vw, 2.5rem); letter-spacing: -0.035em; line-height: 1.08; color: #fff; }
-.stage .lead { color: #b9c3d3; font-size: 1.02rem; max-width: 46ch; }
-.stage-try { color: #8794a8; font-size: 0.86rem; max-width: 44ch; }
 .stage-canvas { position: relative; min-height: 540px; }
 .stage-canvas canvas { cursor: grab; touch-action: pan-y; }
 .stage-canvas canvas:active { cursor: grabbing; }
@@ -232,21 +204,7 @@ ol.trace { list-style: none; margin: 4px 0 0; padding: 0; display: grid; }
 .stage-readout .k.hi { background: #7fb6ff; }
 .stage-readout .k.mid { background: #fff; }
 .stage-readout .k.lo { background: #ff8a63; }
-@media (max-width: 900px) {
-  .stage { grid-template-columns: 1fr; }
-  .stage-copy { padding: 28px 22px 0; }
-  .stage-canvas { min-height: 460px; }
-}
 
-.welcome-lower { display: grid; gap: 28px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-@media (max-width: 860px) { .welcome-lower { grid-template-columns: 1fr; } }
-.section-title { font-size: 0.86rem; color: var(--ink-2); font-weight: 500; margin-bottom: 12px; }
-.features { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.features li { display: grid; grid-template-columns: 34px 1fr; gap: 12px; padding: 14px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); }
-.features strong { font-size: 0.9rem; font-weight: 600; }
-.features p { font-size: 0.8rem; color: var(--ink-3); margin-top: 2px; }
-.f-ic { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent-strong); }
-@media (max-width: 520px) { .features, .pick-grid { grid-template-columns: 1fr; } }
 
 /* trace rows wrap on narrow drawers instead of scrolling sideways */
 .drawer-body { overflow-x: hidden; }

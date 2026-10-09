@@ -1,0 +1,77 @@
+{
+  "engine_version": "2026.10.09-2",
+  "items": [
+    {
+      "symbol": "TCS",
+      "ticker": "TCS.NS",
+      "name": "Tata Consultancy Services Limited",
+      "stance": "ATTRACTIVE",
+      "price": 2156.0,
+      "description": "IT services, steady compounder",
+      "exported_at": "2026-10-09T12:45:09+00:00"
+    },
+    {
+      "symbol": "HDFCBANK",
+      "ticker": "HDFCBANK.NS",
+      "name": "HDFC Bank Limited",
+      "stance": "WATCH",
+      "price": 707.25,
+      "description": "Private bank",
+      "exported_at": "2026-10-09T12:47:43+00:00"
+    },
+    {
+      "symbol": "ATHERENERG",
+      "ticker": "ATHERENERG.NS",
+      "name": "Ather Energy Limited",
+      "stance": "NOT RATED",
+      "price": 1434.4000244140625,
+      "description": "Loss-making EV maker",
+      "exported_at": "2026-10-09T12:49:32+00:00"
+    },
+    {
+      "symbol": "TATASTEEL",
+      "ticker": "TATASTEEL.NS",
+      "name": "Tata Steel Limited",
+      "stance": "AVOID",
+      "price": 173.8000030517578,
+      "description": "Cyclical metals",
+      "exported_at": "2026-10-09T12:51:26+00:00"
+    },
+    {
+      "symbol": "BAJFINANCE",
+      "ticker": "BAJFINANCE.NS",
+      "name": "Bajaj Finance Limited",
+      "stance": "WATCH",
+      "price": 960.0,
+      "description": "Consumer lender (NBFC)",
+      "exported_at": "2026-10-09T12:53:33+00:00"
+    },
+    {
+      "symbol": "WAAREEENER",
+      "ticker": "WAAREEENER.NS",
+      "name": "Waaree Energies Limited",
+      "stance": "WATCH",
+      "price": 2323.0,
+      "description": "Capex-heavy solar",
+      "exported_at": "2026-10-09T12:54:43+00:00"
+    },
+    {
+      "symbol": "INFY",
+      "ticker": "INFY.NS",
+      "name": "Infosys Limited",
+      "stance": "WATCH",
+      "price": 1023.4000244140625,
+      "description": "IT services",
+      "exported_at": "2026-10-09T12:56:25+00:00"
+    },
+    {
+      "symbol": "ITC",
+      "ticker": "ITC.NS",
+      "name": "ITC Limited",
+      "stance": "AVOID",
+      "price": 266.0,
+      "description": "Consumer conglomerate",
+      "exported_at": "2026-10-09T12:58:35+00:00"
+    }
+  ]
+}

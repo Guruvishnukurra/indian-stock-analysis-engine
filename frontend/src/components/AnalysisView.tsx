@@ -19,6 +19,7 @@ import {
   Warning,
 } from '@phosphor-icons/react'
 import { useRef, useState, type ReactNode } from 'react'
+import { useSearchParams } from 'react-router'
 import type { Analysis, HistoryRow, MethodResult } from '../lib/api'
 import { assessmentTone, crore, dateLabel, isNum, metricValue, money, num, pct, pp, title } from '../lib/format'
 import { Drawer } from './Drawer'
@@ -602,9 +603,31 @@ function NewsTab({ a, history, open }: { a: Analysis; history: HistoryRow[]; ope
 
 /* ---------------- page ---------------- */
 
+const TAB_IDS = TABS.map((t) => t.id)
+
+// Trace <-> URL: ?explain=fairvalue, ?explain=method:dcf, ?explain=metric:roe
+function parseTrace(raw: string | null): Trace | null {
+  if (!raw) return null
+  const [type, key] = raw.split(':')
+  if ((type === 'method' || type === 'metric') && key) return { type, key }
+  if (['stance', 'fairvalue', 'upside', 'confidence', 'quality', 'timing'].includes(type)) return { type } as Trace
+  return null
+}
+const formatTrace = (t: Trace) => ('key' in t ? `${t.type}:${t.key}` : t.type)
+
 export function AnalysisView({ analysis: a, history }: { analysis: Analysis; history: HistoryRow[] }) {
-  const [tab, setTab] = useState<TabTarget>('overview')
-  const [trace, setTrace] = useState<Trace | null>(null)
+  const [params, setParams] = useSearchParams()
+  const rawTab = params.get('tab') as TabTarget | null
+  const tab: TabTarget = rawTab && TAB_IDS.includes(rawTab) ? rawTab : 'overview'
+  const trace = parseTrace(params.get('explain'))
+
+  const setTab = (t: TabTarget) => setParams((p) => { p.set('tab', t); return p }, { replace: true })
+  // Opening a trace pushes history so the browser Back button closes it.
+  const setTrace = (t: Trace | null) => {
+    if (t) setParams((p) => { p.set('explain', formatTrace(t)); return p })
+    else if (window.history.state?.idx > 0 && params.get('explain')) window.history.back()
+    else setParams((p) => { p.delete('explain'); return p }, { replace: true })
+  }
 
   const counts: Partial<Record<TabTarget, number>> = {
     news: a.explanation.risks.length,
@@ -612,8 +635,7 @@ export function AnalysisView({ analysis: a, history }: { analysis: Analysis; his
   }
 
   const jump = (t: TabTarget) => {
-    setTrace(null)
-    setTab(t)
+    setParams((p) => { p.delete('explain'); p.set('tab', t); return p }, { replace: true })
     requestAnimationFrame(() => document.getElementById('report-tabs')?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
   }
 
