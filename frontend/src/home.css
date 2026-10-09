@@ -46,7 +46,7 @@
   background: linear-gradient(180deg, #ffffff 0%, #f1f5fb 100%);
   clip-path: polygon(0 0, 100% 0, 100% calc(100% - 72px), 0 100%);
 }
-.hero-glow { position: absolute; inset: -10% -5% 0 28%; z-index: 0; filter: blur(80px); opacity: 0.5; pointer-events: none; }
+.hero-glow { position: absolute; inset: -10% -5% 0 28%; z-index: 0; filter: blur(80px); opacity: 0.68; pointer-events: none; }
 .hero-glow span { position: absolute; border-radius: 50%; animation: drift 22s var(--ease-out) infinite alternate; }
 .hero-glow span:nth-child(1) { width: 46%; height: 52%; left: 18%; top: 8%; background: radial-gradient(circle, #6fb0ff, transparent 70%); }
 .hero-glow span:nth-child(2) { width: 40%; height: 46%; left: 50%; top: 22%; background: radial-gradient(circle, #5fe0b8, transparent 70%); animation-delay: -7s; }
@@ -109,11 +109,18 @@
   text-align: right; font-size: 0.82rem; line-height: 1.5; color: var(--navy-3);
 }
 .fan-caption b { font-family: var(--mono); font-weight: 600; color: var(--navy); }
+.fan-caption.narrow { display: none; }
 
 @media (max-width: 899px) {
-  .home-hero { padding-bottom: 400px; min-height: 0; clip-path: polygon(0 0, 100% 0, 100% calc(100% - 32px), 0 100%); }
+  .home-hero { padding-top: 88px; padding-bottom: 72px; min-height: 0; clip-path: polygon(0 0, 100% 0, 100% calc(100% - 32px), 0 100%); }
+  .fan-anchor { margin-bottom: 220px; }
+  .picks { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-right: -20px; padding: 2px 20px 6px 0; }
+  .picks::-webkit-scrollbar { display: none; }
+  .picks li { flex: none; }
+  .picks-label { margin-top: 18px; }
   .hero-glow { inset: 45% -20% 0 -20%; }
-  .fan-caption { left: 20px; right: 20px; bottom: 44px; text-align: left; max-width: none; }
+  .fan-caption.wide { display: none; }
+  .fan-caption.narrow { display: block; position: static; margin: 4px 0 0; text-align: left; max-width: none; font-size: 0.78rem; }
   .pick-chip .desc { display: none; }
 }
 
@@ -198,3 +205,6 @@
   font-size: 0.8rem; color: var(--ink-2); background: var(--surface-2); border: 1px solid var(--line);
 }
 .source-badge.live { padding-right: 12px; color: var(--up); background: var(--up-soft); border-color: transparent; }
+
+/* the volatility preview needs a pointer that can hover */
+@media (hover: none) { .hover-hint { display: none; } }

@@ -4,10 +4,9 @@ import { useLayoutEffect, useRef, type ReactNode } from 'react'
 // Side sheet built on the native <dialog>: focus trap, Escape to close and
 // an inert page behind it come from the browser, not from custom code.
 // Opens in a layout effect so a figure flying in can measure its target.
-export function Drawer({ open, title, eyebrow, figure, flight = false, onClose, children }: {
+export function Drawer({ open, title, figure, flight = false, onClose, children }: {
   open: boolean
   title: string
-  eyebrow?: string
   figure?: ReactNode
   flight?: boolean
   onClose: () => void
@@ -28,7 +27,6 @@ export function Drawer({ open, title, eyebrow, figure, flight = false, onClose, 
       <div className="drawer-inner">
         <div className="drawer-head">
           <div className="drawer-heading">
-            {eyebrow && <div className="eyebrow">{eyebrow}</div>}
             <h2 id="drawer-title">{title}</h2>
             {open && figure}
           </div>

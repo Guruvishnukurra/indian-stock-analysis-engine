@@ -27,7 +27,7 @@ export function StoryShell({ children, mainId = 'story-main' }: { children: Reac
           <button type="button" className="nav-search" onClick={openPalette} aria-label="Search (Ctrl+K)" title="Search (Ctrl+K)">
             <MagnifyingGlass size={16} aria-hidden="true" /><kbd aria-hidden="true">Ctrl K</kbd>
           </button>
-          <Link className="nav-cta" to="/s/TCS">Open a report</Link>
+          <NavLink className="nav-report" to="/s/TCS">Open a report</NavLink>
         </nav>
       </header>
       <main id={mainId}>{children}</main>

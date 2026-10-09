@@ -164,7 +164,6 @@ export function HowItWorksPage() {
           <ol className="story-steps">
             {STEPS.map((s, i) => (
               <li key={s.id} ref={(el) => { steps.current[i] = el }} data-index={i} className={i === active ? 'on' : ''}>
-                <span className="step-count">{i + 1} of {STEPS.length}</span>
                 <h2>{s.heading}</h2>
                 <p>{s.body}</p>
                 <p className="step-fact">{s.fact(a)}</p>

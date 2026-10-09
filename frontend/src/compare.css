@@ -51,6 +51,8 @@
 .rc-band { position: absolute; left: 0; right: 0; top: 8px; height: 14px; transition: clip-path 600ms var(--ease-expo, ease); }
 .rc-band.s0 { background: color-mix(in srgb, var(--series-1) 55%, transparent); }
 .rc-band.s1 { background: color-mix(in srgb, var(--series-2) 55%, transparent); }
+.rc-band.muted { background: repeating-linear-gradient(135deg, var(--line-strong) 0 4px, transparent 4px 8px); }
+.rc-base.muted { background: var(--ink-3); }
 .rc-base { position: absolute; top: 4px; height: 22px; width: 3px; border-radius: 2px; transform: translateX(-1px); transition: left 600ms var(--ease-expo, ease); }
 .rc-base.s0 { background: var(--series-1); }
 .rc-base.s1 { background: var(--series-2); }
@@ -126,3 +128,7 @@
 .cp-hint { font-size: 0.76rem; color: var(--ink-3); white-space: nowrap; }
 .cp-foot { display: flex; gap: 6px; align-items: center; padding: 10px 16px; border-top: 1px solid var(--line); font-size: 0.74rem; color: var(--ink-3); }
 .cp-foot kbd { margin-left: 4px; }
+.rc-val.context { left: 10px; transform: none; font-family: var(--font); color: var(--ink-3); }
+
+/* after the series rules on purpose: an unrated company never wears a series colour */
+.rc-base.s0.muted, .rc-base.s1.muted { background: var(--ink-3); }

@@ -12,8 +12,8 @@ import { useAnalysis, type AnalysisState } from '../lib/useAnalysis'
 
 const TICKER = /^[A-Z0-9&-]{1,20}$/
 
-function Slot({ id, label, value, items, onChange }: {
-  id: string; label: string; value: string; items: DemoItem[]; onChange: (t: string) => void
+function Slot({ id, label, value, onChange }: {
+  id: string; label: string; value: string; onChange: (t: string) => void
 }) {
   const [draft, setDraft] = useState(value)
   const commit = () => {
@@ -26,7 +26,6 @@ function Slot({ id, label, value, items, onChange }: {
       <label htmlFor={id}>{label}</label>
       <input id={id} list="cmp-companies" value={draft} onChange={(e) => setDraft(e.target.value.toUpperCase())}
         onBlur={commit} autoComplete="off" spellCheck={false} />
-      <datalist id="cmp-companies">{items.map((i) => <option key={i.symbol} value={i.symbol}>{i.description}</option>)}</datalist>
     </form>
   )
 }
@@ -53,7 +52,8 @@ function RangeCompare({ a, b }: { a: Analysis; b: Analysis }) {
   const rows = [a, b].map((x) => {
     const fv = x.fair_value
     const rel = (v?: number) => (isNum(v) ? (v / x.current_price - 1) * 100 : null)
-    return { x, low: rel(fv.low), base: rel(fv.base), high: rel(fv.high) }
+    const rated = !['NOT RATED', 'INSUFFICIENT DATA'].includes(x.explanation.stance)
+    return { x, low: rel(fv.low), base: rel(fv.base), high: rel(fv.high), rated }
   })
   const vals = rows.flatMap((r) => [r.low, r.high, r.base]).filter(isNum)
   const lo = Math.min(-20, ...vals) - 5
@@ -64,17 +64,18 @@ function RangeCompare({ a, b }: { a: Analysis; b: Analysis }) {
       <div className="rc-axis" aria-hidden="true">
         <span style={{ left: at(0) }} className="rc-zero">Today's price</span>
       </div>
-      {rows.map(({ x, low, base, high }, i) => (
+      {rows.map(({ x, low, base, high, rated }, i) => (
         <div key={i} className="rc-row">
           <span className="rc-label">{bareSymbol(x.ticker)}</span>
           <div className="rc-track">
             <span className="rc-price" style={{ left: at(0) }} aria-hidden="true" />
             {isNum(low) && isNum(high) && isNum(base) ? (
               <>
-                <span className={`rc-band s${i}`} style={{ clipPath: `inset(0 calc(100% - ${at(high)}) 0 ${at(low)} round 7px)` }} />
-                <span className={`rc-base s${i}`} style={{ left: at(base) }} />
-                <span className="rc-val" style={{ left: at(base) }}>
-                  {base >= 0 ? '+' : ''}<CountUp value={base} format={(n) => `${n.toFixed(0)}%`} /> to base
+                <span className={`rc-band s${i}${rated ? '' : ' muted'}`} style={{ clipPath: `inset(0 calc(100% - ${at(high)}) 0 ${at(low)} round 7px)` }} />
+                <span className={`rc-base s${i}${rated ? '' : ' muted'}`} style={{ left: at(base) }} />
+                <span className={`rc-val${rated ? '' : ' context'}`} style={rated ? { left: at(base) } : undefined}>
+                  {rated ? <>{base >= 0 ? '+' : ''}<CountUp value={base} format={(n) => `${n.toFixed(0)}%`} /> to base</>
+                    : <>Not rated: range shown for context only</>}
                 </span>
               </>
             ) : <span className="rc-none">{x.fair_value.reason ?? 'No fair value'}</span>}
@@ -153,14 +154,15 @@ export function ComparePage() {
       <AppHeader />
       <div className="shell">
         <main id="content" tabIndex={-1} className="cmp">
+          <datalist id="cmp-companies">{items.map((i) => <option key={i.symbol} value={i.symbol}>{i.description}</option>)}</datalist>
           <header className="cmp-head">
             <h1>Compare two companies</h1>
             <div className="cmp-pickers">
-              <Slot key={`a-${a}`} id="cmp-a" label="First company" value={a} items={items} onChange={(t) => set('a', t)} />
+              <Slot key={`a-${a}`} id="cmp-a" label="First company" value={a} onChange={(t) => set('a', t)} />
               <button type="button" className="btn btn-secondary btn-icon cmp-swap" onClick={swap} aria-label={`Swap ${a} and ${b}`} title="Swap">
                 <ArrowsLeftRight size={18} />
               </button>
-              <Slot key={`b-${b}`} id="cmp-b" label="Second company" value={b} items={items} onChange={(t) => set('b', t)} />
+              <Slot key={`b-${b}`} id="cmp-b" label="Second company" value={b} onChange={(t) => set('b', t)} />
             </div>
           </header>
 

@@ -261,7 +261,7 @@ function Overview({ a, open }: { a: Analysis; open: Open }) {
     <div className="stack">
       {a.conclusion && (
         <section className="bottom-line" aria-label="Bottom line">
-          <div className="eyebrow"><Lightning size={14} weight="fill" />Bottom line</div>
+          <h2 className="bl-title"><Lightning size={16} weight="fill" aria-hidden="true" />Bottom line</h2>
           <p>{a.conclusion}</p>
         </section>
       )}
@@ -687,7 +687,7 @@ export function AnalysisView({ analysis: a, history }: { analysis: Analysis; his
         {tab === 'market' && <MarketTab a={a} open={open} />}
         {tab === 'news' && <NewsTab a={a} history={history} open={open} />}
       </div>
-      <Drawer open={trace != null} title={heading?.title ?? ''} eyebrow={heading ? `${heading.eyebrow}: how we got here` : undefined}
+      <Drawer open={trace != null} title={heading?.title ?? ''}
         figure={trace ? <FlyIn key={formatTrace(trace)} origin={origin}>{traceFigure(trace, a)}</FlyIn> : null}
         flight={origin != null}
         onClose={() => setTrace(null)}>

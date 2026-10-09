@@ -26,8 +26,9 @@
 .home-nav .nav-cta:hover { background: var(--accent-strong); }
 .home-nav .nav-cta:active { transform: scale(0.97); }
 @media (max-width: 640px) {
-  .home-nav nav { display: flex; gap: 16px; }
-  .home-nav nav a { font-size: 0.86rem; }
+  .home-nav nav { display: flex; gap: 14px; }
+  .home-nav nav a { font-size: 0.86rem; white-space: nowrap; }
+  .home-nav nav a[href="/compare"], .home-nav nav .nav-report { display: none; }
   .home-nav .nav-cta, .home-brand { font-size: 0; gap: 0; }
   .home-nav .nav-cta { display: none; }
 }
@@ -80,7 +81,6 @@
 }
 .story-steps > li.on { opacity: 1; }
 .story-steps > li:first-child { min-height: 60vh; justify-content: flex-start; padding-top: 12vh; }
-.step-count { font-size: 0.8rem; color: var(--navy-3); font-weight: 500; }
 .story-steps h2 { font-size: clamp(1.5rem, 2.4vw, 2rem); font-weight: 700; letter-spacing: -0.03em; line-height: 1.12; color: var(--navy); text-wrap: balance; }
 .story-steps p { font-size: 1.04rem; line-height: 1.7; color: var(--navy-2); max-width: 46ch; }
 .story-steps .step-fact {
@@ -105,6 +105,7 @@
 
 .scene { display: grid; gap: 14px; min-width: 0; }
 .scene-chart { width: 100%; height: auto; }
+.scene-chart text { paint-order: stroke; stroke: var(--page); stroke-width: 4px; stroke-linejoin: round; }
 .scene-empty { color: var(--ink-2); }
 .scene-legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 0.8rem; color: var(--ink-2); }
 .scene-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 8px; vertical-align: -1px; }
@@ -200,7 +201,7 @@
 .ev-bars .val { font-family: var(--mono); font-size: 0.86rem; text-align: right; font-variant-numeric: tabular-nums; }
 @media (max-width: 520px) { .ev-bars li { grid-template-columns: minmax(0, 1fr) 56px; } .ev-bars .lbl { grid-column: 1 / -1; } }
 .ev-groups { display: grid; gap: 24px; }
-.ev-group h4 { margin: 0 0 10px; font-size: 0.86rem; color: var(--ink); }
+.ev-group h3 { margin: 0 0 10px; font-size: 0.86rem; color: var(--ink); }
 
 .ev-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
 .ev-table th { text-align: left; font-size: 0.76rem; font-weight: 500; color: var(--ink-3); padding: 0 8px 10px 0; }
@@ -213,7 +214,7 @@
 
 .golden .seg { margin-top: 6px; }
 .golden-groups { margin-top: 20px; display: grid; gap: 18px; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
-.golden-group h4 { margin: 0 0 8px; font-size: 0.84rem; color: var(--ink-2); font-weight: 600; }
+.golden-group h3 { margin: 0 0 8px; font-size: 0.84rem; color: var(--ink-2); font-weight: 600; }
 .golden-group ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
 .golden-chip {
   display: grid; gap: 6px; justify-items: start; padding: 12px 14px; border-radius: 12px; text-decoration: none;

@@ -131,7 +131,7 @@ export function NewsBars({ test }: { test: NewsEval }) {
     <div className="ev-groups">
       {metrics.map((m) => (
         <div key={m.key} className="ev-group">
-          <h4>{m.label}</h4>
+          <h3>{m.label}</h3>
           <Bars rows={APPROACHES.map((a) => ({ label: a.label, value: test[a.key][m.key], color: a.color, strong: a.key === 'llm_verified' }))} />
         </div>
       ))}
@@ -218,7 +218,7 @@ export function GoldenGrid({ golden }: { golden: Record<string, GoldenRow> }) {
       <div className="golden-groups">
         {[...groups.entries()].sort((a, b) => b[1].length - a[1].length).map(([type, items]) => (
           <section key={type} className="golden-group">
-            <h4>{typeName(type)}</h4>
+            <h3>{typeName(type)}</h3>
             <ul>
               {items.map(([ticker, r]) => (
                 <li key={ticker}>

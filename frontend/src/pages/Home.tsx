@@ -152,6 +152,18 @@ export function HomePage() {
 
   const snapshotDay = items.find((i) => i.exported_at)?.exported_at
 
+  // The simulation is always labelled where it is seen: beside the fan on
+  // desktop, directly under it on phones (only one copy is ever displayed).
+  const caption = (
+    <>
+      {preview
+        ? <>Illustrative: {preview.item.symbol}'s realised volatility of <b>{Math.round(preview.vol * 100)}%</b> a year</>
+        : <>Illustrative: ₹100 over 5 years at <b>{Math.round(DEFAULT_SIGMA * 100)}%</b> volatility</>}
+      {range && <> spreads from <b>₹{Math.round(range.p10)}</b> to <b>₹{Math.round(range.p90)}</b> (10th to 90th percentile).</>}
+      {' '}Not a forecast.
+    </>
+  )
+
   return (
     <StoryShell mainId="home-main">
         <section className="home-hero" aria-labelledby="home-title">
@@ -166,22 +178,17 @@ export function HomePage() {
               </p>
             </Rise>
             <Rise delay={0.22}>
-              <div ref={anchor}><SearchField id="hero-ticker" /></div>
+              <div ref={anchor} className="fan-anchor"><SearchField id="hero-ticker" /></div>
+              <p className="fan-caption narrow" aria-live="polite">{caption}</p>
             </Rise>
             <Rise delay={0.32}>
               <p className="picks-label">
-                Showcase companies open instantly{snapshotDay ? ` (snapshots from ${snapshotDate(snapshotDay)})` : ''}. Hover one to see its real volatility.
+                Showcase companies open instantly{snapshotDay ? ` (snapshots from ${snapshotDate(snapshotDay)})` : ''}.<span className="hover-hint"> Hover one to see its real volatility.</span>
               </p>
               <Picks items={items} onPreview={onPreview} />
             </Rise>
           </div>
-          <p className="fan-caption" aria-live="polite">
-            {preview
-              ? <>Illustrative: {preview.item.symbol}'s realised volatility of <b>{Math.round(preview.vol * 100)}%</b> a year</>
-              : <>Illustrative: ₹100 over 5 years at <b>{Math.round(DEFAULT_SIGMA * 100)}%</b> volatility</>}
-            {range && <> spreads from <b>₹{Math.round(range.p10)}</b> to <b>₹{Math.round(range.p90)}</b> (10th to 90th percentile).</>}
-            {' '}Not a forecast.
-          </p>
+          <p className="fan-caption wide" aria-live="polite">{caption}</p>
         </section>
 
         <ExplainDemo items={items} />

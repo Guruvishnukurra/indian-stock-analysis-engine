@@ -126,7 +126,9 @@ export function ValueScene({ a, stage }: { a: Analysis; stage: 'methods' | 'blen
                 <text x={x(r.m.low ?? r.m.base!)} y={rowY(i) - 12} className="label-strong">{r.label}{core ? '' : ' (context only)'}</text>
                 <line x1={x(r.m.low ?? r.m.base!)} x2={x(r.m.high ?? r.m.base!)} y1={rowY(i)} y2={rowY(i)} stroke={color} strokeWidth={3} strokeLinecap="round" opacity={0.45} />
                 <circle cx={x(r.m.base!)} cy={rowY(i)} r={6} fill={core ? color : 'var(--surface)'} stroke={color} strokeWidth={2} />
-                <text x={x(r.m.base!) + 10} y={rowY(i) + 18}>{money(r.m.base)}</text>
+                {Math.abs(x(r.m.base!) - x(a.current_price)) < 48
+                  ? <text x={x(r.m.base!) - 10} y={rowY(i) + 18} textAnchor="end">{money(r.m.base)}</text>
+                  : <text x={x(r.m.base!) + 10} y={rowY(i) + 18}>{money(r.m.base)}</text>}
                 {core && <text className="weights" x={w - right + 10} y={rowY(i) + 4}>{Math.round(r.weight * 100)}%</text>}
                 {core && <line className="links" x1={x(r.m.base!)} y1={rowY(i) + 6} x2={x(fv.base!)} y2={resultY - 8} stroke={color} strokeWidth={1.5} strokeDasharray="3 4" />}
               </g>

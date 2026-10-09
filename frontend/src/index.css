@@ -59,6 +59,7 @@
    deeper but not pure black. Series steps validated on both surfaces. */
 :root[data-theme="dim"], :root[data-theme="dark"] {
   color-scheme: dark;
+  --good: #46d27a;
   --accent: #3987e5;
   --accent-strong: #6aa6ee;
   --accent-soft: rgba(57, 135, 229, 0.18);
@@ -104,6 +105,10 @@
 }
 
 /* ---------- base ---------- */
+
+::selection { background: var(--accent-wash); color: var(--ink); }
+html { scrollbar-color: var(--line-strong) var(--page); }
+input, textarea { caret-color: var(--accent); }
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 140px; }
@@ -315,7 +320,8 @@ kbd {
   background: linear-gradient(180deg, var(--accent-wash), transparent 85%), var(--surface);
   border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--line)); box-shadow: var(--shadow-sm);
 }
-.bottom-line .eyebrow { font-size: 0.8rem; color: var(--accent-strong); font-weight: 500; margin-bottom: 8px; display: inline-flex; align-items: center; gap: 6px; }
+.bottom-line .bl-title, .bottom-line .cmp-diff-h { display: flex; align-items: center; gap: 8px; font-size: 1rem; font-weight: 600; color: var(--ink); margin: 0 0 8px; }
+.bottom-line .bl-title svg { color: var(--accent); }
 .bottom-line p { font-size: 1.06rem; line-height: 1.7; max-width: 82ch; }
 
 ul.list { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }

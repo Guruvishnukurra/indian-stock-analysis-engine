@@ -71,6 +71,7 @@ export function FanCanvas({ originRef, sigma, onRange }: {
     const born = performance.now()
     let lastResample = born
     let raf = 0
+    let reported = ''
     let visible = true
 
     const layout = () => {
@@ -86,12 +87,13 @@ export function FanCanvas({ originRef, sigma, onRange }: {
         top = 92
         bottom = h - 170
         scale = Math.min(oy - top, bottom - oy) / MAX_LN
-      } else {
-        ox = 20
-        oy = h - 230
-        top = oy - 150
-        bottom = h - 100
-        scale = 120 / MAX_LN
+      } else if (anchor) {
+        // narrow screens: the fan opens in the space reserved under the search field
+        ox = anchor.left - box.left + 6
+        top = anchor.bottom - box.top + 18
+        bottom = top + 198
+        oy = (top + bottom) / 2
+        scale = (bottom - oy) / MAX_LN
       }
     }
 
@@ -171,14 +173,21 @@ export function FanCanvas({ originRef, sigma, onRange }: {
         ctx.font = '500 12px "Geist Mono", ui-monospace, monospace'
         ctx.textBaseline = 'middle'
         const end = bands[last]
+        const rupees = end.map((x) => Math.round(100 * Math.exp(x)))
         let prevY = -Infinity
         for (const [i, color, label] of lines) {
           const y = Math.min(bottom - 4, Math.max(Y(end[i]), prevY + 30, top + 4))
           prevY = y
           ctx.fillStyle = color
-          ctx.fillText(`₹${Math.round(100 * Math.exp(end[i]))}`, right + 12, y - 7)
+          ctx.fillText(`₹${rupees[i]}`, right + 12, y - 7)
           ctx.fillStyle = 'rgba(11,27,51,0.6)'
           ctx.fillText(label, right + 12, y + 8)
+        }
+        // The caption reports exactly the figures drawn here, once a morph has settled.
+        const key = rupees.join('/')
+        if (morphStart < 0 && key !== reported) {
+          reported = key
+          onRange?.({ p10: rupees[0], p50: rupees[1], p90: rupees[2] })
         }
       }
 
@@ -201,8 +210,6 @@ export function FanCanvas({ originRef, sigma, onRange }: {
       to = simulate(sigmaNext, seedNext)
       shownSigma = sigmaNext
       morphStart = now
-      const end = Array.from({ length: N }, (_, p) => to.v[p * (STEPS + 1) + STEPS]).sort((a, b) => a - b)
-      onRange?.({ p10: 100 * Math.exp(end[Math.floor(N * 0.1)]), p50: 100 * Math.exp(end[Math.floor(N * 0.5)]), p90: 100 * Math.exp(end[Math.floor(N * 0.9)]) })
     }
 
     const loop = (now: number) => {
@@ -222,6 +229,12 @@ export function FanCanvas({ originRef, sigma, onRange }: {
 
     layout()
     morphTo(shownSigma, seed, born); from = to; morphStart = -1
+    // At rest the labels show these exact percentiles, so the caption can have them before the reveal ends.
+    {
+      const [p10, p50, p90] = percentiles(to, 1, STEPS).map((x) => Math.round(100 * Math.exp(x)))
+      reported = `${p10}/${p50}/${p90}`
+      onRange?.({ p10, p50, p90 })
+    }
     play()
 
     const ro = new ResizeObserver(() => { layout(); if (still) draw(performance.now()) })
