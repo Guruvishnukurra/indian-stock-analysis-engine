@@ -27,6 +27,9 @@ export interface MethodResult {
   }
   cases?: Record<string, { start_growth: number; target_margin: number; value: number }>
   implied_margin?: number | null
+  multiple_median?: number
+  multiple_low?: number
+  multiple_high?: number
 }
 
 export interface FairValue {
@@ -42,7 +45,8 @@ export interface FairValue {
   weights_used?: Record<string, number>
   method_upsides?: Record<string, number>
   context_methods?: Record<string, { base: number; upside: number }>
-  dispersion?: { coefficient_of_variation: number | null } | null
+  dispersion?: { coefficient_of_variation: number | null; max_to_min?: number } | null
+  widened_for_disagreement?: boolean
 }
 
 export interface MetricItem {
@@ -75,11 +79,17 @@ export interface Analysis {
     analyst_count?: number | null
     risk_premium_reasons?: string[]
   }
-  company_profile: { company_type: string; classification_certainty?: string }
+  company_profile: {
+    company_type: string; classification_certainty?: string; valuation_family?: string
+    earnings_usable?: boolean; holding_company?: boolean
+  }
   fair_value: FairValue
   method_results: Record<string, MethodResult>
   valuation_selection?: { selected_methods: string[]; excluded_methods: Record<string, string> }
-  confidence: { score: number; label: string; reasons: string[]; concerns: string[] }
+  confidence: {
+    score: number; label: string; reasons: string[]; concerns: string[]
+    components?: { name: string; points: number; max: number; positives: string[]; concerns: string[] }[]
+  }
   growth_confidence?: { level: string; reasons: string[] } | null
   fundamental_score: { score: number | null; label: string; metrics: MetricItem[]; missing: string[] }
   technical_score: { score: number | null; label: string; signals: [number, string][] }

@@ -231,7 +231,7 @@ def score_peer_support(method_results, fair_value):
             if spread > PEER_SPREAD_WIDE:
                 concerns.append(
                     f"Peers are heterogeneous: multiples range "
-                    f"{low:.1f}x–{high:.1f}x (median less representative)"
+                    f"{low:.1f}x to {high:.1f}x (median less representative)"
                 )
 
     return _component(

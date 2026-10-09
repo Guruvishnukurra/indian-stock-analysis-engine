@@ -2,16 +2,21 @@ import {
   ArrowClockwise,
   ArrowRight,
   ChartLineUp,
-  CheckCircle,
-  Desktop,
+  CircleHalf,
+  Gauge,
   MagnifyingGlass,
   Moon,
+  Newspaper,
+  Scales,
   Sun,
+  TreeStructure,
   WarningOctagon,
 } from '@phosphor-icons/react'
-import { useEffect, useRef, useState } from 'react'
+import { Suspense, lazy, useEffect, useRef, useState } from 'react'
 import { AnalysisView } from './components/AnalysisView'
-import { Backdrop3D } from './components/Backdrop3D'
+
+// three.js is only needed on the start screen, so it loads on demand.
+const FuturesStage = lazy(() => import('./components/FuturesStage'))
 import {
   type Analysis,
   type HistoryRow,
@@ -34,27 +39,26 @@ const DISCLAIMER =
   'Analytical assessment for research and education. Not investment advice, ' +
   'not a recommendation to buy or sell, and not a guaranteed prediction.'
 
-type Theme = 'system' | 'light' | 'dark'
+type Theme = 'light' | 'dim' | 'dark'
 
 const THEMES: { id: Theme; label: string; Icon: typeof Sun }[] = [
   { id: 'light', label: 'Light theme', Icon: Sun },
+  { id: 'dim', label: 'Dim theme (default)', Icon: CircleHalf },
   { id: 'dark', label: 'Dark theme', Icon: Moon },
-  { id: 'system', label: 'Match system theme', Icon: Desktop },
 ]
 
 function useTheme(): [Theme, (t: Theme) => void] {
   const [theme, setTheme] = useState<Theme>(() => {
     try {
-      return (localStorage.getItem('theme') as Theme) || 'system'
+      const saved = localStorage.getItem('theme')
+      return saved === 'light' || saved === 'dark' ? saved : 'dim'
     } catch {
-      return 'system'
+      return 'dim'
     }
   })
 
   useEffect(() => {
-    const root = document.documentElement
-    if (theme === 'system') root.removeAttribute('data-theme')
-    else root.setAttribute('data-theme', theme)
+    document.documentElement.setAttribute('data-theme', theme)
     try {
       localStorage.setItem('theme', theme)
     } catch {
@@ -78,36 +82,53 @@ function ThemeControl({ theme, onChange }: { theme: Theme; onChange: (t: Theme) 
   )
 }
 
+const FEATURES = [
+  { Icon: Scales, t: 'A range, not a target', d: 'Fair value from several methods, blended by weight and shown as low, base and high.' },
+  { Icon: TreeStructure, t: 'Every number explained', d: 'Select any figure in a report to replay the exact steps the engine took to reach it.' },
+  { Icon: Gauge, t: 'Honest about confidence', d: 'Quality, valuation and timing are judged separately, with a score for how far to trust them.' },
+  { Icon: Newspaper, t: 'News, not noise', d: 'A local AI model separates material events from headlines that do not matter.' },
+]
+
 function Welcome({ onPick }: { onPick: (t: string) => void }) {
   return (
     <section className="welcome" aria-labelledby="welcome-title">
-      <div>
-        <h1 id="welcome-title">Understand what a stock is worth, and why.</h1>
-        <p className="lead">
-          Enter an NSE ticker for a fair-value range, a confidence score and a plain-language
-          verdict. Every number is traceable to its method and period.
-        </p>
-        <ul className="list points" aria-label="What the analysis includes">
-          {[
-            'Fair value from several methods, shown as a range',
-            "What today's price assumes about growth and margins",
-            'Quality, valuation and timing judged separately',
-            'News sorted into real events and noise by a local AI model',
-          ].map((p) => (
-            <li key={p}><span className="ic up" aria-hidden="true"><CheckCircle size={14} weight="bold" /></span><span>{p}</span></li>
-          ))}
-        </ul>
+      <div className="stage">
+        <div className="stage-copy">
+          <span className="stage-eyebrow">Live Monte Carlo simulation</span>
+          <h1 id="welcome-title">A stock has no single future. So we never give you a single number.</h1>
+          <p className="lead">
+            Each line is one simulated path for ₹100 invested today. The engine values companies the same way:
+            many plausible futures, summarised as an honest range.
+          </p>
+          <p className="stage-try">Drag the cone to rotate it, scrub through time, or raise volatility and watch the range widen.</p>
+        </div>
+        <Suspense fallback={<div className="stage-canvas" aria-hidden="true"><div className="stage-loading" /></div>}>
+          <FuturesStage />
+        </Suspense>
       </div>
-      <div>
-        <Backdrop3D />
-        <p className="muted small" style={{ marginBottom: 10 }}>Try one of these</p>
-        <div className="pick-grid">
-          {EXAMPLES.map(([t, d]) => (
-            <button key={t} type="button" className="pick" onClick={() => onPick(t)}>
-              <span className="t">{t}<ArrowRight size={14} aria-hidden="true" /></span>
-              <span className="d">{d}</span>
-            </button>
-          ))}
+
+      <div className="welcome-lower">
+        <div>
+          <h2 className="section-title">Try a company</h2>
+          <div className="pick-grid">
+            {EXAMPLES.map(([t, d]) => (
+              <button key={t} type="button" className="pick" onClick={() => onPick(t)}>
+                <span className="t">{t}<ArrowRight size={14} aria-hidden="true" /></span>
+                <span className="d">{d}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <h2 className="section-title">What every report gives you</h2>
+          <ul className="features">
+            {FEATURES.map(({ Icon, t, d }) => (
+              <li key={t}>
+                <span className="f-ic" aria-hidden="true"><Icon size={18} /></span>
+                <div><strong>{t}</strong><p>{d}</p></div>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>
