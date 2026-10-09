@@ -1,0 +1,1096 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-09T14:18:47+00:00",
+  "title": "Design System: Stock Analysis Engine",
+  "extensions": {
+    "colorMeta": {
+      "accent-blue": {
+        "role": "primary",
+        "displayName": "Signal Blue",
+        "canonical": "#2a78d6",
+        "tonalRamp": [
+          "oklch(15.0% 0.041 255.5)",
+          "oklch(26.4% 0.072 255.5)",
+          "oklch(37.9% 0.103 255.5)",
+          "oklch(49.3% 0.134 255.5)",
+          "oklch(60.7% 0.161 255.5)",
+          "oklch(72.1% 0.130 255.5)",
+          "oklch(83.6% 0.099 255.5)",
+          "oklch(95.0% 0.068 255.5)"
+        ]
+      },
+      "accent-blue-deep": {
+        "role": "primary",
+        "displayName": "Deep Signal Blue",
+        "canonical": "#1c5cab",
+        "tonalRamp": [
+          "oklch(15.0% 0.035 256.1)",
+          "oklch(26.4% 0.062 256.1)",
+          "oklch(37.9% 0.089 256.1)",
+          "oklch(49.3% 0.116 256.1)",
+          "oklch(60.7% 0.140 256.1)",
+          "oklch(72.1% 0.113 256.1)",
+          "oklch(83.6% 0.086 256.1)",
+          "oklch(95.0% 0.059 256.1)"
+        ]
+      },
+      "accent-blue-lit": {
+        "role": "primary",
+        "displayName": "Lit Signal Blue",
+        "canonical": "#3987e5",
+        "tonalRamp": [
+          "oklch(15.0% 0.040 255.1)",
+          "oklch(26.4% 0.071 255.1)",
+          "oklch(37.9% 0.102 255.1)",
+          "oklch(49.3% 0.132 255.1)",
+          "oklch(60.7% 0.159 255.1)",
+          "oklch(72.1% 0.129 255.1)",
+          "oklch(83.6% 0.098 255.1)",
+          "oklch(95.0% 0.067 255.1)"
+        ]
+      },
+      "accent-blue-lit-strong": {
+        "role": "primary",
+        "displayName": "Lit Signal Blue Strong",
+        "canonical": "#6aa6ee",
+        "tonalRamp": [
+          "oklch(15.0% 0.031 253.8)",
+          "oklch(26.4% 0.054 253.8)",
+          "oklch(37.9% 0.078 253.8)",
+          "oklch(49.3% 0.101 253.8)",
+          "oklch(60.7% 0.122 253.8)",
+          "oklch(72.1% 0.098 253.8)",
+          "oklch(83.6% 0.075 253.8)",
+          "oklch(95.0% 0.051 253.8)"
+        ]
+      },
+      "accent-wash-light": {
+        "role": "primary",
+        "displayName": "Blue Wash",
+        "canonical": "#e8f1fc",
+        "tonalRamp": [
+          "oklch(15.0% 0.004 253.3)",
+          "oklch(26.4% 0.008 253.3)",
+          "oklch(37.9% 0.011 253.3)",
+          "oklch(49.3% 0.015 253.3)",
+          "oklch(60.7% 0.017 253.3)",
+          "oklch(72.1% 0.014 253.3)",
+          "oklch(83.6% 0.011 253.3)",
+          "oklch(95.0% 0.007 253.3)"
+        ]
+      },
+      "story-ground": {
+        "role": "neutral",
+        "displayName": "Story Ground",
+        "canonical": "#f6f8fb",
+        "tonalRamp": [
+          "oklch(15.0% 0.001 258.3)",
+          "oklch(26.4% 0.002 258.3)",
+          "oklch(37.9% 0.003 258.3)",
+          "oklch(49.3% 0.004 258.3)",
+          "oklch(60.7% 0.004 258.3)",
+          "oklch(72.1% 0.004 258.3)",
+          "oklch(83.6% 0.003 258.3)",
+          "oklch(95.0% 0.002 258.3)"
+        ]
+      },
+      "story-navy": {
+        "role": "neutral",
+        "displayName": "Story Navy",
+        "canonical": "#0b1b33",
+        "tonalRamp": [
+          "oklch(15.0% 0.013 258.3)",
+          "oklch(26.4% 0.023 258.3)",
+          "oklch(37.9% 0.033 258.3)",
+          "oklch(49.3% 0.043 258.3)",
+          "oklch(60.7% 0.051 258.3)",
+          "oklch(72.1% 0.041 258.3)",
+          "oklch(83.6% 0.032 258.3)",
+          "oklch(95.0% 0.022 258.3)"
+        ]
+      },
+      "story-navy-2": {
+        "role": "neutral",
+        "displayName": "Story Navy 2",
+        "canonical": "#3a4862",
+        "tonalRamp": [
+          "oklch(15.0% 0.012 262.5)",
+          "oklch(26.4% 0.021 262.5)",
+          "oklch(37.9% 0.030 262.5)",
+          "oklch(49.3% 0.039 262.5)",
+          "oklch(60.7% 0.047 262.5)",
+          "oklch(72.1% 0.038 262.5)",
+          "oklch(83.6% 0.029 262.5)",
+          "oklch(95.0% 0.020 262.5)"
+        ]
+      },
+      "story-navy-3": {
+        "role": "neutral",
+        "displayName": "Story Navy 3",
+        "canonical": "#56647c",
+        "tonalRamp": [
+          "oklch(15.0% 0.011 261.1)",
+          "oklch(26.4% 0.019 261.1)",
+          "oklch(37.9% 0.027 261.1)",
+          "oklch(49.3% 0.035 261.1)",
+          "oklch(60.7% 0.042 261.1)",
+          "oklch(72.1% 0.034 261.1)",
+          "oklch(83.6% 0.026 261.1)",
+          "oklch(95.0% 0.018 261.1)"
+        ]
+      },
+      "window-navy": {
+        "role": "neutral",
+        "displayName": "Window Navy",
+        "canonical": "#0b1220",
+        "tonalRamp": [
+          "oklch(15.0% 0.008 263.4)",
+          "oklch(26.4% 0.014 263.4)",
+          "oklch(37.9% 0.019 263.4)",
+          "oklch(49.3% 0.025 263.4)",
+          "oklch(60.7% 0.031 263.4)",
+          "oklch(72.1% 0.025 263.4)",
+          "oklch(83.6% 0.019 263.4)",
+          "oklch(95.0% 0.013 263.4)"
+        ]
+      },
+      "window-surface": {
+        "role": "neutral",
+        "displayName": "Window Surface",
+        "canonical": "#111a2b",
+        "tonalRamp": [
+          "oklch(15.0% 0.009 262.5)",
+          "oklch(26.4% 0.016 262.5)",
+          "oklch(37.9% 0.023 262.5)",
+          "oklch(49.3% 0.030 262.5)",
+          "oklch(60.7% 0.036 262.5)",
+          "oklch(72.1% 0.029 262.5)",
+          "oklch(83.6% 0.022 262.5)",
+          "oklch(95.0% 0.015 262.5)"
+        ]
+      },
+      "window-surface-2": {
+        "role": "neutral",
+        "displayName": "Window Surface 2",
+        "canonical": "#172238",
+        "tonalRamp": [
+          "oklch(15.0% 0.011 263.3)",
+          "oklch(26.4% 0.020 263.3)",
+          "oklch(37.9% 0.028 263.3)",
+          "oklch(49.3% 0.037 263.3)",
+          "oklch(60.7% 0.044 263.3)",
+          "oklch(72.1% 0.036 263.3)",
+          "oklch(83.6% 0.027 263.3)",
+          "oklch(95.0% 0.019 263.3)"
+        ]
+      },
+      "window-line": {
+        "role": "neutral",
+        "displayName": "Window Line",
+        "canonical": "#1f2b42",
+        "tonalRamp": [
+          "oklch(15.0% 0.011 262.8)",
+          "oklch(26.4% 0.020 262.8)",
+          "oklch(37.9% 0.029 262.8)",
+          "oklch(49.3% 0.037 262.8)",
+          "oklch(60.7% 0.045 262.8)",
+          "oklch(72.1% 0.036 262.8)",
+          "oklch(83.6% 0.028 262.8)",
+          "oklch(95.0% 0.019 262.8)"
+        ]
+      },
+      "dim-page": {
+        "role": "neutral",
+        "displayName": "Dim Slate Page",
+        "canonical": "#1c2028",
+        "tonalRamp": [
+          "oklch(15.0% 0.004 264.2)",
+          "oklch(26.4% 0.007 264.2)",
+          "oklch(37.9% 0.010 264.2)",
+          "oklch(49.3% 0.014 264.2)",
+          "oklch(60.7% 0.016 264.2)",
+          "oklch(72.1% 0.013 264.2)",
+          "oklch(83.6% 0.010 264.2)",
+          "oklch(95.0% 0.007 264.2)"
+        ]
+      },
+      "dim-surface": {
+        "role": "neutral",
+        "displayName": "Dim Slate Surface",
+        "canonical": "#242a34",
+        "tonalRamp": [
+          "oklch(15.0% 0.005 260.6)",
+          "oklch(26.4% 0.009 260.6)",
+          "oklch(37.9% 0.013 260.6)",
+          "oklch(49.3% 0.017 260.6)",
+          "oklch(60.7% 0.020 260.6)",
+          "oklch(72.1% 0.016 260.6)",
+          "oklch(83.6% 0.012 260.6)",
+          "oklch(95.0% 0.008 260.6)"
+        ]
+      },
+      "dim-surface-2": {
+        "role": "neutral",
+        "displayName": "Dim Slate Surface 2",
+        "canonical": "#2b323d",
+        "tonalRamp": [
+          "oklch(15.0% 0.006 259.4)",
+          "oklch(26.4% 0.010 259.4)",
+          "oklch(37.9% 0.014 259.4)",
+          "oklch(49.3% 0.018 259.4)",
+          "oklch(60.7% 0.022 259.4)",
+          "oklch(72.1% 0.018 259.4)",
+          "oklch(83.6% 0.013 259.4)",
+          "oklch(95.0% 0.009 259.4)"
+        ]
+      },
+      "dim-surface-3": {
+        "role": "neutral",
+        "displayName": "Dim Slate Surface 3",
+        "canonical": "#363e4b",
+        "tonalRamp": [
+          "oklch(15.0% 0.006 260.1)",
+          "oklch(26.4% 0.011 260.1)",
+          "oklch(37.9% 0.016 260.1)",
+          "oklch(49.3% 0.021 260.1)",
+          "oklch(60.7% 0.025 260.1)",
+          "oklch(72.1% 0.020 260.1)",
+          "oklch(83.6% 0.015 260.1)",
+          "oklch(95.0% 0.010 260.1)"
+        ]
+      },
+      "dim-ink": {
+        "role": "neutral",
+        "displayName": "Dim Slate Ink",
+        "canonical": "#eef1f6",
+        "tonalRamp": [
+          "oklch(15.0% 0.002 260.7)",
+          "oklch(26.4% 0.003 260.7)",
+          "oklch(37.9% 0.005 260.7)",
+          "oklch(49.3% 0.006 260.7)",
+          "oklch(60.7% 0.007 260.7)",
+          "oklch(72.1% 0.006 260.7)",
+          "oklch(83.6% 0.005 260.7)",
+          "oklch(95.0% 0.003 260.7)"
+        ]
+      },
+      "dim-ink-2": {
+        "role": "neutral",
+        "displayName": "Dim Slate Ink 2",
+        "canonical": "#b7bfcc",
+        "tonalRamp": [
+          "oklch(15.0% 0.005 260.2)",
+          "oklch(26.4% 0.009 260.2)",
+          "oklch(37.9% 0.013 260.2)",
+          "oklch(49.3% 0.017 260.2)",
+          "oklch(60.7% 0.020 260.2)",
+          "oklch(72.1% 0.016 260.2)",
+          "oklch(83.6% 0.012 260.2)",
+          "oklch(95.0% 0.008 260.2)"
+        ]
+      },
+      "dim-ink-3": {
+        "role": "neutral",
+        "displayName": "Dim Slate Ink 3",
+        "canonical": "#939cab",
+        "tonalRamp": [
+          "oklch(15.0% 0.006 260.7)",
+          "oklch(26.4% 0.011 260.7)",
+          "oklch(37.9% 0.015 260.7)",
+          "oklch(49.3% 0.020 260.7)",
+          "oklch(60.7% 0.024 260.7)",
+          "oklch(72.1% 0.019 260.7)",
+          "oklch(83.6% 0.015 260.7)",
+          "oklch(95.0% 0.010 260.7)"
+        ]
+      },
+      "dim-line": {
+        "role": "neutral",
+        "displayName": "Dim Slate Line",
+        "canonical": "#333b47",
+        "tonalRamp": [
+          "oklch(15.0% 0.006 258.4)",
+          "oklch(26.4% 0.010 258.4)",
+          "oklch(37.9% 0.015 258.4)",
+          "oklch(49.3% 0.019 258.4)",
+          "oklch(60.7% 0.023 258.4)",
+          "oklch(72.1% 0.019 258.4)",
+          "oklch(83.6% 0.014 258.4)",
+          "oklch(95.0% 0.010 258.4)"
+        ]
+      },
+      "dim-line-strong": {
+        "role": "neutral",
+        "displayName": "Dim Slate Line Strong",
+        "canonical": "#46505f",
+        "tonalRamp": [
+          "oklch(15.0% 0.007 258.4)",
+          "oklch(26.4% 0.012 258.4)",
+          "oklch(37.9% 0.018 258.4)",
+          "oklch(49.3% 0.023 258.4)",
+          "oklch(60.7% 0.028 258.4)",
+          "oklch(72.1% 0.022 258.4)",
+          "oklch(83.6% 0.017 258.4)",
+          "oklch(95.0% 0.012 258.4)"
+        ]
+      },
+      "light-page": {
+        "role": "neutral",
+        "displayName": "Light Paper Page",
+        "canonical": "#f4f5f7",
+        "tonalRamp": [
+          "oklch(15.0% 0.001 264.5)",
+          "oklch(26.4% 0.001 264.5)",
+          "oklch(37.9% 0.002 264.5)",
+          "oklch(49.3% 0.002 264.5)",
+          "oklch(60.7% 0.003 264.5)",
+          "oklch(72.1% 0.002 264.5)",
+          "oklch(83.6% 0.002 264.5)",
+          "oklch(95.0% 0.001 264.5)"
+        ]
+      },
+      "light-surface": {
+        "role": "neutral",
+        "displayName": "Light Paper Surface",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "oklch(15.0% 0.000 89.9)",
+          "oklch(26.4% 0.000 89.9)",
+          "oklch(37.9% 0.000 89.9)",
+          "oklch(49.3% 0.000 89.9)",
+          "oklch(60.7% 0.000 89.9)",
+          "oklch(72.1% 0.000 89.9)",
+          "oklch(83.6% 0.000 89.9)",
+          "oklch(95.0% 0.000 89.9)"
+        ]
+      },
+      "light-surface-2": {
+        "role": "neutral",
+        "displayName": "Light Paper Surface 2",
+        "canonical": "#f2f4f7",
+        "tonalRamp": [
+          "oklch(15.0% 0.001 258.3)",
+          "oklch(26.4% 0.002 258.3)",
+          "oklch(37.9% 0.003 258.3)",
+          "oklch(49.3% 0.004 258.3)",
+          "oklch(60.7% 0.004 258.3)",
+          "oklch(72.1% 0.004 258.3)",
+          "oklch(83.6% 0.003 258.3)",
+          "oklch(95.0% 0.002 258.3)"
+        ]
+      },
+      "light-ink": {
+        "role": "neutral",
+        "displayName": "Light Paper Ink",
+        "canonical": "#0f1419",
+        "tonalRamp": [
+          "oklch(15.0% 0.003 248.5)",
+          "oklch(26.4% 0.006 248.5)",
+          "oklch(37.9% 0.008 248.5)",
+          "oklch(49.3% 0.011 248.5)",
+          "oklch(60.7% 0.013 248.5)",
+          "oklch(72.1% 0.010 248.5)",
+          "oklch(83.6% 0.008 248.5)",
+          "oklch(95.0% 0.005 248.5)"
+        ]
+      },
+      "light-ink-2": {
+        "role": "neutral",
+        "displayName": "Light Paper Ink 2",
+        "canonical": "#48505c",
+        "tonalRamp": [
+          "oklch(15.0% 0.006 258.4)",
+          "oklch(26.4% 0.010 258.4)",
+          "oklch(37.9% 0.014 258.4)",
+          "oklch(49.3% 0.018 258.4)",
+          "oklch(60.7% 0.022 258.4)",
+          "oklch(72.1% 0.018 258.4)",
+          "oklch(83.6% 0.014 258.4)",
+          "oklch(95.0% 0.009 258.4)"
+        ]
+      },
+      "light-ink-3": {
+        "role": "neutral",
+        "displayName": "Light Paper Ink 3",
+        "canonical": "#6b7380",
+        "tonalRamp": [
+          "oklch(15.0% 0.006 260.2)",
+          "oklch(26.4% 0.010 260.2)",
+          "oklch(37.9% 0.014 260.2)",
+          "oklch(49.3% 0.018 260.2)",
+          "oklch(60.7% 0.022 260.2)",
+          "oklch(72.1% 0.018 260.2)",
+          "oklch(83.6% 0.014 260.2)",
+          "oklch(95.0% 0.009 260.2)"
+        ]
+      },
+      "light-line": {
+        "role": "neutral",
+        "displayName": "Light Paper Line",
+        "canonical": "#e4e7ec",
+        "tonalRamp": [
+          "oklch(15.0% 0.002 260.7)",
+          "oklch(26.4% 0.003 260.7)",
+          "oklch(37.9% 0.005 260.7)",
+          "oklch(49.3% 0.006 260.7)",
+          "oklch(60.7% 0.007 260.7)",
+          "oklch(72.1% 0.006 260.7)",
+          "oklch(83.6% 0.005 260.7)",
+          "oklch(95.0% 0.003 260.7)"
+        ]
+      },
+      "light-line-strong": {
+        "role": "neutral",
+        "displayName": "Light Paper Line Strong",
+        "canonical": "#cfd4dc",
+        "tonalRamp": [
+          "oklch(15.0% 0.003 259.8)",
+          "oklch(26.4% 0.005 259.8)",
+          "oklch(37.9% 0.008 259.8)",
+          "oklch(49.3% 0.010 259.8)",
+          "oklch(60.7% 0.012 259.8)",
+          "oklch(72.1% 0.010 259.8)",
+          "oklch(83.6% 0.007 259.8)",
+          "oklch(95.0% 0.005 259.8)"
+        ]
+      },
+      "dark-page": {
+        "role": "neutral",
+        "displayName": "Dark Graphite Page",
+        "canonical": "#111418",
+        "tonalRamp": [
+          "oklch(15.0% 0.002 255.6)",
+          "oklch(26.4% 0.004 255.6)",
+          "oklch(37.9% 0.006 255.6)",
+          "oklch(49.3% 0.008 255.6)",
+          "oklch(60.7% 0.009 255.6)",
+          "oklch(72.1% 0.008 255.6)",
+          "oklch(83.6% 0.006 255.6)",
+          "oklch(95.0% 0.004 255.6)"
+        ]
+      },
+      "dark-surface": {
+        "role": "neutral",
+        "displayName": "Dark Graphite Surface",
+        "canonical": "#181c22",
+        "tonalRamp": [
+          "oklch(15.0% 0.003 258.4)",
+          "oklch(26.4% 0.006 258.4)",
+          "oklch(37.9% 0.008 258.4)",
+          "oklch(49.3% 0.011 258.4)",
+          "oklch(60.7% 0.013 258.4)",
+          "oklch(72.1% 0.011 258.4)",
+          "oklch(83.6% 0.008 258.4)",
+          "oklch(95.0% 0.005 258.4)"
+        ]
+      },
+      "dark-surface-2": {
+        "role": "neutral",
+        "displayName": "Dark Graphite Surface 2",
+        "canonical": "#1f242c",
+        "tonalRamp": [
+          "oklch(15.0% 0.004 259.8)",
+          "oklch(26.4% 0.007 259.8)",
+          "oklch(37.9% 0.011 259.8)",
+          "oklch(49.3% 0.014 259.8)",
+          "oklch(60.7% 0.017 259.8)",
+          "oklch(72.1% 0.013 259.8)",
+          "oklch(83.6% 0.010 259.8)",
+          "oklch(95.0% 0.007 259.8)"
+        ]
+      },
+      "dark-ink": {
+        "role": "neutral",
+        "displayName": "Dark Graphite Ink",
+        "canonical": "#eef1f5",
+        "tonalRamp": [
+          "oklch(15.0% 0.002 255.5)",
+          "oklch(26.4% 0.003 255.5)",
+          "oklch(37.9% 0.004 255.5)",
+          "oklch(49.3% 0.005 255.5)",
+          "oklch(60.7% 0.006 255.5)",
+          "oklch(72.1% 0.005 255.5)",
+          "oklch(83.6% 0.004 255.5)",
+          "oklch(95.0% 0.003 255.5)"
+        ]
+      },
+      "dark-line": {
+        "role": "neutral",
+        "displayName": "Dark Graphite Line",
+        "canonical": "#2a303a",
+        "tonalRamp": [
+          "oklch(15.0% 0.005 260.6)",
+          "oklch(26.4% 0.009 260.6)",
+          "oklch(37.9% 0.013 260.6)",
+          "oklch(49.3% 0.016 260.6)",
+          "oklch(60.7% 0.020 260.6)",
+          "oklch(72.1% 0.016 260.6)",
+          "oklch(83.6% 0.012 260.6)",
+          "oklch(95.0% 0.008 260.6)"
+        ]
+      },
+      "series-orange": {
+        "role": "secondary",
+        "displayName": "Series Orange",
+        "canonical": "#eb6834",
+        "tonalRamp": [
+          "oklch(15.0% 0.044 40.6)",
+          "oklch(26.4% 0.077 40.6)",
+          "oklch(37.9% 0.110 40.6)",
+          "oklch(49.3% 0.144 40.6)",
+          "oklch(60.7% 0.173 40.6)",
+          "oklch(72.1% 0.140 40.6)",
+          "oklch(83.6% 0.106 40.6)",
+          "oklch(95.0% 0.073 40.6)"
+        ]
+      },
+      "series-orange-dim": {
+        "role": "secondary",
+        "displayName": "Series Orange (dim)",
+        "canonical": "#d95926",
+        "tonalRamp": [
+          "oklch(15.0% 0.043 40.1)",
+          "oklch(26.4% 0.076 40.1)",
+          "oklch(37.9% 0.109 40.1)",
+          "oklch(49.3% 0.142 40.1)",
+          "oklch(60.7% 0.171 40.1)",
+          "oklch(72.1% 0.138 40.1)",
+          "oklch(83.6% 0.105 40.1)",
+          "oklch(95.0% 0.072 40.1)"
+        ]
+      },
+      "series-green": {
+        "role": "secondary",
+        "displayName": "Series Green",
+        "canonical": "#1baf7a",
+        "tonalRamp": [
+          "oklch(15.0% 0.035 162.1)",
+          "oklch(26.4% 0.062 162.1)",
+          "oklch(37.9% 0.089 162.1)",
+          "oklch(49.3% 0.116 162.1)",
+          "oklch(60.7% 0.139 162.1)",
+          "oklch(72.1% 0.112 162.1)",
+          "oklch(83.6% 0.086 162.1)",
+          "oklch(95.0% 0.059 162.1)"
+        ]
+      },
+      "series-green-dim": {
+        "role": "secondary",
+        "displayName": "Series Green (dim)",
+        "canonical": "#199e70",
+        "tonalRamp": [
+          "oklch(15.0% 0.032 163.1)",
+          "oklch(26.4% 0.057 163.1)",
+          "oklch(37.9% 0.081 163.1)",
+          "oklch(49.3% 0.105 163.1)",
+          "oklch(60.7% 0.127 163.1)",
+          "oklch(72.1% 0.102 163.1)",
+          "oklch(83.6% 0.078 163.1)",
+          "oklch(95.0% 0.053 163.1)"
+        ]
+      },
+      "up-light": {
+        "role": "neutral",
+        "displayName": "Up Light",
+        "canonical": "#0a7d32",
+        "tonalRamp": [
+          "oklch(15.0% 0.036 148.1)",
+          "oklch(26.4% 0.064 148.1)",
+          "oklch(37.9% 0.092 148.1)",
+          "oklch(49.3% 0.119 148.1)",
+          "oklch(60.7% 0.144 148.1)",
+          "oklch(72.1% 0.116 148.1)",
+          "oklch(83.6% 0.088 148.1)",
+          "oklch(95.0% 0.061 148.1)"
+        ]
+      },
+      "up-dim": {
+        "role": "neutral",
+        "displayName": "Up Dim",
+        "canonical": "#46d27a",
+        "tonalRamp": [
+          "oklch(15.0% 0.043 152.0)",
+          "oklch(26.4% 0.076 152.0)",
+          "oklch(37.9% 0.109 152.0)",
+          "oklch(49.3% 0.142 152.0)",
+          "oklch(60.7% 0.171 152.0)",
+          "oklch(72.1% 0.138 152.0)",
+          "oklch(83.6% 0.105 152.0)",
+          "oklch(95.0% 0.072 152.0)"
+        ]
+      },
+      "down-light": {
+        "role": "neutral",
+        "displayName": "Down Light",
+        "canonical": "#c42b2b",
+        "tonalRamp": [
+          "oklch(15.0% 0.047 26.4)",
+          "oklch(26.4% 0.083 26.4)",
+          "oklch(37.9% 0.119 26.4)",
+          "oklch(49.3% 0.156 26.4)",
+          "oklch(60.7% 0.187 26.4)",
+          "oklch(72.1% 0.151 26.4)",
+          "oklch(83.6% 0.115 26.4)",
+          "oklch(95.0% 0.079 26.4)"
+        ]
+      },
+      "down-dim": {
+        "role": "neutral",
+        "displayName": "Down Dim",
+        "canonical": "#ff7a7a",
+        "tonalRamp": [
+          "oklch(15.0% 0.041 21.9)",
+          "oklch(26.4% 0.072 21.9)",
+          "oklch(37.9% 0.103 21.9)",
+          "oklch(49.3% 0.134 21.9)",
+          "oklch(60.7% 0.161 21.9)",
+          "oklch(72.1% 0.130 21.9)",
+          "oklch(83.6% 0.099 21.9)",
+          "oklch(95.0% 0.068 21.9)"
+        ]
+      },
+      "warn-light": {
+        "role": "neutral",
+        "displayName": "Warn Light",
+        "canonical": "#8a5800",
+        "tonalRamp": [
+          "oklch(15.0% 0.027 71.5)",
+          "oklch(26.4% 0.048 71.5)",
+          "oklch(37.9% 0.068 71.5)",
+          "oklch(49.3% 0.089 71.5)",
+          "oklch(60.7% 0.107 71.5)",
+          "oklch(72.1% 0.086 71.5)",
+          "oklch(83.6% 0.066 71.5)",
+          "oklch(95.0% 0.045 71.5)"
+        ]
+      },
+      "warn-dim": {
+        "role": "neutral",
+        "displayName": "Warn Dim",
+        "canonical": "#f3c044",
+        "tonalRamp": [
+          "oklch(15.0% 0.037 85.6)",
+          "oklch(26.4% 0.065 85.6)",
+          "oklch(37.9% 0.093 85.6)",
+          "oklch(49.3% 0.121 85.6)",
+          "oklch(60.7% 0.146 85.6)",
+          "oklch(72.1% 0.118 85.6)",
+          "oklch(83.6% 0.089 85.6)",
+          "oklch(95.0% 0.061 85.6)"
+        ]
+      },
+      "status-good": {
+        "role": "neutral",
+        "displayName": "Status Good",
+        "canonical": "#0ca30c",
+        "tonalRamp": [
+          "oklch(15.0% 0.052 142.6)",
+          "oklch(26.4% 0.091 142.6)",
+          "oklch(37.9% 0.131 142.6)",
+          "oklch(49.3% 0.170 142.6)",
+          "oklch(60.7% 0.205 142.6)",
+          "oklch(72.1% 0.165 142.6)",
+          "oklch(83.6% 0.126 142.6)",
+          "oklch(95.0% 0.086 142.6)"
+        ]
+      },
+      "status-warning": {
+        "role": "neutral",
+        "displayName": "Status Warning",
+        "canonical": "#fab219",
+        "tonalRamp": [
+          "oklch(15.0% 0.041 78.5)",
+          "oklch(26.4% 0.072 78.5)",
+          "oklch(37.9% 0.104 78.5)",
+          "oklch(49.3% 0.135 78.5)",
+          "oklch(60.7% 0.162 78.5)",
+          "oklch(72.1% 0.131 78.5)",
+          "oklch(83.6% 0.100 78.5)",
+          "oklch(95.0% 0.069 78.5)"
+        ]
+      },
+      "status-critical": {
+        "role": "neutral",
+        "displayName": "Status Critical",
+        "canonical": "#d03b3b",
+        "tonalRamp": [
+          "oklch(15.0% 0.047 25.2)",
+          "oklch(26.4% 0.082 25.2)",
+          "oklch(37.9% 0.117 25.2)",
+          "oklch(49.3% 0.153 25.2)",
+          "oklch(60.7% 0.184 25.2)",
+          "oklch(72.1% 0.148 25.2)",
+          "oklch(83.6% 0.113 25.2)",
+          "oklch(95.0% 0.078 25.2)"
+        ]
+      },
+      "status-neutral": {
+        "role": "neutral",
+        "displayName": "Status Neutral",
+        "canonical": "#8a919c",
+        "tonalRamp": [
+          "oklch(15.0% 0.005 259.4)",
+          "oklch(26.4% 0.008 259.4)",
+          "oklch(37.9% 0.012 259.4)",
+          "oklch(49.3% 0.015 259.4)",
+          "oklch(60.7% 0.018 259.4)",
+          "oklch(72.1% 0.015 259.4)",
+          "oklch(83.6% 0.011 259.4)",
+          "oklch(95.0% 0.008 259.4)"
+        ]
+      },
+      "glow-blue": {
+        "role": "tertiary",
+        "displayName": "Story Glow Blue",
+        "canonical": "#6fb0ff",
+        "tonalRamp": [
+          "oklch(15.0% 0.033 254.1)",
+          "oklch(26.4% 0.059 254.1)",
+          "oklch(37.9% 0.084 254.1)",
+          "oklch(49.3% 0.109 254.1)",
+          "oklch(60.7% 0.131 254.1)",
+          "oklch(72.1% 0.106 254.1)",
+          "oklch(83.6% 0.081 254.1)",
+          "oklch(95.0% 0.055 254.1)"
+        ]
+      },
+      "glow-aqua": {
+        "role": "tertiary",
+        "displayName": "Story Glow Aqua",
+        "canonical": "#5fe0b8",
+        "tonalRamp": [
+          "oklch(15.0% 0.032 169.7)",
+          "oklch(26.4% 0.057 169.7)",
+          "oklch(37.9% 0.081 169.7)",
+          "oklch(49.3% 0.106 169.7)",
+          "oklch(60.7% 0.127 169.7)",
+          "oklch(72.1% 0.103 169.7)",
+          "oklch(83.6% 0.078 169.7)",
+          "oklch(95.0% 0.054 169.7)"
+        ]
+      },
+      "glow-peach": {
+        "role": "tertiary",
+        "displayName": "Story Glow Peach",
+        "canonical": "#ffb08a",
+        "tonalRamp": [
+          "oklch(15.0% 0.027 46.5)",
+          "oklch(26.4% 0.047 46.5)",
+          "oklch(37.9% 0.067 46.5)",
+          "oklch(49.3% 0.087 46.5)",
+          "oklch(60.7% 0.105 46.5)",
+          "oklch(72.1% 0.085 46.5)",
+          "oklch(83.6% 0.064 46.5)",
+          "oklch(95.0% 0.044 46.5)"
+        ]
+      },
+      "fan-high": {
+        "role": "tertiary",
+        "displayName": "Fan 90th Percentile",
+        "canonical": "#0f7a58",
+        "tonalRamp": [
+          "oklch(15.0% 0.026 164.8)",
+          "oklch(26.4% 0.046 164.8)",
+          "oklch(37.9% 0.066 164.8)",
+          "oklch(49.3% 0.086 164.8)",
+          "oklch(60.7% 0.103 164.8)",
+          "oklch(72.1% 0.083 164.8)",
+          "oklch(83.6% 0.064 164.8)",
+          "oklch(95.0% 0.044 164.8)"
+        ]
+      },
+      "fan-low": {
+        "role": "tertiary",
+        "displayName": "Fan 10th Percentile",
+        "canonical": "#c2410c",
+        "tonalRamp": [
+          "oklch(15.0% 0.043 38.4)",
+          "oklch(26.4% 0.077 38.4)",
+          "oklch(37.9% 0.110 38.4)",
+          "oklch(49.3% 0.143 38.4)",
+          "oklch(60.7% 0.172 38.4)",
+          "oklch(72.1% 0.139 38.4)",
+          "oklch(83.6% 0.106 38.4)",
+          "oklch(95.0% 0.072 38.4)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Story hero, page-head h1 and closing call only."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Story section headings."
+      },
+      "headline-step": {
+        "displayName": "Headline Step",
+        "purpose": "Scrollytelling steps and Evidence sections."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Working-world page h1 (company name)."
+      },
+      "title-card": {
+        "displayName": "Card Title",
+        "purpose": "Card and drawer section headings."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Working-world running text."
+      },
+      "body-story": {
+        "displayName": "Story Body",
+        "purpose": "Story prose and section leads, capped 46 to 66ch."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Sentence-case labels, table heads, legends and captions in ink-3."
+      },
+      "figure-hero": {
+        "displayName": "Hero Figure",
+        "purpose": "Report hero price."
+      },
+      "figure": {
+        "displayName": "Figure",
+        "purpose": "KPI values and clickable figures."
+      },
+      "mono": {
+        "displayName": "Mono",
+        "purpose": "Tickers, ticker inputs, counts, kbd and formulas."
+      }
+    },
+    "shadows": [
+      {
+        "name": "rest",
+        "value": "0 1px 2px rgba(16, 24, 40, 0.06)",
+        "purpose": "Cards, KPI strip, secondary controls on light and story grounds. Dim: 0 1px 2px rgba(0, 0, 0, 0.25)."
+      },
+      {
+        "name": "raised",
+        "value": "0 1px 2px rgba(16, 24, 40, 0.05), 0 6px 20px -8px rgba(16, 24, 40, 0.10)",
+        "purpose": "Hover lift and tooltips. Dim: 0 1px 2px rgba(0, 0, 0, 0.2), 0 10px 28px -12px rgba(0, 0, 0, 0.5)."
+      },
+      {
+        "name": "hero-search",
+        "value": "0 1px 2px rgba(11, 27, 51, 0.06), 0 24px 48px -24px rgba(11, 27, 51, 0.30)",
+        "purpose": "Story hero search field."
+      },
+      {
+        "name": "window",
+        "value": "0 2px 4px rgba(11, 27, 51, 0.08), 0 40px 80px -36px rgba(11, 27, 51, 0.55)",
+        "purpose": "Dark product windows on bright pages."
+      },
+      {
+        "name": "drawer",
+        "value": "-20px 0 50px -20px rgba(0, 0, 0, 0.5)",
+        "purpose": "Trace drawer edge."
+      },
+      {
+        "name": "palette",
+        "value": "0 30px 80px -20px rgba(0, 0, 0, 0.55)",
+        "purpose": "Command palette."
+      },
+      {
+        "name": "focus-halo",
+        "value": "0 0 0 4px var(--accent-wash)",
+        "purpose": "Field focus-within under the 2px accent outline; 5px on the hero search."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-expo",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Story world and motion layer: sliding indicators, figure fly-in, chart draw-in, reveals."
+      },
+      {
+        "name": "ease",
+        "value": "cubic-bezier(0.2, 0.7, 0.2, 1)",
+        "purpose": "Working-world state transitions (hover, colour, press)."
+      },
+      {
+        "name": "duration-state",
+        "value": "160ms",
+        "purpose": "Hover and colour changes; press 110 to 120ms."
+      },
+      {
+        "name": "duration-indicator",
+        "value": "420ms",
+        "purpose": "Sliding tab ink (transform) and segmented pill (clip-path)."
+      },
+      {
+        "name": "duration-draw",
+        "value": "900ms to 1400ms",
+        "purpose": "Meter growth and chart line draw-in, played backwards from an offset."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "animation: none; transition: none",
+        "purpose": "Global rule; content is in its final state at rest, so nothing is hidden."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "xs",
+        "value": "520px"
+      },
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "900px"
+      },
+      {
+        "name": "lg",
+        "value": "920px"
+      },
+      {
+        "name": "xl",
+        "value": "1000px"
+      },
+      {
+        "name": "shell",
+        "value": "1240px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Signal Blue action in the working world; deep step on hover, slight press scale.",
+      "html": "<button class=\"ds-btn-primary\">Analyse</button>",
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px;border-radius:10px;border:1px solid transparent;background:#2a78d6;color:#fff;font-family:Geist,system-ui,sans-serif;font-weight:500;font-size:0.9rem;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,0.15),0 1px 2px rgba(16,24,40,0.06);transition:background 160ms cubic-bezier(0.2,0.7,0.2,1),transform 110ms cubic-bezier(0.2,0.7,0.2,1)}.ds-btn-primary:hover{background:#1c5cab}.ds-btn-primary:active{transform:translateY(1px) scale(0.985)}.ds-btn-primary:focus-visible{outline:2px solid #2a78d6;outline-offset:2px}"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Surface button with a line-strong hairline for secondary actions.",
+      "html": "<button class=\"ds-btn-secondary\">Compare</button>",
+      "css": ".ds-btn-secondary{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px;border-radius:10px;border:1px solid #cfd4dc;background:#fff;color:#0f1419;font-family:Geist,system-ui,sans-serif;font-weight:500;font-size:0.9rem;cursor:pointer;transition:background 160ms cubic-bezier(0.2,0.7,0.2,1),transform 110ms cubic-bezier(0.2,0.7,0.2,1)}.ds-btn-secondary:hover{background:#f2f4f7}.ds-btn-secondary:active{transform:translateY(1px) scale(0.985)}.ds-btn-secondary:focus-visible{outline:2px solid #2a78d6;outline-offset:2px}"
+    },
+    {
+      "name": "Story Search",
+      "kind": "input",
+      "refersTo": "search-hero",
+      "description": "The story hero's 64px search field: mono input, navy go button, accent halo on focus.",
+      "html": "<form class=\"ds-hero-search\"><input aria-label=\"NSE ticker\" placeholder=\"Search an NSE ticker\"><button type=\"button\" class=\"ds-hero-go\">Analyse <svg width=\"16\" height=\"16\" viewBox=\"0 0 256 256\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M221.66 133.66l-72 72a8 8 0 0 1-11.32-11.32L196.69 136H40a8 8 0 0 1 0-16h156.69l-58.35-58.34a8 8 0 0 1 11.32-11.32l72 72a8 8 0 0 1 0 11.32z\"/></svg></button></form>",
+      "css": ".ds-hero-search{display:flex;align-items:center;gap:12px;height:64px;max-width:560px;padding:0 8px 0 20px;border-radius:16px;background:#fff;border:1px solid rgba(11,27,51,0.12);box-shadow:0 1px 2px rgba(11,27,51,0.06),0 24px 48px -24px rgba(11,27,51,0.30);transition:border-color 180ms cubic-bezier(0.16,1,0.3,1),box-shadow 180ms cubic-bezier(0.16,1,0.3,1)}.ds-hero-search:focus-within{border-color:#2a78d6;box-shadow:0 0 0 5px rgba(42,120,214,0.16),0 24px 48px -24px rgba(11,27,51,0.30)}.ds-hero-search input{flex:1;min-width:0;height:100%;border:0;outline:0;background:transparent;font-family:'Geist Mono',ui-monospace,monospace;font-size:1.08rem;color:#0b1b33}.ds-hero-search input::placeholder{font-family:Geist,system-ui,sans-serif;color:#7a879c}.ds-hero-go{display:inline-flex;align-items:center;gap:8px;height:48px;padding:0 20px;border-radius:12px;border:0;background:#0b1b33;color:#fff;font-family:Geist,system-ui,sans-serif;font-weight:600;cursor:pointer;transition:background 160ms cubic-bezier(0.16,1,0.3,1),transform 120ms cubic-bezier(0.16,1,0.3,1)}.ds-hero-go:hover{background:#1c5cab}.ds-hero-go svg{transition:transform 160ms cubic-bezier(0.16,1,0.3,1)}.ds-hero-go:hover svg{transform:translateX(3px)}.ds-hero-go:active{transform:scale(0.97)}.ds-hero-go:focus-visible{outline:2px solid #2a78d6;outline-offset:3px}"
+    },
+    {
+      "name": "Showcase Pick Chip",
+      "kind": "chip",
+      "refersTo": "pick-chip",
+      "description": "Story pill launching a showcase report: mono ticker plus short description; lifts on hover.",
+      "html": "<a href=\"#\" class=\"ds-pick-chip\"><span class=\"ds-sym\">TCS</span><span class=\"ds-desc\">IT services</span></a>",
+      "css": ".ds-pick-chip{display:inline-flex;align-items:baseline;gap:8px;padding:8px 14px;border-radius:999px;text-decoration:none;background:rgba(255,255,255,0.78);border:1px solid rgba(11,27,51,0.10);transition:border-color 160ms cubic-bezier(0.16,1,0.3,1),background 160ms cubic-bezier(0.16,1,0.3,1),transform 160ms cubic-bezier(0.16,1,0.3,1),box-shadow 160ms cubic-bezier(0.16,1,0.3,1)}.ds-pick-chip:hover,.ds-pick-chip:focus-visible{border-color:#2a78d6;background:#fff;transform:translateY(-2px);box-shadow:0 10px 24px -14px rgba(11,27,51,0.4);outline:none}.ds-sym{font-family:'Geist Mono',ui-monospace,monospace;font-weight:600;font-size:0.86rem;color:#0b1b33}.ds-desc{font-family:Geist,system-ui,sans-serif;font-size:0.8rem;color:#56647c}"
+    },
+    {
+      "name": "Working Card with Figure",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "16px panel on the Dim surface with a clickable mono figure and its trace call to action.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-kpi-label\">Fair value (base)</div><div class=\"ds-kpi-value\">&#8377;3,812</div><button class=\"ds-kpi-cta\">How it was built</button></div>",
+      "css": ".ds-card{background:#242a34;color:#eef1f6;border:1px solid #333b47;border-radius:16px;padding:20px 22px;box-shadow:0 1px 2px rgba(0,0,0,0.25);display:grid;gap:6px;font-family:Geist,system-ui,sans-serif;max-width:280px}.ds-kpi-label{font-size:0.78rem;color:#939cab}.ds-kpi-value{font-family:'Geist Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;font-size:1.55rem;font-weight:500;letter-spacing:-0.02em;line-height:1.1}.ds-kpi-cta{justify-self:start;border:0;background:none;padding:4px 0 0;font:inherit;font-size:0.74rem;color:#6aa6ee;opacity:0.75;cursor:pointer;transition:opacity 160ms cubic-bezier(0.2,0.7,0.2,1),transform 160ms cubic-bezier(0.2,0.7,0.2,1)}.ds-kpi-cta:hover,.ds-kpi-cta:focus-visible{opacity:1;transform:translateX(2px);outline:none}"
+    },
+    {
+      "name": "Stance Badge",
+      "kind": "chip",
+      "refersTo": "tag",
+      "description": "Status pill: tinted fill, status ink, icon plus label, never colour alone.",
+      "html": "<span class=\"ds-stance\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 256 256\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M229.66 77.66l-128 128a8 8 0 0 1-11.32 0l-56-56a8 8 0 0 1 11.32-11.32L96 188.69 218.34 66.34a8 8 0 0 1 11.32 11.32z\"/></svg>Fairly valued</span>",
+      "css": ".ds-stance{display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 12px 0 9px;border-radius:999px;font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:0.92rem;background:rgba(70,210,122,0.14);color:#46d27a}"
+    },
+    {
+      "name": "Tabs with Sliding Ink",
+      "kind": "nav",
+      "refersTo": "tab",
+      "description": "Working tabs on Dim: ink-3 to ink on select, one 2px accent line under the active tab.",
+      "html": "<div class=\"ds-tabs\" role=\"tablist\"><button class=\"ds-tab\" role=\"tab\" aria-selected=\"true\">Overview</button><button class=\"ds-tab\" role=\"tab\" aria-selected=\"false\">Valuation <span class=\"ds-count\">5</span></button><button class=\"ds-tab\" role=\"tab\" aria-selected=\"false\">News</button></div>",
+      "css": ".ds-tabs{display:flex;gap:4px;border-bottom:1px solid #333b47;background:#1c2028;font-family:Geist,system-ui,sans-serif}.ds-tab{position:relative;display:inline-flex;align-items:center;gap:8px;height:46px;padding:0 14px;border:0;background:none;color:#939cab;font:inherit;font-weight:500;cursor:pointer;transition:color 160ms cubic-bezier(0.2,0.7,0.2,1)}.ds-tab:hover{color:#eef1f6}.ds-tab[aria-selected=\"true\"]{color:#eef1f6}.ds-tab[aria-selected=\"true\"]::after{content:\"\";position:absolute;left:0;right:0;bottom:-1px;height:2px;border-radius:2px;background:#3987e5}.ds-tab:focus-visible{outline:2px solid #3987e5;outline-offset:2px;border-radius:6px}.ds-count{font-family:'Geist Mono',ui-monospace,monospace;font-size:0.72rem;padding:0 6px;border-radius:999px;background:#2b323d;color:#b7bfcc}"
+    },
+    {
+      "name": "Product Window",
+      "kind": "custom",
+      "refersTo": "product-window",
+      "description": "Dark navy window floating on a bright story page, holding real product UI.",
+      "html": "<div class=\"ds-window\"><div class=\"ds-window-bar\">Report, fair value</div><div class=\"ds-window-body\"><div class=\"ds-label\">Fair value range</div><div class=\"ds-fig\">&#8377;3,420 to &#8377;4,180</div></div></div>",
+      "css": ".ds-window{max-width:420px;border-radius:20px;overflow:hidden;background:#0b1220;color:#eef2f8;border:1px solid rgba(255,255,255,0.08);box-shadow:0 2px 4px rgba(11,27,51,0.08),0 40px 80px -36px rgba(11,27,51,0.55);font-family:Geist,system-ui,sans-serif}.ds-window-bar{display:flex;align-items:center;height:46px;padding:0 20px;border-bottom:1px solid #1f2b42;background:#111a2b;font-size:0.82rem;color:#8b97ab;font-weight:500}.ds-window-body{padding:24px;display:grid;gap:4px}.ds-label{font-size:0.78rem;color:#8b97ab}.ds-fig{font-family:'Geist Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;font-size:2rem;letter-spacing:-0.02em}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Many Futures, One Instrument",
+    "overview": "The system has two worlds that share one type family, one accent and one shape grammar. The **story world** (Home, How it works, Evidence) is always bright: a cool-white ground, deep navy ink, and the data-series colours used as light. A canvas fan of simulated price paths spreads out of the hero search field over a slow, blurred glow of the same hues, and dark navy product windows float on the page holding the real report components. The **working world** (Report, Compare, the trace drawer, the command palette) is a calm instrument. It opens in Dim, with Light and Dark selectable. Each theme has its own surfaces and ink steps rather than inverted values.\n\nDensity follows the job. Story pages breathe, with section padding up to 150px, display headlines at -0.04em tracking and prose capped between 46 and 66 characters. Working pages are compact and tabular: 16px grid gaps, figure tiles separated by 1px hairlines, and Geist Mono figures that can each be clicked to open their trace. Motion follows a single rule. Everything uses an exponential ease-out, and content is already in its final state at rest; animations only play in from an offset.\n\nThe build rejects the fintech split hero (phone mockup, logo strip, equal feature cards). It has no uppercase labels, no eyebrow text above headings and no glyph icons. Icons are Phosphor SVG throughout.",
+    "keyCharacteristics": [
+      "Two worlds: the bright story world and the themed working world (Dim by default).",
+      "One blue accent. Status colours carry meaning only and always come with an icon and a label.",
+      "Geist for words, Geist Mono with tabular numerals for figures, tickers and ticker inputs.",
+      "Soft, navy-tinted ambient shadows. Hover lifts by 1 to 2px.",
+      "Story sections end on slanted edges. Dark product windows sit on the bright pages.",
+      "Exponential ease-out motion that never hides content at rest."
+    ],
+    "rules": [
+      {
+        "name": "The One Accent Rule",
+        "body": "Blue is the only accent. Orange and green appear only as data series. Up, down and warn appear only as status, and only alongside an icon and a text label.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two Worlds Rule",
+        "body": "Story pages are always bright, whatever the app theme is set to. Working pages follow the theme. When working components appear inside a story page, they render within a dark product window using the scoped window palette.",
+        "section": "colors"
+      },
+      {
+        "name": "The Unrated Rule",
+        "body": "A company with no rating never takes a series colour. Its bands are drawn with a hatched line-strong pattern and its markers in ink-3.",
+        "section": "colors"
+      },
+      {
+        "name": "The Mono Means Number Rule",
+        "body": "Geist Mono with tabular numerals is used for figures, tickers, ticker inputs, counts, kbd hints and formulas. It is never used for prose. Placeholders inside mono inputs switch back to Geist.",
+        "section": "typography"
+      },
+      {
+        "name": "The Two Weights of Voice Rule",
+        "body": "Story headings are 700 with -0.03 to -0.04em tracking. Working headings stop at 600 with no more than -0.025em. A working page never uses the display ramp.",
+        "section": "typography"
+      },
+      {
+        "name": "The Sentence Case Rule",
+        "body": "No uppercase labels and no eyebrows. Labels are small, sentence case and set in ink-3.",
+        "section": "typography"
+      },
+      {
+        "name": "The Ambient Only Rule",
+        "body": "Every shadow is soft, blurred and offset only on the y axis, with a negative spread. There are no hard offset shadows and no coloured glows on controls.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Slant Rule",
+        "body": "A slanted clip-path edge appears only where a story section begins or ends. Working surfaces stay rectilinear.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "Do set every figure, ticker and ticker input in Geist Mono with tabular numerals, and keep prose in Geist.",
+      "Do keep blue as the single accent, and pair every status colour with an icon and a text label.",
+      "Do keep story pages bright whatever the app theme, and render working components inside story pages through a dark product window.",
+      "Do use the radius ladder: 16px panels, 10px controls, full pills for chips, tags, stances and switches, and 20px for product windows.",
+      "Do animate with `cubic-bezier(0.16, 1, 0.3, 1)` on transform, opacity and clip-path only, and keep content in its final state at rest so reduced motion loses nothing.",
+      "Do show hover by lifting 1 to 2px with an accent border and the raised shadow. Show press with a 0.97 to 0.985 scale."
+    ],
+    "donts": [
+      "Don't use orange or green as accents or decoration. They are data series only.",
+      "Don't give an unrated company a series colour. Use the hatched line-strong band and ink-3 marker.",
+      "Don't put uppercase labels or eyebrow text above headings. Labels are sentence case in ink-3.",
+      "Don't use hard offset shadows or coloured glows on controls. Shadows are ambient, offset on y only.",
+      "Don't use the 700 display ramp or slanted edges on working surfaces.",
+      "Don't use pure black for the Dark theme. Its page is the graphite step, not #000."
+    ]
+  }
+}
