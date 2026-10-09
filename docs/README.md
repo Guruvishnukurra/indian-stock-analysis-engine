@@ -7,6 +7,54 @@ fact-checked AI-written thesis, and an honestly validated ML trend module.
 
 > Analytical assessment for research and education. Not investment advice.
 
+## Getting started
+
+**You need:** [Python 3.12+](https://www.python.org/downloads/) and
+[Node.js 20.19+](https://nodejs.org/). Optional: [Ollama](https://ollama.com)
+for news-event tagging and the AI-written thesis (everything else works
+without it).
+
+```bash
+git clone https://github.com/Guruvishnukurra/indian-stock-analysis-engine.git
+cd indian-stock-analysis-engine
+```
+
+Then start it with one command. The first run creates the Python environment
+and installs every package (several minutes); later runs start in seconds.
+The dashboard opens in your browser at **http://localhost:5173**.
+
+| System | Command |
+|---|---|
+| Windows | double-click `start.cmd` (or run `.\start.cmd`) |
+| macOS / Linux / Git Bash | `./start.sh` |
+
+Press **Ctrl+C** in that window to stop everything. The API runs on
+http://localhost:8000 (it only serves data; opening it shows a link to the
+dashboard). For the AI features, once: `ollama pull qwen2.5:7b-instruct`.
+
+The 8 showcase companies (TCS, HDFCBANK, ATHERENERG, TATASTEEL, BAJFINANCE,
+WAAREEENER, INFY, ITC) open instantly from saved snapshots; any other NSE
+ticker runs the live engine (about 30 s to 3 min). The first live run
+downloads the FinBERT and MiniLM models once. A GPU speeds things up but is
+not required.
+
+<details>
+<summary>Manual start (two terminals)</summary>
+
+```bash
+python -m venv .venv
+.venv\Scripts\Activate.ps1          # macOS/Linux: source .venv/bin/activate
+pip install -r requirements.txt
+python -m uvicorn src.api.main:app --port 8000
+```
+
+```bash
+cd frontend
+npm install
+npm run dev                         # then open http://localhost:5173
+```
+</details>
+
 ## How verdicts work
 
 - **Split verdict**: Quality (fundamentals), Valuation (log of fair value /

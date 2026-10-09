@@ -19,6 +19,7 @@ from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse, Response
 from pydantic import BaseModel, Field
 
 from src.api.db import Database, utcnow
@@ -170,6 +171,45 @@ app.add_middleware(
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
+
+
+DASHBOARD_URL = os.environ.get("DASHBOARD_URL", "http://localhost:5173")
+
+ROOT_PAGE = """<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stock Analysis Engine API</title>
+<style>
+  body {{ margin: 0; min-height: 100vh; display: grid; place-items: center; background: #f6f8fb; color: #0b1b33;
+         font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }}
+  main {{ max-width: 34rem; padding: 2rem; }}
+  h1 {{ font-size: 1.6rem; letter-spacing: -0.02em; margin: 0 0 .5rem; }}
+  p {{ color: #3a4862; margin: .5rem 0; }}
+  a.go {{ display: inline-block; margin-top: 1rem; padding: .7rem 1.2rem; border-radius: 12px;
+         background: #0b1b33; color: #fff; text-decoration: none; font-weight: 600; }}
+  a {{ color: #1c5cab; }}
+  code {{ background: #e9eef5; padding: .1rem .35rem; border-radius: 6px; }}
+</style></head>
+<body><main>
+  <h1>The analysis API is running.</h1>
+  <p>This address serves data to the dashboard; the website itself runs separately.</p>
+  <p>Start it with <code>cd frontend</code> then <code>npm run dev</code>, or run the start script in the project folder.</p>
+  <a class="go" href="{dashboard}">Open the dashboard</a>
+  <p style="margin-top:1.5rem">Developers: <a href="/docs">API reference</a> and <a href="/health">health check</a>.</p>
+</main></body></html>"""
+
+
+@app.get("/", include_in_schema=False)
+def root():
+    """A human landing page, so opening the API in a browser is not a 404."""
+
+    return HTMLResponse(ROOT_PAGE.format(dashboard=DASHBOARD_URL))
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+def favicon():
+
+    return Response(status_code=204)
 
 
 class AnalysisRequest(BaseModel):

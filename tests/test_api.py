@@ -171,3 +171,13 @@ def test_results_from_older_engine_are_not_reused(client):
     again = client.post("/analyses", json={"ticker": "TCS", "include_news": False}).json()
 
     assert again["reused"] is False
+
+
+def test_root_points_people_to_the_dashboard(client):
+
+    response = client.get("/")
+
+    assert response.status_code == 200
+    assert "text/html" in response.headers["content-type"]
+    assert "http://localhost:5173" in response.text
+    assert client.get("/favicon.ico").status_code == 204
