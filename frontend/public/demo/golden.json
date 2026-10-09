@@ -1,0 +1,573 @@
+{
+ "TCS.NS": {
+  "status": "ok",
+  "company_type": "technology",
+  "stance": "ATTRACTIVE",
+  "price": 2076.0,
+  "base": 3029.4149084048126,
+  "methods": [
+   "DCF",
+   "Peer P/E"
+  ],
+  "confidence": 77,
+  "cyclical": false,
+  "capex_heavy": false,
+  "holding_company": false,
+  "earnings_usable": true,
+  "ownership": "Private",
+  "expectations_available": true
+ },
+ "INFY.NS": {
+  "status": "ok",
+  "company_type": "technology",
+  "stance": "WATCH",
+  "price": 997.0,
+  "base": 1097.675858164043,
+  "methods": [
+   "DCF",
+   "Peer P/E"
+  ],
+  "confidence": 61,
+  "cyclical": false,
+  "capex_heavy": false,
+  "holding_company": false,
+  "earnings_usable": true,
+  "ownership": "Private",
+  "expectations_available": true
+ },
+ "HDFCBANK.NS": {
+  "status": "ok",
+  "company_type": "bank",
+  "stance": "WATCH",
+  "price": 692.25,
+  "base": 886.6274312047312,
+  "methods": [
+   "Peer P/E",
+   "Peer P/B"
+  ],
+  "confidence": 68,
+  "cyclical": false,
+  "capex_heavy": false,
+  "holding_company": false,
+  "earnings_usable": true,
+  "ownership": "Private",
+  "expectations_available": true
+ },
+ "SBIN.NS": {
+  "status": "ok",
+  "company_type": "bank",
+  "stance": "AVOID",
+  "price": 940.0,
+  "base": 632.2007763848925,
+  "methods": [
+   "Peer P/E",
+   "Peer P/B"
+  ],
+  "confidence": 78,
+  "cyclical": false,
+  "capex_heavy": false,
+  "holding_company": false,
+  "earnings_usable": true,
+  "ownership": "PSU",
+  "expectations_available": true
+ },
+ "BAJFINANCE.NS": {
+  "status": "ok",
+  "company_type": "nbfc",
+  "stance": "WATCH",
+  "price": 955.9500122070312,
+  "base": 536.5567352612211,
+  "methods": [
+   "Peer P/E",
+   "Peer P/B"
+  ],
+  "confidence": 73,
+  "cyclical": false,
+  "capex_heavy": false,
+  "holding_company": false,
+  "earnings_usable": true,
+  "ownership": "Private",
+  "expectations_available": true
+ },
+ "HDFCLIFE.NS": {
+  "status": "ok",
+  "company_type": "insurance",
+  "stance": "AVOID",
+  "price": 544.5,
+  "base": 357.65991135917704,
+  "methods": [
+   "Peer P/E",
+   "Peer P/B"
+  ],
+  "confidence": 74,
+  "cyclical": false,
+  "capex_heavy": false,
+  "holding_company": false,
+  "earnings_usable": true,
+  "ownership": "Private",
+  "expectations_available": false
+ },
+ "GROWW.NS": {
+  "status": "ok",
+  "company_type": "capital_markets",
+  "stance": "WATCH",
+  "price": 192.60000610351562,
+  "base": 108.32306341789473,
+  "methods": [
+   "Peer P/E",
+   "Peer P/B"
+  ],
+  "confidence": 50,
+  "cyclical": false,
+  "capex_heavy": false,
+  "holding_company": false,
+  "earnings_usable": true,
+  "ownership": "Private",
+  "expectations_available": true
+ },
+ "BSE.NS": {
+  "status": "ok",
+  "company_type": "capital_markets",
+  "stance": "WATCH",
+  "price": 3334.800048828125,
+  "base": 2309.5279675649995,
+  "methods": [
+   "Peer P/E",
+   "Peer P/B"
+  ],
+  "confidence": 71,
+  "cyclical": false,
+  "capex_heavy": false,
+  "holding_company": false,
+  "earnings_usable": true,
+  "ownership": "Private",
+  "expectations_available": true
+ },
+ "HDFCAMC.NS": {
+  "status": "ok",
+  "company_type": "asset_management",
+  "stance": "WATCH",
+  "price": 2245.0,
+  "base": 2181.949057225763,
+  "methods": [
+   "Peer P/E",
+   "Peer P/B"
+  ],
+  "confidence": 78,
+  "cyclical": false,
+  "capex_heavy": false,
+  "holding_company": false,
+  "earnings_usable": true,
+  "ownership": "Private",
+  "expectations_available": true
+ },
+ "BAJAJHLDNG.NS": {
+  "status": "ok",
+  "company_type": "asset_management",
+  "stance": "NOT RATED",
+  "price": 10600.0,
+  "base": 38369.90129898395,
+  "methods": [
+   "Peer P/E",
+   "Peer P/B"
+  ],
+  "confidence": 63,
+  "cyclical": false,
+  "capex_heavy": false,
+  "holding_company": true,
+  "earnings_usable": true,
+  "ownership": "Private",
+  "expectations_available": true
+ },
+ "SUNPHARMA.NS": {
+  "status": "ok",
+  "company_type": "pharma",
+  "stance": "WATCH",
+  "price": 1759.800048828125,
+  "base": 1254.8113908517316,
+  "methods": [
+   "DCF",
+   "Peer P/E"
+  ],
+  "confidence": 87,
+  "cyclical": false,
+  "capex_heavy": false,
+  "holding_company": false,
+  "earnings_usable": true,
+  "ownership": "Private",
+  "expectations_available": true
+ },
+ "APOLLOHOSP.NS": {
+  "status": "ok",
+  "company_type": "healthcare_services",
+  "stance": "WATCH",
+  "price": 7666.0,
+  "base": 6861.611928609455,
+  "methods": [
+   "DCF",
+   "Peer P/E"
+  ],
+  "confidence": 66,
+  "cyclical": false,
+  "capex_heavy": false,
+  "holding_company": false,
+  "earnings_usable": true,
+  "ownership": "Private",
+  "expectations_available": true
+ },
+ "HINDUNILVR.NS": {
+  "status": "ok",
+  "company_type": "consumer_defensive",
+  "stance": "AVOID",
+  "price": 1844.5,
+  "base": 1421.0018460003614,
+  "methods": [
+   "DCF",
+   "Peer P/E"
+  ],
+  "confidence": 82,
+  "cyclical": false,
+  "capex_heavy": false,
+  "holding_company": false,
+  "earnings_usable": true,
+  "ownership": "Private",
+  "expectations_available": true
+ },
+ "NESTLEIND.NS": {
+  "status": "ok",
+  "company_type": "consumer_defensive",
+  "stance": "WATCH",
+  "price": 1319.0,
+  "base": 537.9937609427787,
+  "methods": [
+   "DCF",
+   "Peer P/E"
+  ],
+  "confidence": 77,
+  "cyclical": false,
+  "capex_heavy": false,
+  "holding_company": false,
+  "earnings_usable": true,
+  "ownership": "Private",
+  "expectations_available": true
+ },
+ "TITAN.NS": {
+  "status": "ok",
+  "company_type": "consumer_cyclical",
+  "stance": "NOT RATED",
+  "price": 4359.5,
+  "base": 942.6248896292705,
+  "methods": [
+   "DCF",
+   "Peer P/E"
+  ],
+  "confidence": 63,
+  "cyclical": false,
+  "capex_heavy": false,
+  "holding_company": false,
+  "earnings_usable": true,
+  "ownership": "Private",
+  "expectations_available": true
+ },
+ "TRENT.NS": {
+  "status": "ok",
+  "company_type": "consumer_cyclical",
+  "stance": "NOT RATED",
+  "price": 2876.300048828125,
+  "base": 982.0151150929142,
+  "methods": [
+   "DCF",
+   "Peer P/E"
+  ],
+  "confidence": 63,
+  "cyclical": false,
+  "capex_heavy": false,
+  "holding_company": false,
+  "earnings_usable": true,
+  "ownership": "Private",
+  "expectations_available": true
+ },
+ "MARUTI.NS": {
+  "status": "ok",
+  "company_type": "automobile",
+  "stance": "WATCH",
+  "price": 11228.0,
+  "base": 12217.772365311948,
+  "methods": [
+   "DCF",
+   "Peer P/E"
+  ],
+  "confidence": 78,
+  "cyclical": false,
+  "capex_heavy": false,
+  "holding_company": false,
+  "earnings_usable": true,
+  "ownership": "Private",
+  "expectations_available": true
+ },
+ "ATHERENERG.NS": {
+  "status": "ok",
+  "company_type": "automobile",
+  "stance": "NOT RATED",
+  "price": 1406.0,
+  "base": 171.73005486503087,
+  "methods": [
+   "Growth-stage DCF",
+   "Peer EV/Sales"
+  ],
+  "confidence": 40,
+  "cyclical": false,
+  "capex_heavy": false,
+  "holding_company": false,
+  "earnings_usable": false,
+  "ownership": "Private",
+  "expectations_available": true
+ },
+ "SWIGGY.NS": {
+  "status": "ok",
+  "company_type": "consumer_cyclical",
+  "stance": "NOT RATED",
+  "price": 234.9499969482422,
+  "base": 289.7148753334188,
+  "methods": [
+   "Peer EV/Sales"
+  ],
+  "confidence": 36,
+  "cyclical": false,
+  "capex_heavy": false,
+  "holding_company": false,
+  "earnings_usable": false,
+  "ownership": "Private",
+  "expectations_available": true
+ },
+ "ETERNAL.NS": {
+  "status": "ok",
+  "company_type": "consumer_cyclical",
+  "stance": "NOT RATED",
+  "price": 319.04998779296875,
+  "base": 123.91786837843064,
+  "methods": [
+   "Peer EV/Sales"
+  ],
+  "confidence": 43,
+  "cyclical": false,
+  "capex_heavy": false,
+  "holding_company": false,
+  "earnings_usable": false,
+  "ownership": "Private",
+  "expectations_available": true
+ },
+ "IDEA.NS": {
+  "status": "ok",
+  "company_type": "telecom",
+  "stance": "INSUFFICIENT DATA",
+  "price": 12.800000190734863,
+  "base": null,
+  "methods": [],
+  "confidence": 34,
+  "cyclical": false,
+  "capex_heavy": false,
+  "holding_company": false,
+  "earnings_usable": false,
+  "ownership": "Private",
+  "expectations_available": true
+ },
+ "TATASTEEL.NS": {
+  "status": "ok",
+  "company_type": "materials",
+  "stance": "AVOID",
+  "price": 171.9600067138672,
+  "base": 102.39500568775784,
+  "methods": [
+   "DCF",
+   "Peer P/E"
+  ],
+  "confidence": 58,
+  "cyclical": true,
+  "capex_heavy": false,
+  "holding_company": false,
+  "earnings_usable": true,
+  "ownership": "Private",
+  "expectations_available": true
+ },
+ "HINDALCO.NS": {
+  "status": "ok",
+  "company_type": "materials",
+  "stance": "ATTRACTIVE",
+  "price": 890.1500244140625,
+  "base": 1030.2653873917243,
+  "methods": [
+   "DCF",
+   "Peer P/E"
+  ],
+  "confidence": 82,
+  "cyclical": true,
+  "capex_heavy": true,
+  "holding_company": false,
+  "earnings_usable": true,
+  "ownership": "Private",
+  "expectations_available": true
+ },
+ "ULTRACEMCO.NS": {
+  "status": "ok",
+  "company_type": "materials",
+  "stance": "AVOID",
+  "price": 10426.0,
+  "base": 6773.912167263811,
+  "methods": [
+   "DCF",
+   "Peer P/E"
+  ],
+  "confidence": 75,
+  "cyclical": false,
+  "capex_heavy": false,
+  "holding_company": false,
+  "earnings_usable": true,
+  "ownership": "Private",
+  "expectations_available": true
+ },
+ "PIDILITIND.NS": {
+  "status": "ok",
+  "company_type": "materials",
+  "stance": "WATCH",
+  "price": 1460.0999755859375,
+  "base": 1422.1362392988997,
+  "methods": [
+   "DCF",
+   "Peer P/E"
+  ],
+  "confidence": 71,
+  "cyclical": false,
+  "capex_heavy": false,
+  "holding_company": false,
+  "earnings_usable": true,
+  "ownership": "Private",
+  "expectations_available": true
+ },
+ "WAAREEENER.NS": {
+  "status": "ok",
+  "company_type": "industrial",
+  "stance": "WATCH",
+  "price": 2317.0,
+  "base": 1673.2511556809043,
+  "methods": [
+   "DCF",
+   "Peer P/E"
+  ],
+  "confidence": 71,
+  "cyclical": true,
+  "capex_heavy": true,
+  "holding_company": false,
+  "earnings_usable": true,
+  "ownership": "Private",
+  "expectations_available": true
+ },
+ "RELIANCE.NS": {
+  "status": "ok",
+  "company_type": "energy",
+  "stance": "AVOID",
+  "price": 1178.0,
+  "base": 751.9195177011459,
+  "methods": [
+   "DCF",
+   "Peer P/E"
+  ],
+  "confidence": 77,
+  "cyclical": false,
+  "capex_heavy": false,
+  "holding_company": false,
+  "earnings_usable": true,
+  "ownership": "Private",
+  "expectations_available": true
+ },
+ "ONGC.NS": {
+  "status": "ok",
+  "company_type": "energy",
+  "stance": "ATTRACTIVE",
+  "price": 219.8000030517578,
+  "base": 517.7007408316115,
+  "methods": [
+   "DCF",
+   "Peer P/E"
+  ],
+  "confidence": 68,
+  "cyclical": false,
+  "capex_heavy": false,
+  "holding_company": false,
+  "earnings_usable": true,
+  "ownership": "PSU",
+  "expectations_available": true
+ },
+ "NTPC.NS": {
+  "status": "ok",
+  "company_type": "utilities",
+  "stance": "WATCH",
+  "price": 309.70001220703125,
+  "base": 461.0790928115558,
+  "methods": [
+   "Peer P/E",
+   "Peer P/B"
+  ],
+  "confidence": 65,
+  "cyclical": false,
+  "capex_heavy": false,
+  "holding_company": false,
+  "earnings_usable": true,
+  "ownership": "PSU",
+  "expectations_available": false
+ },
+ "DLF.NS": {
+  "status": "ok",
+  "company_type": "real_estate",
+  "stance": "AVOID",
+  "price": 636.9500122070312,
+  "base": 434.487843458968,
+  "methods": [
+   "DCF",
+   "Peer P/E"
+  ],
+  "confidence": 77,
+  "cyclical": false,
+  "capex_heavy": false,
+  "holding_company": false,
+  "earnings_usable": true,
+  "ownership": "Private",
+  "expectations_available": true
+ },
+ "BHARTIARTL.NS": {
+  "status": "ok",
+  "company_type": "telecom",
+  "stance": "WATCH",
+  "price": 1804.5999755859375,
+  "base": 1387.9342854426989,
+  "methods": [
+   "DCF",
+   "Peer P/E"
+  ],
+  "confidence": 63,
+  "cyclical": false,
+  "capex_heavy": false,
+  "holding_company": false,
+  "earnings_usable": true,
+  "ownership": "Private",
+  "expectations_available": true
+ },
+ "LT.NS": {
+  "status": "ok",
+  "company_type": "industrial",
+  "stance": "AVOID",
+  "price": 3625.10009765625,
+  "base": 2194.7720165846,
+  "methods": [
+   "DCF",
+   "Peer P/E"
+  ],
+  "confidence": 89,
+  "cyclical": false,
+  "capex_heavy": false,
+  "holding_company": false,
+  "earnings_usable": true,
+  "ownership": "Private",
+  "expectations_available": true
+ }
+}

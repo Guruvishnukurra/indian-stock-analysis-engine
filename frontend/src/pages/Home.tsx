@@ -1,4 +1,4 @@
-import { ArrowRight, ArrowUpRight, ChartLineUp, MagnifyingGlass } from '@phosphor-icons/react'
+import { ArrowRight, ArrowUpRight, MagnifyingGlass } from '@phosphor-icons/react'
 import { motion, useInView, useReducedMotion } from 'motion/react'
 import { Suspense, lazy, useEffect, useRef, useState, type ReactNode } from 'react'
 import { Link, useNavigate } from 'react-router'
@@ -7,7 +7,7 @@ import { TraceBody } from '../components/Traces'
 import type { Analysis } from '../lib/api'
 import { type DemoItem, bareSymbol, getManifest, loadSnapshot, realisedVolatility, snapshotDate } from '../lib/demo'
 import { money } from '../lib/format'
-import { DISCLAIMER } from './Report'
+import { StoryShell } from '../components/story/StoryShell'
 
 const FuturesStage = lazy(() => import('../components/FuturesStage'))
 
@@ -122,7 +122,7 @@ function ExplainSection({ item }: { item: DemoItem }) {
 
 const EVIDENCE = [
   { figure: '36.0%', vs: 'vs 33.3% baseline', text: 'Balanced accuracy of our 40-day trend model in walk-forward tests. It misses our 5-point bar, so the dashboard hides it instead of showing a weak prediction.' },
-  { figure: '86%', vs: '55% recall', text: 'Of the news events the local AI model reports, on 120 held-out headlines, are genuine company events. About half of real events are still missed, and reports say so.' },
+  { figure: '86%', vs: '55% recall', text: 'Of the news events the local AI model reports, on 120 held-out headlines, are genuine company events. About half of real events are still missed, and the labels are not yet human-checked.' },
   { figure: '32', vs: 'stocks', text: 'The golden set re-checked after every engine change: routing, methods, allowed verdicts and sanity checks across sectors.' },
   { figure: '48', vs: 'NIFTY 50 companies', text: "Compared against analyst consensus. Consensus falls inside the engine's range for 52% of them, and the engine's relative calls are independent of analysts (rank correlation about 0)." },
 ]
@@ -137,8 +137,6 @@ export function HomePage() {
 
   useEffect(() => {
     getManifest().then((m) => { if (m.items.length) setItems(m.items) })
-    document.documentElement.dataset.surface = 'story'
-    return () => { delete document.documentElement.dataset.surface }
   }, [])
 
   const onPreview = (item: DemoItem | null) => {
@@ -155,21 +153,7 @@ export function HomePage() {
   const snapshotDay = items.find((i) => i.exported_at)?.exported_at
 
   return (
-    <div className="story">
-      <a className="skip-link" href="#home-main">Skip to content</a>
-      <header className="home-nav">
-        <Link className="home-brand" to="/">
-          <span className="brand-mark" aria-hidden="true"><ChartLineUp size={18} weight="bold" /></span>
-          Stock Analysis Engine
-        </Link>
-        <nav aria-label="Page sections">
-          <a href="#explained">Explained numbers</a>
-          <a href="#lab">Uncertainty lab</a>
-          <a href="#evidence">Evidence</a>
-        </nav>
-      </header>
-
-      <main id="home-main">
+    <StoryShell mainId="home-main">
         <section className="home-hero" aria-labelledby="home-title">
           <div className="hero-glow" aria-hidden="true"><span /><span /><span /></div>
           <FanCanvas originRef={anchor} sigma={sigma} onRange={setRange} />
@@ -222,6 +206,7 @@ export function HomePage() {
             <h2 id="evidence-title">Checked, including what failed.</h2>
             <p>The validation behind the engine, in plain numbers. Each one is reproducible from a script in the repository.</p>
           </div>
+          <Link className="text-link" to="/evidence">See every result, with charts<ArrowUpRight size={16} /></Link>
           <ol className="ledger">
             {EVIDENCE.map((e) => (
               <motion.li key={e.figure} initial={{ opacity: 0.001, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
@@ -238,9 +223,6 @@ export function HomePage() {
           <SearchField id="close-ticker" size="md" />
           <Picks items={items.slice(0, 6)} />
         </section>
-      </main>
-
-      <footer className="home-footer"><p>{DISCLAIMER}</p></footer>
-    </div>
+    </StoryShell>
   )
 }

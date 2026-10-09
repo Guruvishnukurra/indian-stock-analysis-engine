@@ -27,7 +27,8 @@ export function num(value: number | null | undefined, digits = 2): string {
 
 export function crore(value: number | null | undefined): string {
   if (!isNum(value)) return 'n/a'
-  return `₹${(value / 1e7).toLocaleString('en-IN', { maximumFractionDigits: 0 })} cr`
+  const sign = value < 0 ? '-' : ''
+  return `${sign}₹${(Math.abs(value) / 1e7).toLocaleString('en-IN', { maximumFractionDigits: 0 })} cr`
 }
 
 export function metricValue(value: number, unit: string): string {

@@ -80,9 +80,12 @@ export interface Analysis {
     risk_premium_reasons?: string[]
   }
   company_profile: {
-    company_type: string; classification_certainty?: string; valuation_family?: string
+    company_type: string; classification_certainty?: string; classification_basis?: string; valuation_family?: string
     earnings_usable?: boolean; holding_company?: boolean
+    // per-method routing: dcf_applicable / dcf_reason, peer_pe_applicable / peer_pe_reason, ...
+    [key: string]: unknown
   }
+  fundamentals_annual?: { date: string; Revenue?: number | null; Net_Income?: number | null; Free_Cash_Flow?: number | null; [key: string]: unknown }[]
   fair_value: FairValue
   method_results: Record<string, MethodResult>
   valuation_selection?: { selected_methods: string[]; excluded_methods: Record<string, string> }

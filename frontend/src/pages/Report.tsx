@@ -17,9 +17,7 @@ import { bareSymbol, snapshotDate } from '../lib/demo'
 import { type Theme, useTheme } from '../lib/theme'
 import { type Source, useAnalysis } from '../lib/useAnalysis'
 
-export const DISCLAIMER =
-  'Analytical assessment for research and education. Not investment advice, ' +
-  'not a recommendation to buy or sell, and not a guaranteed prediction.'
+import { DISCLAIMER } from '../lib/copy'
 
 const THEMES: { id: Theme; label: string; Icon: typeof Sun }[] = [
   { id: 'light', label: 'Light theme', Icon: Sun },

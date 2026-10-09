@@ -277,6 +277,7 @@ def validation_evidence():
         "ml_trend": ROOT / "models" / "trend_validation.json",
         "peer_selection": ROOT / "data" / "reference" / "peer_method_evaluation.json",
         "news_events_test": ROOT / "data" / "reference" / "news_event_evaluation_test.json",
+        "news_events_test2": ROOT / "data" / "reference" / "news_event_evaluation_test2.json",
         "metric_distributions": ROOT / "data" / "reference" / "metric_distributions.json",
         "consensus_comparison": ROOT / "data" / "reference" / "consensus_comparison.json",
     }
