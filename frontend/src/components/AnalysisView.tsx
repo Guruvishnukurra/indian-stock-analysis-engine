@@ -91,7 +91,7 @@ function Explorer({ label, options }: {
   return (
     <div className="explorer">
       <div className="seg" role="tablist" aria-label={label}>
-        <SlideIndicator index={options.indexOf(current)} className="seg-pill" />
+        <SlideIndicator index={options.indexOf(current)} className="seg-pill" kind="pill" />
         {options.map((o) => (
           <button key={o.id} type="button" role="tab" aria-selected={o.id === current.id} onClick={() => setActive(o.id)}>
             {o.label}{o.count != null && <span className="count">{o.count}</span>}
@@ -195,7 +195,7 @@ function Tabs({ active, onChange, counts }: { active: TabTarget; onChange: (t: T
   return (
     <nav className="tabs" id="report-tabs" aria-label="Report sections">
       <div className="tablist" role="tablist">
-        <SlideIndicator index={TABS.findIndex((t) => t.id === active)} className="tab-ink" inset={10} />
+        <SlideIndicator index={TABS.findIndex((t) => t.id === active)} className="tab-ink" kind="line" inset={10} />
         {TABS.map((t, i) => (
           <button key={t.id} ref={(el) => { refs.current[i] = el }} role="tab" id={`tab-${t.id}`}
             aria-selected={active === t.id} aria-controls={`panel-${t.id}`} tabIndex={active === t.id ? 0 : -1}
@@ -365,7 +365,7 @@ function ScenarioExplorer({ a }: { a: Analysis }) {
   return (
     <div className="stack">
       <div className="seg" role="radiogroup" aria-label="Scenario">
-        <SlideIndicator index={Math.max(0, names.indexOf(pick))} className="seg-pill" />
+        <SlideIndicator index={Math.max(0, names.indexOf(pick))} className="seg-pill" kind="pill" />
         {names.map((n) => (
           <button key={n} type="button" role="radio" aria-checked={pick === n} onClick={() => setPick(n)}>{title(n)} case</button>
         ))}
@@ -497,7 +497,7 @@ function MarketTab({ a, open }: { a: Analysis; open: Open }) {
         <Card title="Price" icon={<ChartLine size={18} />}
           action={
             <div className="seg sm" role="radiogroup" aria-label="Chart range">
-              <SlideIndicator index={RANGES.findIndex(([, d]) => d === range)} className="seg-pill" />
+              <SlideIndicator index={RANGES.findIndex(([, d]) => d === range)} className="seg-pill" kind="pill" />
               {RANGES.map(([l, d]) => <button key={l} type="button" role="radio" aria-checked={range === d} onClick={() => setRange(d)}>{l}</button>)}
             </div>
           }>

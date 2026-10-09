@@ -8,10 +8,11 @@
 /* ---------- sliding indicators ---------- */
 
 .tablist { position: relative; }
-.tab-ink { position: absolute; left: 0; bottom: -1px; height: 2px; border-radius: 2px; background: var(--accent); pointer-events: none; }
+.tab-ink { position: absolute; left: 0; bottom: -1px; width: 100px; height: 2px; border-radius: 2px; background: var(--accent); pointer-events: none; transform-origin: left; }
 .seg { position: relative; isolation: isolate; }
-.seg-pill { position: absolute; left: 0; top: 3px; bottom: 3px; z-index: -1; border-radius: 8px; background: var(--surface); box-shadow: var(--shadow-sm); pointer-events: none; }
-.tab-ink[data-ready], .seg-pill[data-ready] { transition: transform 420ms var(--ease-expo), width 420ms var(--ease-expo); }
+.seg-pill { position: absolute; inset: 0; z-index: -1; background: var(--surface); pointer-events: none; }
+.tab-ink[data-ready] { transition: transform 420ms var(--ease-expo); }
+.seg-pill[data-ready] { transition: clip-path 420ms var(--ease-expo); }
 
 /* ---------- panel figure (flies in from the clicked number) ---------- */
 
