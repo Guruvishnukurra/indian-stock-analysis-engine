@@ -1,3 +1,4 @@
+import { MotionConfig } from 'motion/react'
 import { Navigate, Route, Routes, useLocation } from 'react-router'
 import { HomePage } from './pages/Home'
 import { ReportPage } from './pages/Report'
@@ -10,10 +11,13 @@ function Root() {
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Root />} />
-      <Route path="/s/:ticker" element={<ReportPage />} />
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+    // Respect the OS reduced-motion setting for every motion component.
+    <MotionConfig reducedMotion="user">
+      <Routes>
+        <Route path="/" element={<Root />} />
+        <Route path="/s/:ticker" element={<ReportPage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </MotionConfig>
   )
 }

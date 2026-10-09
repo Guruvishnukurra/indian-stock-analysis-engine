@@ -46,7 +46,7 @@
   cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: background 160ms var(--ease), color 160ms var(--ease);
 }
 .seg button:hover { color: var(--ink); }
-.seg button[aria-selected="true"], .seg button[aria-checked="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow-sm); }
+.seg button[aria-selected="true"], .seg button[aria-checked="true"] { color: var(--ink); }
 .seg .count { font-family: var(--mono); font-size: 0.7rem; padding: 0 6px; border-radius: 999px; background: var(--surface-3); color: var(--ink-2); }
 .seg.sm button { padding: 4px 10px; font-size: 0.78rem; }
 .explorer { display: grid; gap: 16px; }

@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import type { Analysis } from '../lib/api'
 import { assessmentTone, crore, isNum, metricValue, money, num, pct, title } from '../lib/format'
 import { StanceBadge } from './Status'
+import { CountUp } from '../motion/CountUp'
 import { METHOD_INFO, METRIC_INFO, type TabTarget, type Trace, humanKey, traceHeading } from '../lib/traces'
 
 /* "How we got here" pages. Each trace replays the engine's own decision
@@ -148,7 +149,7 @@ function FairValueTrace({ a }: { a: Analysis }) {
         </div>
       </Step>
       <Step n={4} heading="Blend by weight">
-        <Formula>{rows.map((r, i) => <span key={r.key}>{i > 0 && ' + '}{money((r.m?.base ?? 0) * r.w)}</span>)} = <b>{money(total)}</b></Formula>
+        <Formula>{rows.map((r, i) => <span key={r.key}>{i > 0 && ' + '}{money((r.m?.base ?? 0) * r.w)}</span>)} = <b><CountUp value={total} format={money} delay={0.25} /></b></Formula>
         <p className="muted small">Weights favour methods that suit this company type and agree with the others.</p>
       </Step>
       <Step n={5} heading="Build the range">
@@ -158,7 +159,7 @@ function FairValueTrace({ a }: { a: Analysis }) {
         </p>
       </Step>
       <Step n="=" heading="Fair value (base)" result>
-        <div className="big-num">{money(fv.base)}</div>
+        <div className="big-num">{isNum(fv.base) ? <CountUp value={fv.base} format={money} delay={0.3} /> : 'n/a'}</div>
         <p className="muted small">Range {money(fv.low)} to {money(fv.high)}</p>
       </Step>
     </ol>
@@ -173,7 +174,7 @@ function UpsideTrace({ a }: { a: Analysis }) {
       <Step n={1} heading="Start from the blended fair value"><div className="big-num sm">{money(fv.base)}</div></Step>
       <Step n={2} heading="Compare with the last traded price"><div className="big-num sm">{money(a.current_price)}</div></Step>
       <Step n={3} heading="Upside = fair value / price - 1">
-        <Formula>{money(fv.base)} / {money(a.current_price)} - 1 = <b>{pct(fv.upside_base)}</b></Formula>
+        <Formula>{money(fv.base)} / {money(a.current_price)} - 1 = <b>{isNum(fv.upside_base) ? <CountUp value={fv.upside_base} format={(n) => pct(n)} delay={0.2} /> : 'n/a'}</b></Formula>
         <p className="muted small">Across the range: {pct(fv.upside_low)} (low) to {pct(fv.upside_high)} (high).</p>
       </Step>
       {v && (
@@ -201,7 +202,7 @@ function ConfidenceTrace({ a }: { a: Analysis }) {
           </Step>
         ))}
         <Step n="=" heading="Confidence" result>
-          <div className="big-num">{a.confidence.score}<span className="muted small">/100</span></div>
+          <div className="big-num"><CountUp value={a.confidence.score} format={(n) => String(Math.round(n))} delay={0.3} /><span className="muted small">/100</span></div>
           <p className="muted small">{a.confidence.label}</p>
         </Step>
       </ol>
@@ -222,7 +223,7 @@ function QualityTrace({ a }: { a: Analysis }) {
           </Step>
         ))}
         <Step n="=" heading="Quality score" result>
-          <div className="big-num">{isNum(f.score) ? Math.round(f.score) : 'n/a'}<span className="muted small">/100</span></div>
+          <div className="big-num">{isNum(f.score) ? <CountUp value={f.score} format={(n) => String(Math.round(n))} delay={0.3} /> : 'n/a'}<span className="muted small">/100</span></div>
           <p className="muted small">{f.label}. {T.strongQuality}+ is strong, under {T.weakQuality} is weak.</p>
         </Step>
       </ol>
@@ -271,7 +272,7 @@ function MethodTrace({ a, k }: { a: Analysis; k: string }) {
         <Step n="=" heading={m.available ? 'Value per share' : 'Not used'} result>
           {m.available ? (
             <>
-              <div className="big-num">{money(m.base)}</div>
+              <div className="big-num">{isNum(m.base) ? <CountUp value={m.base} format={money} delay={0.2} /> : 'n/a'}</div>
               <p className="muted small">Range {money(m.low)} to {money(m.high)} ({m.range_basis}). {weight ? `Weight in the blend: ${Math.round(weight * 100)}%.` : 'Not part of the blend.'}</p>
             </>
           ) : <p className="small secondary">{m.reason}</p>}

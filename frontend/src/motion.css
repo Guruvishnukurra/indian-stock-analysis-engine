@@ -1,0 +1,56 @@
+/* Motion layer. One grammar everywhere: exponential ease-out, content is
+   always in its final state at rest (animations only run "backwards" from
+   an offset), and the global reduced-motion rule in index.css turns every
+   keyframe off without hiding anything. */
+
+:root { --ease-expo: cubic-bezier(0.16, 1, 0.3, 1); }
+
+/* ---------- sliding indicators ---------- */
+
+.tablist { position: relative; }
+.tab-ink { position: absolute; left: 0; bottom: -1px; height: 2px; border-radius: 2px; background: var(--accent); pointer-events: none; }
+.seg { position: relative; isolation: isolate; }
+.seg-pill { position: absolute; left: 0; top: 3px; bottom: 3px; z-index: -1; border-radius: 8px; background: var(--surface); box-shadow: var(--shadow-sm); pointer-events: none; }
+.tab-ink[data-ready], .seg-pill[data-ready] { transition: transform 420ms var(--ease-expo), width 420ms var(--ease-expo); }
+
+/* ---------- panel figure (flies in from the clicked number) ---------- */
+
+dialog.drawer { overflow: visible; }
+dialog.drawer.flight[open] { animation: panel-fade 320ms var(--ease-expo); }
+@keyframes panel-fade { from { opacity: 0; } to { opacity: 1; } }
+.drawer-heading { min-width: 0; }
+.drawer-figure { display: inline-block; margin-top: 12px; transform-origin: top left; will-change: transform; }
+.drawer-figure .value { font-family: var(--mono); font-size: 2.1rem; font-weight: 500; letter-spacing: -0.02em; line-height: 1.1; display: inline-flex; align-items: baseline; gap: 4px; }
+.drawer-figure .stance { font-size: 1.05rem; padding: 6px 14px; }
+
+/* ---------- trace choreography ---------- */
+
+/* the connector draws down the chain as each step lands */
+.step::before { transform-origin: top; animation: line-draw 420ms var(--ease-expo) backwards; }
+.step:nth-child(1)::before { animation-delay: 120ms; }
+.step:nth-child(2)::before { animation-delay: 170ms; }
+.step:nth-child(3)::before { animation-delay: 220ms; }
+.step:nth-child(4)::before { animation-delay: 270ms; }
+.step:nth-child(5)::before { animation-delay: 320ms; }
+.step:nth-child(6)::before { animation-delay: 370ms; }
+.step:nth-child(n+7)::before { animation-delay: 420ms; }
+@keyframes line-draw { from { transform: scaleY(0); } }
+
+.step .dot { animation: dot-pop 380ms var(--ease-expo) backwards; animation-delay: inherit; }
+@keyframes dot-pop { from { transform: scale(0.4); opacity: 0; } }
+
+.step-body .meter > span, .kpi .meter > span { transform-origin: left; animation: grow-x-key 900ms var(--ease-expo) backwards 200ms; }
+
+/* ---------- charts ---------- */
+
+.chart .draw-in { stroke-dasharray: 1; stroke-dashoffset: 0; animation: draw 1400ms var(--ease-expo) backwards; }
+@keyframes draw { from { stroke-dashoffset: 1; } }
+
+.chart .pop-in { transform-box: fill-box; transform-origin: center; animation: pop 520ms var(--ease-expo) backwards; }
+@keyframes pop { from { transform: scale(0); opacity: 0; } }
+
+.chart .grow-x { transform-box: fill-box; transform-origin: center; animation: grow-x-key 900ms var(--ease-expo) backwards 120ms; }
+@keyframes grow-x-key { from { transform: scaleX(0); } }
+
+.chart .grow-y { transform-box: fill-box; transform-origin: bottom; animation: grow-y-key 700ms var(--ease-expo) backwards; }
+@keyframes grow-y-key { from { transform: scaleY(0); } }

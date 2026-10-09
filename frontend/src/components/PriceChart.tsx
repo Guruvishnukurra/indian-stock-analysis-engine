@@ -75,8 +75,9 @@ export function PriceChart({ data }: { data: Row[] }) {
         ))}
 
         {SERIES.map((s, index) => (
-          <path key={s.key} d={paths[index]} fill="none" stroke={s.color} strokeWidth={2}
-            strokeLinejoin="round" strokeLinecap="round" />
+          <path key={`${s.key}-${data.length}`} d={paths[index]} fill="none" stroke={s.color} strokeWidth={2}
+            strokeLinejoin="round" strokeLinecap="round" pathLength={1} className="draw-in"
+            style={{ animationDelay: `${index * 160}ms` }} />
         ))}
 
         {/* Direct end labels (relief for the low-contrast aqua line). */}
@@ -84,7 +85,7 @@ export function PriceChart({ data }: { data: Row[] }) {
           const value = last[s.key]
           if (value == null) return null
           return (
-            <g key={s.key}>
+            <g key={`${s.key}-${data.length}`} className="pop-in" style={{ animationDelay: `${900 + index * 160}ms` }}>
               <circle cx={x(data.length - 1)} cy={y(value)} r={4} fill={s.color} stroke="var(--surface)" strokeWidth={2} />
               <text x={x(data.length - 1) + 8} y={y(value) + 4 + (index - 1) * 2}>{index === 0 ? money(value) : s.label.split(' ')[0]}</text>
             </g>

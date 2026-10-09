@@ -103,14 +103,14 @@ export function FairValueChart({
 
         {growthRange && (
           <rect x={x(Math.max(growthRange.p10, minV))} width={Math.max(x(growthRange.p90) - x(Math.max(growthRange.p10, minV)), 2)}
-            y={96} height={8} rx={4} fill="var(--series-1)" opacity={0.25} />
+            y={96} height={8} rx={4} fill="var(--series-1)" opacity={0.25} className="grow-x" style={{ animationDelay: '300ms' }} />
         )}
 
         {hasBand && (
           <>
             <rect x={x(fairValue.low!)} width={Math.max(x(fairValue.high!) - x(fairValue.low!), 2)}
-              y={62} height={22} rx={4} fill="var(--series-1-wash)" stroke="var(--series-1)" strokeWidth={1} />
-            <line x1={x(fairValue.base!)} x2={x(fairValue.base!)} y1={56} y2={90} stroke="var(--series-1)" strokeWidth={2} />
+              y={62} height={22} rx={4} fill="var(--series-1-wash)" stroke="var(--series-1)" strokeWidth={1} className="grow-x" />
+            <line x1={x(fairValue.base!)} x2={x(fairValue.base!)} y1={56} y2={90} stroke="var(--series-1)" strokeWidth={2} className="grow-y" style={{ animationDelay: '350ms' }} />
             <text x={x(fairValue.base!)} y={50} textAnchor="middle" className="label-strong">
               Base {money(fairValue.base)}
             </text>
@@ -119,16 +119,18 @@ export function FairValueChart({
           </>
         )}
 
-        {methods.map((m) => (
+        {methods.map((m, i) => (
           <g key={m.label}>
-            <circle cx={x(m.value)} cy={73} r={5} fill="var(--series-1)" stroke="var(--surface)" strokeWidth={2} />
+            <circle cx={x(m.value)} cy={73} r={5} fill="var(--series-1)" stroke="var(--surface)" strokeWidth={2}
+              className="pop-in" style={{ animationDelay: `${450 + i * 90}ms` }} />
             {hit(m, x(m.value), 73)}
           </g>
         ))}
 
-        {context.map((m) => (
+        {context.map((m, i) => (
           <g key={m.label}>
-            <circle cx={x(m.value)} cy={73} r={5} fill="var(--surface)" stroke="var(--ink-3)" strokeWidth={2} />
+            <circle cx={x(m.value)} cy={73} r={5} fill="var(--surface)" stroke="var(--ink-3)" strokeWidth={2}
+              className="pop-in" style={{ animationDelay: `${650 + i * 90}ms` }} />
             {hit(m, x(m.value), 73)}
           </g>
         ))}
@@ -141,7 +143,7 @@ export function FairValueChart({
         ) : null}
 
         <g>
-          <line x1={x(price)} x2={x(price)} y1={28} y2={axisY} stroke="var(--ink)" strokeWidth={2} />
+          <line x1={x(price)} x2={x(price)} y1={28} y2={axisY} stroke="var(--ink)" strokeWidth={2} className="grow-y" />
           <text x={x(price)} y={20} textAnchor="middle" className="label-strong">
             Price {money(price)}
           </text>

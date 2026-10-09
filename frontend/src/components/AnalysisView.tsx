@@ -27,6 +27,9 @@ import { FairValueChart } from './FairValueChart'
 import { PriceChart } from './PriceChart'
 import { Sensitivity } from './Sensitivity'
 import { StanceBadge } from './Status'
+import { CountUp } from '../motion/CountUp'
+import { FlyIn } from '../motion/FlyIn'
+import { SlideIndicator } from '../motion/SlideIndicator'
 import { type TabTarget, type Trace, traceHeading } from '../lib/traces'
 import { TraceBody } from './Traces'
 
@@ -40,7 +43,8 @@ const METHODS: [string, string][] = [
 ]
 
 type Tone = 'up' | 'down' | 'warn' | 'neutral'
-type Open = (t: Trace) => void
+// `from` is the clicked element; its [data-fig] figure flies into the panel.
+type Open = (t: Trace, from?: Element | null) => void
 
 function List({ items, tone, icon, empty = 'Nothing notable' }: {
   items: string[]; tone: Tone; icon: ReactNode; empty?: string
@@ -87,6 +91,7 @@ function Explorer({ label, options }: {
   return (
     <div className="explorer">
       <div className="seg" role="tablist" aria-label={label}>
+        <SlideIndicator index={options.indexOf(current)} className="seg-pill" />
         {options.map((o) => (
           <button key={o.id} type="button" role="tab" aria-selected={o.id === current.id} onClick={() => setActive(o.id)}>
             {o.label}{o.count != null && <span className="count">{o.count}</span>}
@@ -101,10 +106,10 @@ function Explorer({ label, options }: {
 /* ---------------- hero ---------------- */
 
 function Kpi({ icon, label, onClick, children, detail }: {
-  icon: ReactNode; label: string; onClick: () => void; children: ReactNode; detail: ReactNode
+  icon: ReactNode; label: string; onClick: (el: HTMLElement) => void; children: ReactNode; detail: ReactNode
 }) {
   return (
-    <button type="button" className="kpi" onClick={onClick}>
+    <button type="button" className="kpi" onClick={(e) => onClick(e.currentTarget)}>
       <span className="label">{icon}{label}</span>
       {children}
       <span className="detail">{detail}</span>
@@ -137,28 +142,28 @@ function Hero({ a, open }: { a: Analysis; open: Open }) {
       </div>
 
       <div className="kpis" role="group" aria-label="Key figures. Select one to see how it was calculated.">
-        <Kpi icon={<Target size={14} />} label="Overall" onClick={() => open({ type: 'stance' })} detail="Analytical view, not advice">
-          <StanceBadge stance={a.explanation.stance} />
+        <Kpi icon={<Target size={14} />} label="Overall" onClick={(el) => open({ type: 'stance' }, el)} detail="Analytical view, not advice">
+          <span data-fig><StanceBadge stance={a.explanation.stance} /></span>
         </Kpi>
-        <Kpi icon={<Scales size={14} />} label="Fair value (base)" onClick={() => open({ type: 'fairvalue' })}
+        <Kpi icon={<Scales size={14} />} label="Fair value (base)" onClick={(el) => open({ type: 'fairvalue' }, el)}
           detail={fv.available ? `Range ${money(fv.low)} to ${money(fv.high)}` : fv.reason ?? 'Unavailable'}>
-          <span className="value">{fv.available ? money(fv.base) : 'n/a'}</span>
+          <span className="value" data-fig>{fv.available && isNum(fv.base) ? <CountUp value={fv.base} format={money} /> : 'n/a'}</span>
         </Kpi>
-        <Kpi icon={<ChartLine size={14} />} label="Upside to base" onClick={() => open({ type: 'upside' })}
+        <Kpi icon={<ChartLine size={14} />} label="Upside to base" onClick={(el) => open({ type: 'upside' }, el)}
           detail={a.explanation.verdicts?.valuation.label ?? 'Valuation n/a'}>
-          <span className={`value delta ${isNum(upside) && upside >= 0 ? 'up' : 'down'}`}>
+          <span className={`value delta ${isNum(upside) && upside >= 0 ? 'up' : 'down'}`} data-fig>
             {isNum(upside) && (upside >= 0 ? <ArrowUpRight size={20} weight="bold" /> : <ArrowDownRight size={20} weight="bold" />)}
-            {pct(upside, true, 0)}
+            {isNum(upside) ? <CountUp value={upside} format={(n) => pct(n, true, 0)} delay={0.1} /> : 'n/a'}
           </span>
         </Kpi>
-        <Kpi icon={<Gauge size={14} />} label="Confidence" onClick={() => open({ type: 'confidence' })} detail={c.label}>
-          <span className="value">{c.score}<span className="muted small">/100</span></span>
+        <Kpi icon={<Gauge size={14} />} label="Confidence" onClick={(el) => open({ type: 'confidence' }, el)} detail={c.label}>
+          <span className="value" data-fig><CountUp value={c.score} format={(n) => String(Math.round(n))} delay={0.15} /><span className="muted small">/100</span></span>
           <span className={`meter ${c.score >= 75 ? 'good' : c.score >= 55 ? '' : 'warn'}`} aria-hidden="true">
             <span style={{ width: `${c.score}%` }} />
           </span>
         </Kpi>
-        <Kpi icon={<ShieldWarning size={14} />} label="Quality" onClick={() => open({ type: 'quality' })} detail={q.label}>
-          <span className="value">{isNum(q.score) ? Math.round(q.score) : 'n/a'}<span className="muted small">/100</span></span>
+        <Kpi icon={<ShieldWarning size={14} />} label="Quality" onClick={(el) => open({ type: 'quality' }, el)} detail={q.label}>
+          <span className="value" data-fig>{isNum(q.score) ? <CountUp value={q.score} format={(n) => String(Math.round(n))} delay={0.2} /> : 'n/a'}<span className="muted small">/100</span></span>
         </Kpi>
       </div>
     </header>
@@ -190,6 +195,7 @@ function Tabs({ active, onChange, counts }: { active: TabTarget; onChange: (t: T
   return (
     <nav className="tabs" id="report-tabs" aria-label="Report sections">
       <div className="tablist" role="tablist">
+        <SlideIndicator index={TABS.findIndex((t) => t.id === active)} className="tab-ink" inset={10} />
         {TABS.map((t, i) => (
           <button key={t.id} ref={(el) => { refs.current[i] = el }} role="tab" id={`tab-${t.id}`}
             aria-selected={active === t.id} aria-controls={`panel-${t.id}`} tabIndex={active === t.id ? 0 : -1}
@@ -224,17 +230,17 @@ function VerdictPath({ a, open }: { a: Analysis; open: Open }) {
       <ol className="vpath">
         {nodes.map((n) => (
           <li key={n.label}>
-            <button type="button" className={`vnode ${n.tone}`} onClick={() => open(n.trace)}>
+            <button type="button" className={`vnode ${n.tone}`} onClick={(e) => open(n.trace, e.currentTarget)}>
               <span className="vlabel">{n.label}</span>
-              <span className="vvalue">{n.value}</span>
+              <span className="vvalue" data-fig>{n.value}</span>
             </button>
             <CaretRight size={16} className="varrow" aria-hidden="true" />
           </li>
         ))}
         <li>
-          <button type="button" className="vnode result" onClick={() => open({ type: 'stance' })}>
+          <button type="button" className="vnode result" onClick={(e) => open({ type: 'stance' }, e.currentTarget)}>
             <span className="vlabel">Stance</span>
-            <StanceBadge stance={a.explanation.stance} />
+            <span data-fig><StanceBadge stance={a.explanation.stance} /></span>
           </button>
         </li>
       </ol>
@@ -319,13 +325,13 @@ function MethodsTable({ a, open }: { a: Analysis; open: Open }) {
               if (!m) return null
               const weight = weights[key]
               return (
-                <tr key={key} className={m.available ? '' : 'excluded'} onClick={() => open({ type: 'method', key })}>
+                <tr key={key} className={m.available ? '' : 'excluded'} onClick={(e) => open({ type: 'method', key }, e.currentTarget)}>
                   <td>
-                    <button type="button" className="row-link" onClick={(e) => { e.stopPropagation(); open({ type: 'method', key }) }}>
+                    <button type="button" className="row-link" onClick={(e) => { e.stopPropagation(); open({ type: 'method', key }, e.currentTarget.closest('tr')) }}>
                       {label}{label in context ? ' (context)' : ''}<CaretRight size={13} aria-hidden="true" />
                     </button>
                   </td>
-                  <td className="num" data-label="Value">{m.available ? money(m.base) : 'n/a'}</td>
+                  <td className="num" data-label="Value"><span data-fig>{m.available ? money(m.base) : 'n/a'}</span></td>
                   <td className="num" data-label="Range">{m.available ? `${money(m.low)} to ${money(m.high)}` : 'n/a'}</td>
                   <td data-label="Weight" style={{ whiteSpace: 'nowrap' }}>
                     {weight ? (<><span className="weight-bar" aria-hidden="true"><span style={{ width: `${weight * 100}%` }} /></span><span className="mono">{Math.round(weight * 100)}%</span></>) : <span className="muted">n/a</span>}
@@ -359,6 +365,7 @@ function ScenarioExplorer({ a }: { a: Analysis }) {
   return (
     <div className="stack">
       <div className="seg" role="radiogroup" aria-label="Scenario">
+        <SlideIndicator index={Math.max(0, names.indexOf(pick))} className="seg-pill" />
         {names.map((n) => (
           <button key={n} type="button" role="radio" aria-checked={pick === n} onClick={() => setPick(n)}>{title(n)} case</button>
         ))}
@@ -458,9 +465,9 @@ function FundamentalsTab({ a, open }: { a: Analysis; open: Open }) {
         {f.metrics.map((m) => {
           const tone = assessmentTone(m.assessment)
           return (
-            <button type="button" className="metric" key={m.key} onClick={() => open({ type: 'metric', key: m.key })}>
+            <button type="button" className="metric" key={m.key} onClick={(e) => open({ type: 'metric', key: m.key }, e.currentTarget)}>
               <span className="name">{m.label}</span>
-              <span className="val">{metricValue(m.value, m.unit)}</span>
+              <span className="val" data-fig>{metricValue(m.value, m.unit)}</span>
               <span className={`meter ${tone}`} aria-hidden="true"><span style={{ width: `${Math.max(m.score, 3)}%` }} /></span>
               <span className="row"><span>{m.assessment}, {Math.round(m.score)}/100</span><CaretRight size={13} aria-hidden="true" /></span>
               <span className="muted small">{m.source ?? 'Period n/a'}</span>
@@ -490,6 +497,7 @@ function MarketTab({ a, open }: { a: Analysis; open: Open }) {
         <Card title="Price" icon={<ChartLine size={18} />}
           action={
             <div className="seg sm" role="radiogroup" aria-label="Chart range">
+              <SlideIndicator index={RANGES.findIndex(([, d]) => d === range)} className="seg-pill" />
               {RANGES.map(([l, d]) => <button key={l} type="button" role="radio" aria-checked={range === d} onClick={() => setRange(d)}>{l}</button>)}
             </div>
           }>
@@ -504,8 +512,8 @@ function MarketTab({ a, open }: { a: Analysis; open: Open }) {
             <div className="stat"><div className="label">Relative to sector</div><div className={`val delta ${tone(c.relative_to_sector)}`}>{pp(c.relative_to_sector)}</div></div>
             <div className="stat"><div className="label">RSI (14)</div><div className="val">{num(a.latest_technical?.RSI_14, 1)}</div></div>
             <div className="stat"><div className="label">Beta vs NIFTY</div><div className="val">{num(a.beta)}</div></div>
-            <button type="button" className="stat stat-btn" onClick={() => open({ type: 'timing' })}>
-              <span className="label">Trend <CaretRight size={12} aria-hidden="true" /></span><span className="val">{a.technical_score.label}</span>
+            <button type="button" className="stat stat-btn" onClick={(e) => open({ type: 'timing' }, e.currentTarget)}>
+              <span className="label">Trend <CaretRight size={12} aria-hidden="true" /></span><span className="val" data-fig>{a.technical_score.label}</span>
             </button>
           </div>
           <p className="muted small">Sector benchmark: {a.sector_benchmark?.name ?? 'n/a'}</p>
@@ -603,6 +611,26 @@ function NewsTab({ a, history, open }: { a: Analysis; history: HistoryRow[]; ope
 
 /* ---------------- page ---------------- */
 
+// The headline figure a trace explains, shown large in the panel header.
+function traceFigure(t: Trace, a: Analysis): ReactNode {
+  switch (t.type) {
+    case 'stance': return <StanceBadge stance={a.explanation.stance} />
+    case 'fairvalue': return <span className="value">{money(a.fair_value.base)}</span>
+    case 'upside': return <span className={`value delta ${(a.fair_value.upside_base ?? 0) >= 0 ? 'up' : 'down'}`}>{pct(a.fair_value.upside_base, true, 0)}</span>
+    case 'confidence': return <span className="value">{a.confidence.score}<span className="muted small">/100</span></span>
+    case 'quality': return <span className="value">{isNum(a.fundamental_score.score) ? Math.round(a.fundamental_score.score) : 'n/a'}<span className="muted small">/100</span></span>
+    case 'timing': return <span className="value">{a.technical_score.label}</span>
+    case 'method': {
+      const m = a.method_results[t.key]
+      return <span className="value">{m?.available ? money(m.base) : 'Not used'}</span>
+    }
+    case 'metric': {
+      const m = a.fundamental_score.metrics.find((x) => x.key === t.key)
+      return <span className="value">{m ? metricValue(m.value, m.unit) : 'n/a'}</span>
+    }
+  }
+}
+
 const TAB_IDS = TABS.map((t) => t.id)
 
 // Trace <-> URL: ?explain=fairvalue, ?explain=method:dcf, ?explain=metric:roe
@@ -623,7 +651,14 @@ export function AnalysisView({ analysis: a, history }: { analysis: Analysis; his
 
   const setTab = (t: TabTarget) => setParams((p) => { p.set('tab', t); return p }, { replace: true })
   // Opening a trace pushes history so the browser Back button closes it.
+  const [origin, setOrigin] = useState<DOMRect | null>(null)
+  const open: Open = (t, from) => {
+    const fig = from?.querySelector('[data-fig]') ?? from
+    setOrigin(fig ? fig.getBoundingClientRect() : null)
+    setTrace(t)
+  }
   const setTrace = (t: Trace | null) => {
+    if (!t) setOrigin(null)
     if (t) setParams((p) => { p.set('explain', formatTrace(t)); return p })
     else if (window.history.state?.idx > 0 && params.get('explain')) window.history.back()
     else setParams((p) => { p.delete('explain'); return p }, { replace: true })
@@ -643,16 +678,18 @@ export function AnalysisView({ analysis: a, history }: { analysis: Analysis; his
 
   return (
     <article>
-      <Hero a={a} open={setTrace} />
+      <Hero a={a} open={open} />
       <Tabs active={tab} onChange={setTab} counts={counts} />
       <div className="tabpanel" role="tabpanel" id={`panel-${tab}`} aria-labelledby={`tab-${tab}`} key={tab}>
-        {tab === 'overview' && <Overview a={a} open={setTrace} />}
-        {tab === 'valuation' && <ValuationTab a={a} open={setTrace} />}
-        {tab === 'fundamentals' && <FundamentalsTab a={a} open={setTrace} />}
-        {tab === 'market' && <MarketTab a={a} open={setTrace} />}
-        {tab === 'news' && <NewsTab a={a} history={history} open={setTrace} />}
+        {tab === 'overview' && <Overview a={a} open={open} />}
+        {tab === 'valuation' && <ValuationTab a={a} open={open} />}
+        {tab === 'fundamentals' && <FundamentalsTab a={a} open={open} />}
+        {tab === 'market' && <MarketTab a={a} open={open} />}
+        {tab === 'news' && <NewsTab a={a} history={history} open={open} />}
       </div>
       <Drawer open={trace != null} title={heading?.title ?? ''} eyebrow={heading ? `${heading.eyebrow}: how we got here` : undefined}
+        figure={trace ? <FlyIn key={formatTrace(trace)} origin={origin}>{traceFigure(trace, a)}</FlyIn> : null}
+        flight={origin != null}
         onClose={() => setTrace(null)}>
         {trace && <TraceBody trace={trace} a={a} onJump={jump} />}
       </Drawer>

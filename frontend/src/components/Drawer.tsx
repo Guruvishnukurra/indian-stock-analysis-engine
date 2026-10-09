@@ -1,14 +1,21 @@
 import { X } from '@phosphor-icons/react'
-import { useEffect, useRef, type ReactNode } from 'react'
+import { useLayoutEffect, useRef, type ReactNode } from 'react'
 
 // Side sheet built on the native <dialog>: focus trap, Escape to close and
 // an inert page behind it come from the browser, not from custom code.
-export function Drawer({ open, title, eyebrow, onClose, children }: {
-  open: boolean; title: string; eyebrow?: string; onClose: () => void; children: ReactNode
+// Opens in a layout effect so a figure flying in can measure its target.
+export function Drawer({ open, title, eyebrow, figure, flight = false, onClose, children }: {
+  open: boolean
+  title: string
+  eyebrow?: string
+  figure?: ReactNode
+  flight?: boolean
+  onClose: () => void
+  children: ReactNode
 }) {
   const ref = useRef<HTMLDialogElement>(null)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const dialog = ref.current
     if (!dialog) return
     if (open && !dialog.open) dialog.showModal()
@@ -16,13 +23,14 @@ export function Drawer({ open, title, eyebrow, onClose, children }: {
   }, [open])
 
   return (
-    <dialog ref={ref} className="drawer" aria-labelledby="drawer-title" onClose={onClose}
+    <dialog ref={ref} className={`drawer${flight ? ' flight' : ''}`} aria-labelledby="drawer-title" onClose={onClose}
       onClick={(e) => { if (e.target === ref.current) onClose() }}>
       <div className="drawer-inner">
         <div className="drawer-head">
-          <div>
+          <div className="drawer-heading">
             {eyebrow && <div className="eyebrow">{eyebrow}</div>}
             <h2 id="drawer-title">{title}</h2>
+            {open && figure}
           </div>
           <button type="button" className="btn btn-ghost btn-icon" onClick={onClose} aria-label="Close details">
             <X size={18} />
