@@ -148,7 +148,8 @@ ol.trace { list-style: none; margin: 4px 0 0; padding: 0; display: grid; }
   background: var(--surface); border: 1px solid var(--line-strong); color: var(--ink-2); position: relative; z-index: 1;
 }
 .step.pass .dot { background: var(--up-soft); color: var(--up); border-color: transparent; }
-.step.stop .dot { background: var(--accent); color: var(--accent-ink); border-color: transparent; box-shadow: 0 0 0 4px var(--accent-wash); }
+.step.stop .dot { background: var(--down); color: #fff; border-color: transparent; box-shadow: 0 0 0 4px var(--down-soft); }
+.step.decide .dot { background: var(--accent); color: var(--accent-ink); border-color: transparent; box-shadow: 0 0 0 4px var(--accent-wash); }
 .step.skip { opacity: 0.55; }
 .step.result .dot { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
 .step-body { display: grid; gap: 6px; padding-top: 3px; min-width: 0; justify-items: start; }

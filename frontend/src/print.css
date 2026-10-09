@@ -1,0 +1,117 @@
+/* Printable report (/s/:ticker/report). Always light, A4, no motion.
+   On screen it previews as a sheet of paper; in print only the paper remains. */
+
+.pr-shell {
+  color-scheme: light;
+  --page: #eef1f5; --surface: #ffffff; --surface-2: #f2f4f7; --surface-3: #e5e9ef;
+  --ink: #0b1b33; --ink-2: #3a4862; --ink-3: #5d6b84; --line: #dfe4eb; --line-strong: #c6cdd8;
+  --accent: #2a78d6; --accent-strong: #1c5cab; --accent-ink: #fff; --accent-soft: #e8f1fc; --accent-wash: rgba(42, 120, 214, 0.12);
+  --up: #0a7d32; --up-soft: #e6f4ea; --down: #c42b2b; --down-soft: #fdecec; --warn: #8a5800; --warn-soft: #fdf3dc;
+  --series-1: #2a78d6; --series-2: #eb6834; --series-3: #1baf7a; --series-1-wash: rgba(42, 120, 214, 0.14);
+  --good: #0ca30c; --warning: #fab219; --critical: #d03b3b;
+  --shadow-sm: none; --shadow: none;
+  min-height: 100vh; background: var(--page); color: var(--ink); padding: 0 16px 48px;
+}
+
+.pr-toolbar {
+  position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
+  max-width: 210mm; margin: 0 auto; padding: 14px 0; background: var(--page);
+}
+.pr-hint { font-size: 0.82rem; color: var(--ink-3); }
+.pr-loading, .pr-error { max-width: 210mm; margin: 40px auto; color: var(--ink-2); display: flex; gap: 8px; align-items: center; }
+
+.paper {
+  max-width: 210mm; margin: 0 auto; padding: 18mm 16mm; background: #fff; color: var(--ink);
+  box-shadow: 0 1px 3px rgba(11, 27, 51, 0.12), 0 20px 50px -24px rgba(11, 27, 51, 0.35); border-radius: 6px;
+  font-size: 10.5pt; line-height: 1.55;
+}
+.paper * { animation: none !important; transition: none !important; }
+.paper .btn { display: none; }              /* trace "open section" buttons are screen-only */
+
+/* ---------- cover ---------- */
+
+.pr-brand { font-size: 9pt; font-weight: 600; color: var(--accent-strong); display: flex; justify-content: space-between; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+.pr-brand span { color: var(--ink-3); font-weight: 500; }
+.pr-cover h1 { margin-top: 16px; font-size: 24pt; letter-spacing: -0.03em; line-height: 1.1; }
+.pr-sub { margin-top: 6px; color: var(--ink-2); }
+.pr-meta { margin-top: 2px; color: var(--ink-3); font-size: 9pt; }
+.pr-verdict { margin-top: 18px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); }
+.pr-stance { display: flex; align-items: center; gap: 12px; }
+.pr-label { font-size: 9pt; color: var(--ink-3); }
+.pr-figs { margin: 14px 0 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.pr-figs div { display: grid; gap: 1px; }
+.pr-figs dt { font-size: 8.5pt; color: var(--ink-3); }
+.pr-figs dd { margin: 0; font-family: var(--mono); font-size: 15pt; font-weight: 500; letter-spacing: -0.02em; }
+.pr-figs span { font-size: 8.5pt; color: var(--ink-2); }
+.pr-split { margin-top: 12px; font-size: 9.5pt; color: var(--ink-2); }
+.pr-bottom { margin-top: 16px; }
+.pr-bottom h2 { font-size: 11pt; margin-bottom: 4px; }
+.pr-bottom p { font-size: 11pt; line-height: 1.6; }
+
+/* ---------- sections ---------- */
+
+.pr-section { margin-top: 22px; }
+.pr-section { break-inside: auto; }
+.pr-section h2 { font-size: 13pt; letter-spacing: -0.015em; padding-bottom: 6px; border-bottom: 1px solid var(--line); margin-bottom: 10px; break-after: avoid; }
+.pr-section h3 { font-size: 10pt; margin: 12px 0 4px; color: var(--ink); break-after: avoid; }
+.pr-muted { color: var(--ink-3); font-size: 9.5pt; }
+.pr-note { margin-top: 8px; color: var(--ink-2); font-size: 9pt; }
+.pr-list { margin: 4px 0 0; padding-left: 18px; display: grid; gap: 3px; }
+.pr-list li { break-inside: avoid; }
+.pr-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; }
+.pr-cols > div { break-inside: avoid; }
+.pr-thesis { white-space: pre-line; }
+.pr-disclaimer { margin-top: 10px; padding: 10px 12px; border-radius: 8px; background: var(--surface-2); font-size: 9pt; color: var(--ink-2); }
+
+.pr-table { width: 100%; border-collapse: collapse; font-size: 9pt; }
+.pr-table th { text-align: left; font-weight: 600; color: var(--ink-3); font-size: 8.5pt; padding: 0 6px 6px 0; border-bottom: 1px solid var(--line-strong); }
+.pr-table td { padding: 6px 6px 6px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+.pr-table tr { break-inside: avoid; }
+.pr-table .num { text-align: right; font-family: var(--mono); white-space: nowrap; }
+.pr-table tr.off td { color: var(--ink-3); }
+.pr-table tfoot td { font-weight: 600; border-bottom: 0; }
+.pr-table.compact td, .pr-table.compact th { padding-right: 4px; }
+
+.pr-kv { margin: 0; display: grid; gap: 2px; }
+.pr-kv.wide { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 18px; }
+.pr-kv div { display: flex; justify-content: space-between; gap: 12px; padding: 4px 0; border-bottom: 1px dashed var(--line); font-size: 9.5pt; }
+.pr-kv dt { color: var(--ink-3); }
+.pr-kv dd { margin: 0; text-align: right; }
+
+.pr-events { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 5px; font-size: 9pt; }
+.pr-events li { display: flex; gap: 6px; align-items: baseline; break-inside: avoid; }
+.paper .screen-only { display: none; }
+.pr-chip { flex: none; font-size: 7.5pt; padding: 1px 6px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); color: var(--ink-2); }
+
+/* reused trace steps, tightened for paper */
+.paper ol.trace { gap: 0; }
+.paper .step { padding-bottom: 10px; break-inside: avoid; }
+.paper .step-body h3 { margin: 0; }
+.paper .step.result .step-body { background: var(--surface-2); }
+.paper .big-num { font-size: 15pt; }
+.paper .chart { max-width: 100%; }
+
+@media (max-width: 640px) {
+  .pr-figs, .pr-cols, .pr-kv.wide { grid-template-columns: 1fr 1fr; }
+  .paper { padding: 20px 16px; }
+}
+
+/* ---------- print ---------- */
+
+@page { size: A4; margin: 14mm 14mm 16mm; }
+
+@media print {
+  html, body { background: #fff !important; }
+  .appbar, .pr-toolbar, .skip-link { display: none !important; }
+  .pr-shell { padding: 0; background: #fff; }
+  .paper { max-width: none; margin: 0; padding: 0; box-shadow: none; border-radius: 0; }
+  .pr-section.new-page { break-before: page; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  a { color: inherit; text-decoration: none; }
+}
+
+/* report header button: icon only on phones */
+@media (max-width: 520px) { .report-btn { width: 36px; padding: 0; } .report-btn .label-text { display: none; } }
+
+/* never split the closing section or the disclaimer box across pages */
+.pr-section:last-child, .pr-disclaimer, .pr-verdict, .pr-bottom { break-inside: avoid; }

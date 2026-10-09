@@ -14,6 +14,7 @@ import './home.css'
 import './motion.css'
 import './story.css'
 import './compare.css'
+import './print.css'
 import App from './App.tsx'
 
 createRoot(document.getElementById('root')!).render(

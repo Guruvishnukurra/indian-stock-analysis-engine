@@ -69,6 +69,7 @@ export interface Verdicts {
 export interface Analysis {
   ticker: string
   status: string
+  engine_version?: string
   company_name: string
   sector?: string
   industry?: string
@@ -122,6 +123,12 @@ export interface Analysis {
     sentiment_basis?: string
     raw_article_count?: number
     duplicates_removed?: number
+    article_count?: number
+    finbert_score?: number | null
+    vader_score?: number | null
+    top_positive?: string[]
+    top_negative?: string[]
+    warnings?: string[]
     events?: {
       catalysts: string[]
       risks: string[]

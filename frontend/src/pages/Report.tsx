@@ -1,12 +1,13 @@
 import {
   ArrowClockwise,
+  FilePdf,
   ClockCounterClockwise,
   Lightning,
   MagnifyingGlass,
   WarningOctagon,
 } from '@phosphor-icons/react'
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate, useParams } from 'react-router'
+import { Link, useNavigate, useParams } from 'react-router'
 import { AnalysisView } from '../components/AnalysisView'
 import type { Job } from '../lib/api'
 import { bareSymbol, snapshotDate } from '../lib/demo'
@@ -115,6 +116,11 @@ function Report({ param }: { param: string }) {
               <span className="label-text">News and AI</span>
               <span className="visually-hidden">Include news and AI</span>
             </button>
+            {state.status === 'ready' && (
+              <Link className="btn btn-secondary report-btn" to={`/s/${symbol}/report`} title="Download a PDF report of this analysis">
+                <FilePdf size={17} weight="fill" aria-hidden="true" /><span className="label-text">PDF report</span>
+              </Link>
+            )}
             {state.status === 'ready' && (
               <button className="btn btn-ghost btn-icon" type="button" onClick={() => setLive((n) => n + 1)}
                 aria-label="Recompute this analysis live" title="Recompute with the live engine">

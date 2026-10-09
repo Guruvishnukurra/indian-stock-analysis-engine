@@ -5,6 +5,7 @@ import { ComparePage } from './pages/Compare'
 import { EvidencePage } from './pages/Evidence'
 import { HomePage } from './pages/Home'
 import { HowItWorksPage } from './pages/HowItWorks'
+import { PrintReportPage } from './pages/PrintReport'
 import { ReportPage } from './pages/Report'
 
 // Old links used /?t=TCS.NS; send them to the report route.
@@ -20,6 +21,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Root />} />
         <Route path="/s/:ticker" element={<ReportPage />} />
+        <Route path="/s/:ticker/report" element={<PrintReportPage />} />
         <Route path="/how-it-works" element={<HowItWorksPage />} />
         <Route path="/evidence" element={<EvidencePage />} />
         <Route path="/compare" element={<ComparePage />} />

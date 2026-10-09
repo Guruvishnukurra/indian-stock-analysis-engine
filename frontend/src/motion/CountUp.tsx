@@ -1,5 +1,6 @@
 import { animate, useReducedMotion } from 'motion/react'
-import { useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
+import { StillNumbers } from './still'
 
 const EASE_OUT = [0.16, 1, 0.3, 1] as const
 
@@ -13,7 +14,9 @@ export function CountUp({ value, format, duration = 0.9, delay = 0, from = 0 }: 
   delay?: number
   from?: number
 }) {
-  const reduce = useReducedMotion()
+  const prefersStill = useReducedMotion()
+  const onPaper = useContext(StillNumbers)
+  const reduce = prefersStill || onPaper
   const [shown, setShown] = useState(from)
   const last = useRef(from)
 

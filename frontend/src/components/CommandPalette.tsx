@@ -1,6 +1,7 @@
 import {
   ArrowRight,
   BookOpen,
+  FilePdf,
   ChartLineUp,
   CircleHalf,
   Columns,
@@ -99,6 +100,8 @@ export function CommandPalette() {
               <Item key={id} value={`explain ${label}`} keywords={['explain', 'trace', 'why']} icon={<TreeStructure size={16} />}
                 hint="Explain" onSelect={() => go(reportUrl({ explain: id }))}>{label}</Item>
             ))}
+            <Item value="download pdf report" keywords={['pdf', 'download', 'print', 'report', 'export']} icon={<FilePdf size={16} />}
+              hint="PDF" onSelect={() => go(`/s/${current}/report`)}>Download the PDF report</Item>
             {SECTIONS.map(([id, label]) => (
               <Item key={id} value={`section ${label}`} keywords={['tab', 'section']} icon={<ArrowRight size={16} />}
                 hint="Section" onSelect={() => go(`/s/${current}?tab=${id}`)}>{label}</Item>

@@ -18,17 +18,18 @@ const T = {
 
 
 
-type State = 'pass' | 'stop' | 'skip' | 'info'
+// pass: check passed; stop: a gate failed and ended the path; decide: the rule that matched; skip: not reached
+type State = 'pass' | 'stop' | 'decide' | 'skip' | 'info'
 
 function Step({ n, heading, state = 'info', result, children }: {
   n: number | string; heading: string; state?: State; result?: boolean; children?: ReactNode
 }) {
-  const Icon = state === 'pass' ? CheckCircle : state === 'stop' ? XCircle : state === 'skip' ? MinusCircle : null
+  const Icon = state === 'pass' || state === 'decide' ? CheckCircle : state === 'stop' ? XCircle : state === 'skip' ? MinusCircle : null
   return (
     <li className={`step ${state}${result ? ' result' : ''}`}>
       <span className="dot" aria-hidden="true">{Icon ? <Icon size={14} weight="bold" /> : n}</span>
       <div className="step-body">
-        <h3>{heading}{state === 'stop' && <span className="visually-hidden"> (decided here)</span>}</h3>
+        <h3>{heading}{(state === 'stop' || state === 'decide') && <span className="visually-hidden"> (decided here)</span>}</h3>
         {children}
       </div>
     </li>
@@ -100,7 +101,7 @@ function StanceTrace({ a }: { a: Analysis }) {
           </Step>
         ))}
         {failedAt === -1 && rules.map((r, i) => (
-          <Step key={r.heading} n={++n} heading={r.heading} state={i < firstRule ? 'skip' : i === firstRule ? 'stop' : 'skip'}>
+          <Step key={r.heading} n={++n} heading={r.heading} state={i === firstRule ? 'decide' : 'skip'}>
             <p className="small secondary">{r.detail}{i === firstRule ? ` Result: ${r.result}.` : ''}</p>
           </Step>
         ))}
@@ -134,7 +135,7 @@ function FairValueTrace({ a }: { a: Analysis }) {
           {fv.methods_used.map((m) => <li key={m} className="chip on">{m}</li>)}
           {Object.keys(excluded).map((m) => <li key={m} className="chip off" title={excluded[m]}>{METHOD_INFO[m]?.name ?? humanKey(m)}</li>)}
         </ul>
-        {Object.keys(excluded).length > 0 && <p className="muted small" style={{ marginTop: 8 }}>Greyed methods were excluded. Hover them for the reason.</p>}
+        {Object.keys(excluded).length > 0 && <p className="muted small screen-only" style={{ marginTop: 8 }}>Greyed methods were excluded. Hover them for the reason.</p>}
       </Step>
       <Step n={3} heading="Value the company with each method">
         <div className="contrib">
